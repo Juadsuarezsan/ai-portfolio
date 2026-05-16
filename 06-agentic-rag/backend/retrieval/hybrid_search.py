@@ -1,26 +1,17 @@
+"""Hybrid search — BM25 + vector + Reciprocal Rank Fusion."""
+from __future__ import annotations
+
 from collections import defaultdict
+from typing import Callable
+
 from stores.base_store import BaseVectorStore, SearchResult
 
 
-RRF_K = 60  # standard reciprocal rank fusion parameter
+RRF_K = 60
 
 
 class HybridSearcher:
-    """
-    Per store:
-      1. Use Claude to generate 3 alternative phrasings of the query.
-      2. For each phrasing:
-         - keyword_search (BM25 / FTS / sparse, depending on store)
-         - similarity_search (vector)
-      3. Merge all returned lists via Reciprocal Rank Fusion (RRF):
-           score(d) = sum( 1 / (k + rank_i(d)) ) over each result list
-      4. Return top-K fused results.
-
-    The pipeline runs once per store; results are returned per store for the
-    benchmark dashboard side-by-side view.
-    """
-
-    def __init__(self, *, query_rewriter, embed, k: int = 10) -> None:
+    def __init__(self, *, query_rewriter, embed: Callable[[str], list[float]], k: int = 10) -> None:
         self.query_rewriter = query_rewriter
         self.embed = embed
         self.k = k
@@ -29,7 +20,7 @@ class HybridSearcher:
         rewrites = await self.query_rewriter.rewrite(query, n=3)
         result_lists: list[list[SearchResult]] = []
         for q in [query, *rewrites]:
-            embedding = await self.embed(q)
+            embedding = self.embed(q)
             vector_hits = await store.similarity_search(query_embedding=embedding, k=self.k)
             keyword_hits = await store.keyword_search(query=q, k=self.k)
             result_lists.append(vector_hits)

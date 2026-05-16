@@ -265,6 +265,45 @@ Every change logs with diff, expected impact (measured on eval set), and reviewe
 
 ---
 
+## Running the eval harness
+
+```bash
+cd backend/
+python -m eval.runner                  # human-readable report
+python -m eval.runner --json
+python -m unittest tests.test_rag -v
+```
+
+The harness ships:
+- **Synthetic corpus + gold Q-A**: 20 chunks across two topics (GraphRAG vs vector RAG; hybrid retrieval),
+  10 gold questions with required-chunk-ids and answer substrings — anchored to the corpus
+  so retrieval metrics are defendable (no FiQA/BEIR borrowing).
+- **InMemoryStore** (`stores/memory_store.py`) — satisfies the same `BaseVectorStore` interface as
+  pgvector / Qdrant / Pinecone, with a real BM25 keyword index (k1=1.5, b=0.75).
+- **Contextual enricher stub** prepends a position-aware blurb to each chunk before embedding —
+  same shape as the Anthropic contextual-retrieval technique.
+- **Hybrid pipeline**: `StubQueryRewriter` -> BM25 + vector -> **RRF fusion** -> `StubReranker`.
+- **Metrics**: `context_recall`, `context_precision`, `faithfulness`, `answer_relevancy`, plus
+  answer-substring match for the synthesizer.
+- **Optimization Proposer** (not auto-applier) with proposal/canary/rollback states.
+
+Verified end-to-end:
+- **context_recall: 100%**, **faithfulness: 100%**, **answer substring match: 90%**
+- 11/11 unit tests pass (metrics, embedding, BM25, RRF, proposer accept/skip/rollback, e2e)
+
+## API
+
+| Method | Path | Purpose |
+|---|---|---|
+| `POST` | `/api/query`                              | Run hybrid retrieval + rerank, return top-k chunks |
+| `GET`  | `/api/eval/run`                           | Run the full Ragas-equivalent eval harness |
+| `POST` | `/api/optimizer/propose`                  | Drift-trigger entry: propose param change for review |
+| `GET`  | `/api/optimizer/proposals`                | List the proposal queue |
+| `POST` | `/api/optimizer/review`                   | Approve/reject (approve moves to canary) |
+| `POST` | `/api/optimizer/rollback/{proposal_id}`   | Revert a canary that regressed |
+
+---
+
 ## License
 
 MIT.
