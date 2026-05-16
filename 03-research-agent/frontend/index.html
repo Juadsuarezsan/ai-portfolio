@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>P3 · MemGPT Research Agent</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root { --accent:#7c5cff; --accent-2:#22d3ee; --accent-3:#f472b6; --bg:#07090f; }
+  body { background: var(--bg); color:#e7ecf5; font-family:'Inter', system-ui, sans-serif; }
+  .bg-stage { position:fixed; inset:0; z-index:-2; background:
+    radial-gradient(1200px 700px at 80% -10%, rgba(124,92,255,0.22), transparent 60%),
+    radial-gradient(1000px 600px at -10% 30%, rgba(34,211,238,0.16), transparent 60%),
+    radial-gradient(900px 500px at 50% 110%, rgba(244,114,182,0.16), transparent 55%),
+    linear-gradient(180deg,#06070d,#0a0e1c); }
+  .card { background: rgba(18,20,28,0.7); border:1px solid rgba(255,255,255,0.08); border-radius:14px; backdrop-filter: blur(8px); }
+  .tier { background: rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:14px; }
+  .tier-label { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; opacity:0.5; margin-bottom:8px; }
+  .brand { font-family:'JetBrains Mono',monospace; letter-spacing:0.2em; background: linear-gradient(90deg, var(--accent-2), var(--accent)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  .score-bar { height: 4px; border-radius: 2px; background: rgba(255,255,255,0.06); overflow: hidden; }
+  .score-bar > div { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+</style>
+</head>
+<body>
+<div class="bg-stage"></div>
+
+<nav class="border-b border-white/5 backdrop-blur sticky top-0 z-10 bg-black/40">
+  <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+    <div class="brand text-sm">// P3 · RESEARCH AGENT (MEMGPT)</div>
+    <div class="text-xs text-white/40 font-mono">backend: <span id="backend-status">checking...</span></div>
+  </div>
+</nav>
+
+<main class="max-w-6xl mx-auto px-6 py-10 space-y-6">
+
+  <header>
+    <h1 class="text-4xl font-bold tracking-tight">Three-tier memory in action</h1>
+    <p class="text-white/60 mt-2 max-w-2xl">Start a session, add findings, watch the hybrid policy (recency + relevance + pinned) score every entry. Eviction archives to episodic; consolidation extracts durable facts to semantic.</p>
+  </header>
+
+  <section class="card p-6">
+    <div class="grid md:grid-cols-3 gap-3">
+      <input id="sid" type="text" value="sess-1" class="bg-black/40 border border-white/10 rounded px-3 py-2 text-sm" placeholder="session id" />
+      <input id="goal" type="text" class="md:col-span-2 bg-black/40 border border-white/10 rounded px-3 py-2 text-sm" placeholder="research goal — e.g. compare GraphRAG vs vector RAG" />
+    </div>
+    <button id="start" class="mt-3 px-6 py-2 rounded-lg font-semibold text-sm bg-gradient-to-r from-[#7c5cff] to-[#22d3ee] text-[#0b0f1f]">Start session</button>
+  </section>
+
+  <section class="card p-6">
+    <h2 class="text-lg font-semibold mb-3">Add a finding to working memory</h2>
+    <div class="grid md:grid-cols-3 gap-3">
+      <input id="key" type="text" class="bg-black/40 border border-white/10 rounded px-3 py-2 text-sm" placeholder="key (e.g. finding:01)" />
+      <select id="kind" class="bg-black/40 border border-white/10 rounded px-3 py-2 text-sm">
+        <option>note</option><option>finding</option><option>plan</option><option>snippet</option><option>tool_output</option>
+      </select>
+      <label class="flex items-center gap-2 text-sm text-white/70"><input id="pinned" type="checkbox" class="rounded" /> pinned</label>
+    </div>
+    <textarea id="content" rows="3" class="mt-3 w-full bg-black/40 border border-white/10 rounded p-3 text-sm" placeholder="content..."></textarea>
+    <button id="remember" class="mt-3 px-6 py-2 rounded-lg font-semibold text-sm border border-white/20 hover:bg-white/5">Remember</button>
+  </section>
+
+  <section class="card p-6">
+    <h2 class="text-lg font-semibold mb-3">Working memory snapshot</h2>
+    <div id="snap" class="text-white/40 text-sm">No session started.</div>
+  </section>
+
+  <section class="card p-6">
+    <h2 class="text-lg font-semibold mb-3">Query — full multi-tier context</h2>
+    <div class="flex gap-3">
+      <input id="query" type="text" class="flex-1 bg-black/40 border border-white/10 rounded px-3 py-2 text-sm" placeholder="question..." />
+      <button id="ask" class="px-6 py-2 rounded-lg font-semibold text-sm border border-white/20 hover:bg-white/5">Get context</button>
+    </div>
+    <pre id="context" class="hidden mt-4 p-4 bg-black/40 rounded text-xs font-mono overflow-x-auto"></pre>
+  </section>
+
+  <section class="card p-6">
+    <h2 class="text-lg font-semibold mb-3">Run multi-session eval</h2>
+    <button id="run-eval" class="text-xs px-3 py-1.5 rounded border border-white/10 hover:bg-white/5 font-mono">Run</button>
+    <pre id="eval-output" class="hidden mt-3 p-3 bg-black/40 rounded text-xs font-mono overflow-x-auto"></pre>
+  </section>
+</main>
+
+<script>
+const API = location.origin.replace(/:\d+$/, ':8002');
+const $ = (id) => document.getElementById(id);
+async function api(path, opts) {
+  try { const r = await fetch(`${API}${path}`, opts); if (!r.ok) throw new Error(`${r.status}`); return await r.json(); }
+  catch(e){return {__error:e.message};}
+}
+async function checkBackend(){ const r=await api('/health'); $('backend-status').textContent=r.__error?'offline':'online'; $('backend-status').className=r.__error?'text-red-400':'text-green-400'; }
+
+function renderSnap(snap, used) {
+  if (!snap.length) { $('snap').innerHTML = '<div class="text-white/40 text-sm">empty</div>'; return; }
+  $('snap').innerHTML = `
+    <div class="text-xs text-white/50 font-mono mb-2">used: ${used} tokens · ${snap.length} entries</div>
+    ${snap.map(s => `
+      <div class="border border-white/5 rounded p-3 mb-2">
+        <div class="flex items-center justify-between text-xs mb-2">
+          <div class="flex items-center gap-2">
+            <span class="font-mono text-white/70">${s.key}</span>
+            <span class="text-white/40">[${s.kind}]</span>
+            ${s.pinned ? '<span class="text-amber-400 font-mono">PINNED</span>' : ''}
+          </div>
+          <span class="font-mono text-white/60">score ${s.score.toFixed(3)}</span>
+        </div>
+        <div class="text-xs text-white/60">${s.preview}</div>
+        <div class="score-bar mt-2"><div style="width:${s.score*100}%"></div></div>
+      </div>
+    `).join('')}`;
+}
+
+$('start').addEventListener('click', async () => {
+  const data = await api('/api/sessions/start', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({session_id: $('sid').value, goal: $('goal').value}),
+  });
+  if (data.__error) return;
+  renderSnap(data.snapshot, 0);
+});
+
+$('remember').addEventListener('click', async () => {
+  const data = await api('/api/sessions/remember', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({session_id: $('sid').value, key:$('key').value, content:$('content').value, kind:$('kind').value, pinned:$('pinned').checked}),
+  });
+  if (data.__error) return;
+  const used = data.snapshot.reduce((s,x)=>s+x.tokens, 0);
+  renderSnap(data.snapshot, used);
+  $('key').value=''; $('content').value=''; $('pinned').checked=false;
+});
+
+$('ask').addEventListener('click', async () => {
+  const data = await api('/api/sessions/context', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({session_id: $('sid').value, query: $('query').value}),
+  });
+  if (data.__error) return;
+  $('context').classList.remove('hidden'); $('context').textContent = data.context;
+});
+
+$('run-eval').addEventListener('click', async () => {
+  $('eval-output').classList.remove('hidden'); $('eval-output').textContent = 'Running...';
+  const d = await api('/api/eval/run');
+  if (d.__error) { $('eval-output').textContent = 'Error: '+d.__error; return; }
+  $('eval-output').textContent =
+    `Scenarios: ${d.n_scenarios}  Probes: ${d.n_probes}\n` +
+    `Recall with memory:        ${(d.recall_with_memory*100).toFixed(1)}%\n` +
+    `Recall stateless baseline: ${(d.recall_stateless_baseline*100).toFixed(1)}%\n` +
+    `Lift:                      ${(d.recall_lift*100).toFixed(1)}pp\n` +
+    `Semantic dedup pass rate:  ${(d.dedup_pass_rate*100).toFixed(1)}%\n` +
+    `Contamination-clean rate:  ${(d.contamination_clean_rate*100).toFixed(1)}%`;
+});
+
+checkBackend();
+</script>
+</body>
+</html>

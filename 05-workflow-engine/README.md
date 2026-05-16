@@ -281,8 +281,31 @@ missing dependency, self-reference, duplicate ids):
 | `POST` | `/api/workflows/{wf}/nodes/{n}/resolve`            | Approve / reject / edit-params an awaiting node |
 | `GET`  | `/api/eval/run`                                    | Run the validation + execution harness |
 
-Phases 2-5 (planner from NL, replanner, workflow memory, full HITL UI) are scoped
-explicitly in the README and not part of this build.
+### Phase 2 + 3 (planner / replanner / workflow memory) — shipped
+
+```bash
+python -m eval.planner_runner       # planner + replanner harness
+python -m unittest tests.test_planner -v
+```
+
+- **PlannerAgent** (`planner/planner_agent.py`) — NL goal -> validated DAG. Two backends:
+  Claude (production) and a heuristic stub (offline). Both consult `workflow_memory.find_similar`
+  and reuse a past DAG when `similarity >= 0.85`.
+- **Replanner** (`executor/replanner.py`) — rule book for known failures (`github.create_issue`
+  -> `github.get_repo_summary` fallback) + LLM path for novel ones. Explicitly returns `[]`
+  for failures with no honest automatic recovery (e.g. Slack rate-limit).
+- **WorkflowMemory** (`planner/workflow_memory.py`) — in-memory analog of pgvector with goal-
+  embedding similarity and `recent()` audit trail.
+- Successful runs auto-save to workflow memory so the next plan can reuse them.
+
+Verified: **planning accuracy 80%** on 5 NL goals, template reuse fires on the second call,
+replanner's `github.create_issue` fallback works, no silent recovery for Slack. 6/6 planner tests pass.
+
+### Phases 4-5 still scoped out
+
+Real MCP servers for Jira/Slack (full stdio transport instead of in-process mock) and the
+`react-flow` HITL UI are explicitly future work — the in-process mock satisfies the same
+contract, and the static HTML frontend in `frontend/index.html` covers the HITL queue.
 
 ---
 

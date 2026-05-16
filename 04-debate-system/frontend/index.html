@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>P4 · Multi-Agent Debate</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root { --accent:#7c5cff; --accent-2:#22d3ee; --accent-3:#f472b6; --bg:#07090f; }
+  body { background: var(--bg); color:#e7ecf5; font-family:'Inter', system-ui, sans-serif; }
+  .bg-stage { position:fixed; inset:0; z-index:-2; background:
+    radial-gradient(1200px 700px at 80% -10%, rgba(124,92,255,0.22), transparent 60%),
+    radial-gradient(1000px 600px at -10% 30%, rgba(34,211,238,0.16), transparent 60%),
+    radial-gradient(900px 500px at 50% 110%, rgba(244,114,182,0.16), transparent 55%),
+    linear-gradient(180deg,#06070d,#0a0e1c); }
+  .card { background: rgba(18,20,28,0.7); border:1px solid rgba(255,255,255,0.08); border-radius:14px; backdrop-filter: blur(8px); }
+  .stmt { border:1px solid rgba(255,255,255,0.07); border-radius:10px; padding:14px; background: rgba(0,0,0,0.25); }
+  .role-optimist     { border-left: 4px solid #34d399; }
+  .role-skeptic      { border-left: 4px solid #ff5a72; }
+  .role-financial    { border-left: 4px solid #22d3ee; }
+  .role-risk         { border-left: 4px solid #fbbf24; }
+  .role-devils_advocate { border-left: 4px solid #f472b6; }
+  .pill { display:inline-flex; padding:4px 10px; border-radius:999px; font-size:11px; font-family:'JetBrains Mono',monospace; letter-spacing:0.1em; text-transform:uppercase; }
+  .pill.strong_yes,.pill.yes { background:rgba(52,211,153,0.12); color:#34d399; border:1px solid rgba(52,211,153,0.3); }
+  .pill.strong_no,.pill.no { background:rgba(255,90,114,0.12); color:#ff5a72; border:1px solid rgba(255,90,114,0.3); }
+  .pill.neutral { background:rgba(255,255,255,0.06); color:#e7ecf5; border:1px solid rgba(255,255,255,0.1); }
+  .brand { font-family:'JetBrains Mono',monospace; letter-spacing:0.2em; background: linear-gradient(90deg, var(--accent-2), var(--accent)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  .consensus-bar { height: 8px; border-radius: 4px; background: rgba(255,255,255,0.06); overflow: hidden; }
+  .consensus-bar > div { height: 100%; background: linear-gradient(90deg, #ff5a72, #fbbf24, #34d399); }
+</style>
+</head>
+<body>
+<div class="bg-stage"></div>
+
+<nav class="border-b border-white/5 backdrop-blur sticky top-0 z-10 bg-black/40">
+  <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+    <div class="brand text-sm">// P4 · DEBATE SYSTEM</div>
+    <div class="text-xs text-white/40 font-mono">backend: <span id="backend-status">checking...</span></div>
+  </div>
+</nav>
+
+<main class="max-w-6xl mx-auto px-6 py-10 space-y-6">
+
+  <header>
+    <h1 class="text-4xl font-bold tracking-tight">Five agents · three rounds · one decision</h1>
+    <p class="text-white/60 mt-2 max-w-2xl">Optimist, Skeptic, Financial, Risk, Devil's Advocate. Adversarial structure surfaces edge cases a single CoT skips. The Devil's Advocate retargets each round against the current majority.</p>
+  </header>
+
+  <section class="card p-6">
+    <label class="block text-xs font-mono uppercase tracking-wider text-white/50 mb-2">Strategic problem</label>
+    <textarea id="problem" rows="3" class="w-full bg-black/40 border border-white/10 rounded p-3 text-sm" placeholder="e.g. Should we acquire Company X for $500M against industry comparables of $300-450M?"></textarea>
+    <button id="run" class="mt-3 px-6 py-2 rounded-lg font-semibold text-sm bg-gradient-to-r from-[#7c5cff] to-[#22d3ee] text-[#0b0f1f]">Run debate</button>
+  </section>
+
+  <section id="rounds" class="space-y-4"></section>
+
+  <section id="memo" class="hidden card p-6">
+    <h2 class="text-xl font-bold mb-4">Executive memo</h2>
+    <div class="grid md:grid-cols-2 gap-4">
+      <div>
+        <div class="text-xs uppercase text-white/40 font-mono">Recommended decision</div>
+        <div id="memo-decision" class="text-lg font-semibold mt-1"></div>
+      </div>
+      <div>
+        <div class="text-xs uppercase text-white/40 font-mono">Confidence</div>
+        <div id="memo-confidence" class="text-lg font-semibold mt-1"></div>
+      </div>
+    </div>
+    <div class="mt-4">
+      <div class="text-xs uppercase text-white/40 font-mono mb-1">Consensus level</div>
+      <div class="consensus-bar"><div id="consensus-fill" style="width:0%"></div></div>
+      <div id="consensus-text" class="text-xs text-white/60 mt-1 font-mono"></div>
+    </div>
+    <div id="groupthink-warn" class="hidden mt-3 text-sm border border-amber-400/30 bg-amber-400/10 text-amber-300 rounded px-3 py-2">
+      ⚠ Groupthink warning — consensus jumped sharply between rounds.
+    </div>
+    <div class="grid md:grid-cols-2 gap-4 mt-4">
+      <div>
+        <div class="text-xs uppercase text-white/40 font-mono mb-2">Supporting arguments</div>
+        <ul id="memo-supporting" class="text-sm space-y-1 list-disc list-inside text-white/80"></ul>
+      </div>
+      <div>
+        <div class="text-xs uppercase text-white/40 font-mono mb-2">Dissenting views</div>
+        <ul id="memo-dissenting" class="text-sm space-y-1 list-disc list-inside text-white/80"></ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+const API = location.origin.replace(/:\d+$/, ':8003');
+const $ = (id) => document.getElementById(id);
+async function api(path, opts) { try { const r = await fetch(`${API}${path}`, opts); if (!r.ok) throw new Error(r.status); return await r.json(); } catch(e){return {__error:e.message};} }
+async function checkBackend(){ const r=await api('/health'); $('backend-status').textContent=r.__error?'offline':'online'; $('backend-status').className=r.__error?'text-red-400':'text-green-400'; }
+
+function renderStatements(statements) {
+  const byRound = {};
+  statements.forEach(s => { (byRound[s.round] ||= []).push(s); });
+  $('rounds').innerHTML = '';
+  for (const r of [1,2,3]) {
+    if (!byRound[r]) continue;
+    const type = byRound[r][0].round_type;
+    const block = document.createElement('section');
+    block.className = 'card p-5';
+    block.innerHTML = `
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="font-semibold text-lg">Round ${r} — ${type}</h3>
+        <span class="text-xs text-white/40 font-mono">${byRound[r].length} statements</span>
+      </div>
+      <div class="grid md:grid-cols-2 gap-3">
+        ${byRound[r].map(s => `
+          <div class="stmt role-${s.role}">
+            <div class="flex items-center justify-between text-xs mb-2">
+              <span class="font-mono text-white/80">${s.role}</span>
+              <span class="pill ${s.stance}">${s.stance}</span>
+            </div>
+            <div class="text-sm text-white/70 leading-relaxed">${s.content}</div>
+            <div class="text-xs text-white/40 mt-2 font-mono">conf ${s.confidence.toFixed(2)}</div>
+          </div>
+        `).join('')}
+      </div>`;
+    $('rounds').appendChild(block);
+  }
+}
+
+function renderMemo(m) {
+  $('memo-decision').textContent = m.recommended_decision;
+  $('memo-confidence').textContent = `${(m.confidence*100).toFixed(0)}%`;
+  $('consensus-fill').style.width = `${m.consensus_level*100}%`;
+  $('consensus-text').textContent = `${(m.consensus_level*100).toFixed(0)}% — ${m.consensus_level >= 0.7 ? 'settled' : m.consensus_level >= 0.4 ? 'mixed' : 'contested'}`;
+  if (m.groupthink_warning) $('groupthink-warn').classList.remove('hidden');
+  else $('groupthink-warn').classList.add('hidden');
+  $('memo-supporting').innerHTML = m.key_supporting_arguments.map(x => `<li>${x}</li>`).join('') || '<li class="text-white/40">—</li>';
+  $('memo-dissenting').innerHTML = m.dissenting_views.map(x => `<li>${x}</li>`).join('') || '<li class="text-white/40">—</li>';
+  $('memo').classList.remove('hidden');
+}
+
+$('run').addEventListener('click', async () => {
+  $('run').textContent = 'Debating...'; $('run').disabled = true;
+  $('rounds').innerHTML = ''; $('memo').classList.add('hidden');
+  const data = await api('/api/debate', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ problem: $('problem').value, session_id: 'ui-'+Date.now() }),
+  });
+  $('run').textContent = 'Run debate'; $('run').disabled = false;
+  if (data.__error) { alert('Error: ' + data.__error); return; }
+  renderStatements(data.statements);
+  renderMemo(data.executive_memo);
+});
+
+checkBackend();
+</script>
+</body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>P6 · Agentic RAG</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root { --accent:#7c5cff; --accent-2:#22d3ee; --accent-3:#f472b6; --bg:#07090f; }
+  body { background: var(--bg); color:#e7ecf5; font-family:'Inter', system-ui, sans-serif; }
+  .bg-stage { position:fixed; inset:0; z-index:-2; background:
+    radial-gradient(1200px 700px at 80% -10%, rgba(124,92,255,0.22), transparent 60%),
+    radial-gradient(1000px 600px at -10% 30%, rgba(34,211,238,0.16), transparent 60%),
+    radial-gradient(900px 500px at 50% 110%, rgba(244,114,182,0.16), transparent 55%),
+    linear-gradient(180deg,#06070d,#0a0e1c); }
+  .card { background: rgba(18,20,28,0.7); border:1px solid rgba(255,255,255,0.08); border-radius:14px; backdrop-filter: blur(8px); }
+  .brand { font-family:'JetBrains Mono',monospace; letter-spacing:0.2em; background: linear-gradient(90deg, var(--accent-2), var(--accent)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  .metric-bar { height: 10px; border-radius: 5px; background: rgba(255,255,255,0.06); overflow: hidden; }
+  .metric-bar > div { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+  .pill { display:inline-flex; padding:4px 10px; border-radius:999px; font-size:11px; font-family:'JetBrains Mono',monospace; letter-spacing:0.1em; text-transform:uppercase; }
+  .pill.pending { background:rgba(251,191,36,0.12); color:#fbbf24; border:1px solid rgba(251,191,36,0.3); }
+  .pill.canary { background:rgba(34,211,238,0.12); color:#22d3ee; border:1px solid rgba(34,211,238,0.3); }
+  .pill.rolled_back { background:rgba(255,90,114,0.12); color:#ff5a72; border:1px solid rgba(255,90,114,0.3); }
+  .pill.rejected { background:rgba(255,255,255,0.05); color:#9aa3b8; border:1px solid rgba(255,255,255,0.1); }
+</style>
+</head>
+<body>
+<div class="bg-stage"></div>
+
+<nav class="border-b border-white/5 backdrop-blur sticky top-0 z-10 bg-black/40">
+  <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+    <div class="brand text-sm">// P6 · AGENTIC RAG</div>
+    <div class="text-xs text-white/40 font-mono">backend: <span id="backend-status">checking...</span></div>
+  </div>
+</nav>
+
+<main class="max-w-6xl mx-auto px-6 py-10 space-y-6">
+
+  <header>
+    <h1 class="text-4xl font-bold tracking-tight">Hybrid retrieval + Optimization Proposer</h1>
+    <p class="text-white/60 mt-2 max-w-2xl">BM25 + vector + RRF + reranking + Ragas-equivalent metrics. The Optimizer proposes parameter changes; humans review before they roll into a 10% canary.</p>
+  </header>
+
+  <section class="card p-6">
+    <div class="flex gap-3">
+      <input id="q" type="text" class="flex-1 bg-black/40 border border-white/10 rounded px-3 py-2 text-sm" placeholder="e.g. What is the latency cost of Cohere reranking?" />
+      <button id="ask" class="px-6 py-2 rounded-lg font-semibold text-sm bg-gradient-to-r from-[#7c5cff] to-[#22d3ee] text-[#0b0f1f]">Query</button>
+    </div>
+    <div id="results" class="mt-4 space-y-2"></div>
+  </section>
+
+  <section class="card p-6">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-lg font-semibold">Eval dashboard</h2>
+      <button id="run-eval" class="text-xs px-3 py-1.5 rounded border border-white/10 hover:bg-white/5 font-mono">Run eval</button>
+    </div>
+    <div id="dashboard" class="text-white/40 text-sm">Run the eval to see metrics.</div>
+  </section>
+
+  <section class="card p-6">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-lg font-semibold">Optimization Proposer</h2>
+      <button id="refresh-proposals" class="text-xs px-3 py-1.5 rounded border border-white/10 hover:bg-white/5">Refresh</button>
+    </div>
+    <div class="grid md:grid-cols-2 gap-3 mb-4">
+      <select id="metric" class="bg-black/40 border border-white/10 rounded px-3 py-2 text-sm">
+        <option value="faithfulness">faithfulness</option>
+        <option value="context_recall">context_recall</option>
+        <option value="answer_relevancy">answer_relevancy</option>
+      </select>
+      <div class="flex gap-2 items-center text-xs">
+        <span class="text-white/50">before:</span>
+        <input id="ev-before" type="number" step="0.01" value="0.70" class="w-20 bg-black/40 border border-white/10 rounded px-2 py-1 text-sm" />
+        <span class="text-white/50">→ after:</span>
+        <input id="ev-after" type="number" step="0.01" value="0.78" class="w-20 bg-black/40 border border-white/10 rounded px-2 py-1 text-sm" />
+        <button id="propose" class="px-3 py-1.5 rounded font-semibold text-xs bg-gradient-to-r from-[#7c5cff] to-[#22d3ee] text-[#0b0f1f]">Propose</button>
+      </div>
+    </div>
+    <div id="proposals" class="space-y-2"></div>
+  </section>
+</main>
+
+<script>
+const API = location.origin.replace(/:\d+$/, ':8005');
+const $ = (id) => document.getElementById(id);
+async function api(path, opts) { try { const r = await fetch(`${API}${path}`, opts); if (!r.ok) throw new Error(r.status); return await r.json(); } catch(e){return {__error:e.message};} }
+async function checkBackend(){ const r=await api('/health'); $('backend-status').textContent=r.__error?'offline':'online'; $('backend-status').className=r.__error?'text-red-400':'text-green-400'; }
+
+$('ask').addEventListener('click', async () => {
+  const data = await api('/api/query', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({question: $('q').value, k: 5}),
+  });
+  if (data.__error) { $('results').innerHTML = `<div class="text-red-400 text-sm">${data.__error}</div>`; return; }
+  $('results').innerHTML = data.results.map((r,i) => `
+    <div class="border border-white/5 rounded p-3">
+      <div class="flex items-center justify-between text-xs mb-1">
+        <span class="font-mono text-white/70">#${i+1} · ${r.chunk_id}</span>
+        <span class="font-mono text-white/50">score ${r.score.toFixed(3)}</span>
+      </div>
+      <div class="text-sm text-white/80">${r.content}</div>
+    </div>
+  `).join('');
+});
+
+function bar(label, value, max=1.0) {
+  return `
+    <div class="mb-3">
+      <div class="flex items-center justify-between text-xs mb-1">
+        <span class="font-mono text-white/70">${label}</span>
+        <span class="font-mono text-white/60">${(value*100).toFixed(1)}%</span>
+      </div>
+      <div class="metric-bar"><div style="width:${(value/max*100).toFixed(1)}%"></div></div>
+    </div>`;
+}
+
+$('run-eval').addEventListener('click', async () => {
+  $('dashboard').innerHTML = '<div class="text-white/40 text-sm">Running...</div>';
+  const d = await api('/api/eval/run');
+  if (d.__error) { $('dashboard').innerHTML = `<div class="text-red-400">${d.__error}</div>`; return; }
+  const m = d.metrics;
+  $('dashboard').innerHTML = `
+    <div class="text-xs text-white/50 font-mono mb-3">${d.n_queries} gold queries against the synthetic corpus</div>
+    ${bar('context_recall', m.context_recall)}
+    ${bar('context_precision', m.context_precision)}
+    ${bar('faithfulness', m.faithfulness)}
+    ${bar('answer_relevancy', m.answer_relevancy)}
+    ${bar('answer_substring_match', m.answer_substring_match)}
+  `;
+});
+
+async function loadProposals() {
+  const d = await api('/api/optimizer/proposals');
+  if (d.__error) { $('proposals').innerHTML = `<div class="text-red-400 text-xs">offline</div>`; return; }
+  if (!d.proposals.length) { $('proposals').innerHTML = '<div class="text-white/40 text-sm">No proposals yet.</div>'; return; }
+  $('proposals').innerHTML = d.proposals.map(p => `
+    <div class="border border-white/5 rounded p-3">
+      <div class="flex items-center justify-between text-xs mb-1">
+        <span class="font-mono text-white/80">#${p.id} · ${p.store_name} · ${p.regressed_metric}</span>
+        <span class="pill ${p.status}">${p.status}</span>
+      </div>
+      <div class="text-xs text-white/60 mb-2">${p.rationale}</div>
+      <div class="text-[11px] font-mono text-white/50">
+        before: ${JSON.stringify(p.before)}<br>
+        after:  ${JSON.stringify(p.after)}
+      </div>
+      <div class="mt-2 flex gap-2 text-xs">
+        ${p.status === 'pending_review' ? `
+          <button class="px-2 py-1 rounded border border-green-400/40 text-green-400 hover:bg-green-400/10" data-act="approve" data-id="${p.id}">Approve → canary</button>
+          <button class="px-2 py-1 rounded border border-red-400/40 text-red-400 hover:bg-red-400/10" data-act="reject" data-id="${p.id}">Reject</button>
+        ` : p.status === 'canary' ? `
+          <button class="px-2 py-1 rounded border border-amber-400/40 text-amber-400 hover:bg-amber-400/10" data-act="rollback" data-id="${p.id}">Rollback</button>
+        ` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+$('proposals').addEventListener('click', async (e) => {
+  const b = e.target.closest('button[data-act]');
+  if (!b) return;
+  const id = parseInt(b.dataset.id);
+  if (b.dataset.act === 'approve' || b.dataset.act === 'reject') {
+    await api('/api/optimizer/review', {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({proposal_id:id, approved: b.dataset.act === 'approve'})});
+  } else {
+    await api(`/api/optimizer/rollback/${id}`, {method:'POST'});
+  }
+  loadProposals();
+});
+
+$('propose').addEventListener('click', async () => {
+  await api('/api/optimizer/propose', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({store_name:'in_memory', regressed_metric: $('metric').value,
+                          eval_before: parseFloat($('ev-before').value),
+                          eval_after: parseFloat($('ev-after').value)})});
+  loadProposals();
+});
+
+$('refresh-proposals').addEventListener('click', loadProposals);
+
+checkBackend(); loadProposals();
+</script>
+</body>
+</html>

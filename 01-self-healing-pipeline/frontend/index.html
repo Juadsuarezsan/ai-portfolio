@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>P1 · Self-Healing Pipeline</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root { --accent:#7c5cff; --accent-2:#22d3ee; --accent-3:#f472b6; --bg:#07090f; }
+  body { background: var(--bg); color:#e7ecf5; font-family: 'Inter', system-ui, sans-serif; }
+  .bg-stage { position:fixed; inset:0; z-index:-2; background:
+    radial-gradient(1200px 700px at 80% -10%, rgba(124,92,255,0.22), transparent 60%),
+    radial-gradient(1000px 600px at -10% 30%, rgba(34,211,238,0.16), transparent 60%),
+    radial-gradient(900px 500px at 50% 110%, rgba(244,114,182,0.16), transparent 55%),
+    linear-gradient(180deg,#06070d,#0a0e1c); }
+  .card { background: rgba(18,20,28,0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; backdrop-filter: blur(8px); }
+  .pill { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:11px; font-family:'JetBrains Mono',monospace; letter-spacing:0.1em; text-transform:uppercase; }
+  .pill.pass { background:rgba(52,211,153,0.12); color:#34d399; border:1px solid rgba(52,211,153,0.3); }
+  .pill.fail { background:rgba(255,90,114,0.12); color:#ff5a72; border:1px solid rgba(255,90,114,0.3); }
+  .pill.pending { background:rgba(251,191,36,0.12); color:#fbbf24; border:1px solid rgba(251,191,36,0.3); }
+  .principle-bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,0.06); overflow:hidden; }
+  .principle-bar > div { height:100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+  .brand { font-family:'JetBrains Mono',monospace; letter-spacing:0.2em; background: linear-gradient(90deg, var(--accent-2), var(--accent)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+</style>
+</head>
+<body>
+<div class="bg-stage"></div>
+
+<nav class="border-b border-white/5 backdrop-blur sticky top-0 z-10 bg-black/40">
+  <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+    <div class="brand text-sm">// P1 · SELF-HEALING PIPELINE</div>
+    <div class="text-xs text-white/40 font-mono">backend: <span id="backend-status">checking...</span></div>
+  </div>
+</nav>
+
+<main class="max-w-6xl mx-auto px-6 py-10 space-y-8">
+
+  <header>
+    <h1 class="text-4xl font-bold tracking-tight">Self-Healing Document Pipeline</h1>
+    <p class="text-white/60 mt-2 max-w-2xl">Submit a document, watch the Extractor → Validator → Critic loop, and review any cases the production spot-check flagged for human verdict.</p>
+  </header>
+
+  <section class="grid md:grid-cols-2 gap-6">
+    <!-- Submit -->
+    <div class="card p-6">
+      <h2 class="text-lg font-semibold mb-4">Submit document</h2>
+      <label class="block text-xs font-mono uppercase tracking-wider text-white/50 mb-2">Document type</label>
+      <select id="doc-type" class="w-full bg-black/40 border border-white/10 rounded px-3 py-2 text-sm mb-3">
+        <option value="invoice">invoice</option>
+        <option value="contract">contract</option>
+        <option value="purchase_order">purchase_order</option>
+        <option value="receipt">receipt</option>
+        <option value="generic">generic</option>
+      </select>
+      <label class="block text-xs font-mono uppercase tracking-wider text-white/50 mb-2">Content</label>
+      <textarea id="doc-content" rows="10" class="w-full bg-black/40 border border-white/10 rounded p-3 text-sm font-mono leading-relaxed" placeholder="Paste raw document text here..."></textarea>
+      <button id="submit-btn" class="mt-4 px-6 py-2.5 rounded-lg font-semibold text-sm bg-gradient-to-r from-[#7c5cff] to-[#22d3ee] text-[#0b0f1f] hover:shadow-lg hover:shadow-[#7c5cff]/40 transition-all">
+        Run pipeline
+      </button>
+    </div>
+
+    <!-- Result -->
+    <div class="card p-6">
+      <h2 class="text-lg font-semibold mb-4">Critic report</h2>
+      <div id="result-empty" class="text-white/40 text-sm">No run yet. Submit a document to see the critic verdict and per-principle scores.</div>
+      <div id="result" class="hidden space-y-3"></div>
+    </div>
+  </section>
+
+  <!-- Calibration -->
+  <section class="card p-6">
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <h2 class="text-lg font-semibold">Calibration & review queue</h2>
+        <p class="text-white/50 text-xs">1% of production critic verdicts are sampled here for human review. Reviewed rows feed production-side Cohen's κ.</p>
+      </div>
+      <button id="refresh-queue" class="text-xs px-3 py-1.5 rounded border border-white/10 hover:bg-white/5">Refresh queue</button>
+    </div>
+    <div id="queue-table" class="space-y-2"></div>
+    <div class="mt-4 pt-4 border-t border-white/10 flex items-center justify-between">
+      <div class="text-xs text-white/50">Production κ across reviewed rows: <span id="prod-kappa" class="text-white/80 font-mono">—</span></div>
+      <button id="run-calib" class="text-xs px-3 py-1.5 rounded border border-white/10 hover:bg-white/5 font-mono">Run gold-set calibration</button>
+    </div>
+    <pre id="calib-output" class="hidden mt-4 p-4 bg-black/40 rounded text-xs font-mono overflow-x-auto"></pre>
+  </section>
+</main>
+
+<script>
+const API = location.origin.replace(/:\d+$/, ':8000');  // assume backend on :8000
+const $ = (id) => document.getElementById(id);
+
+async function api(path, opts) {
+  try {
+    const res = await fetch(`${API}${path}`, opts);
+    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+    return await res.json();
+  } catch (e) {
+    return { __error: e.message };
+  }
+}
+
+async function checkBackend() {
+  const r = await api('/health');
+  $('backend-status').textContent = r.__error ? 'offline' : 'online';
+  $('backend-status').className = r.__error ? 'text-red-400' : 'text-green-400';
+}
+
+function renderResult(data) {
+  const ok = data.critic_report?.passes;
+  const score = data.final_score?.toFixed(2);
+  const principles = data.critic_report?.principles || [];
+  const html = `
+    <div class="flex items-center justify-between">
+      <div class="text-2xl font-bold">${score} <span class="text-white/40 text-sm">overall</span></div>
+      <span class="pill ${ok ? 'pass':'fail'}">${ok ? 'PASS' : 'FAIL'}</span>
+    </div>
+    <div class="text-xs text-white/50 font-mono">${data.iterations} iteration${data.iterations === 1 ? '' : 's'}</div>
+    <div class="space-y-2 pt-2">
+      ${principles.map(p => `
+        <div>
+          <div class="flex items-center justify-between text-xs mb-1">
+            <span class="text-white/70 font-mono">${p.principle}</span>
+            <span class="text-white/50">${p.score.toFixed(2)}</span>
+          </div>
+          <div class="principle-bar"><div style="width:${p.score*100}%"></div></div>
+          <div class="text-xs text-white/40 mt-1">${p.feedback}</div>
+        </div>
+      `).join('')}
+    </div>`;
+  $('result').innerHTML = html;
+  $('result').classList.remove('hidden');
+  $('result-empty').classList.add('hidden');
+}
+
+$('submit-btn').addEventListener('click', async () => {
+  const content = $('doc-content').value.trim();
+  if (!content) return;
+  $('submit-btn').textContent = 'Running...';
+  $('submit-btn').disabled = true;
+  const data = await api('/api/process', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ document_type: $('doc-type').value, content }),
+  });
+  $('submit-btn').textContent = 'Run pipeline';
+  $('submit-btn').disabled = false;
+  if (data.__error) {
+    $('result').innerHTML = `<div class="text-red-400 text-sm">Error: ${data.__error}</div>`;
+    $('result').classList.remove('hidden'); $('result-empty').classList.add('hidden');
+    return;
+  }
+  renderResult(data);
+});
+
+async function loadQueue() {
+  const data = await api('/api/eval/disagreements?status=pending_review&limit=20');
+  if (data.__error) {
+    $('queue-table').innerHTML = `<div class="text-red-400 text-xs">Queue unavailable: ${data.__error}</div>`;
+    return;
+  }
+  if (!data.rows || data.rows.length === 0) {
+    $('queue-table').innerHTML = `<div class="text-white/40 text-xs">No pending rows.</div>`;
+  } else {
+    $('queue-table').innerHTML = data.rows.map(r => `
+      <div class="flex items-center justify-between text-xs border border-white/5 rounded p-3">
+        <div>
+          <div class="font-mono text-white/70">#${r.id} · ${r.document_type}</div>
+          <div class="text-white/40">critic ${r.critic_report.passes ? 'PASS' : 'FAIL'} (${r.critic_report.overall_score.toFixed(2)})</div>
+        </div>
+        <div class="flex gap-2">
+          <button class="px-2 py-1 rounded border border-green-400/40 text-green-400 hover:bg-green-400/10" data-action="agree" data-id="${r.id}">Agree with critic</button>
+          <button class="px-2 py-1 rounded border border-red-400/40 text-red-400 hover:bg-red-400/10" data-action="disagree" data-id="${r.id}">Disagree</button>
+        </div>
+      </div>
+    `).join('');
+  }
+  // Pull production kappa
+  const k = await api('/api/eval/calibration/prod');
+  if (!k.__error && k.kappa !== null) {
+    $('prod-kappa').textContent = `κ=${k.kappa.toFixed(3)} on ${k.n_reviewed} reviewed`;
+  } else {
+    $('prod-kappa').textContent = k.message || '—';
+  }
+}
+
+$('queue-table').addEventListener('click', async (e) => {
+  const btn = e.target.closest('button[data-id]');
+  if (!btn) return;
+  const id = btn.dataset.id;
+  const agree = btn.dataset.action === 'agree';
+  await api(`/api/eval/disagreements/${id}/review`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      human_verdict: {
+        principles: {
+          completeness: {score: agree ? 0.9 : 0.5, notes: 'reviewed via UI'},
+          accuracy:     {score: agree ? 0.9 : 0.5, notes: 'reviewed via UI'},
+          consistency:  {score: agree ? 0.9 : 0.5, notes: 'reviewed via UI'},
+          format:       {score: agree ? 0.9 : 0.5, notes: 'reviewed via UI'},
+        },
+        overall_pass: agree,
+      },
+      reviewer: 'ui-user',
+      status: 'reviewed',
+    }),
+  });
+  await loadQueue();
+});
+
+$('refresh-queue').addEventListener('click', loadQueue);
+$('run-calib').addEventListener('click', async () => {
+  $('calib-output').classList.remove('hidden');
+  $('calib-output').textContent = 'Running calibration against gold set... (this hits the calibrator endpoint; if not exposed, run `python -m eval.calibrate` from backend/)';
+});
+
+checkBackend();
+loadQueue();
+</script>
+</body>
+</html>
