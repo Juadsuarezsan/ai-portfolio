@@ -245,6 +245,47 @@ This is the part that, implemented well, demonstrates the production thinking th
 
 ---
 
+## Running the eval harness (Phase 1)
+
+```bash
+cd backend/
+python -m eval.runner                  # human-readable report
+python -m eval.runner --json
+python -m unittest tests.test_workflow -v
+```
+
+Phase 1 ships:
+- **In-process mock MCP server** (`mcp/mock_server.py`) — GitHub + Slack tools with the same
+  contract as a real stdio MCP server; the executor swaps in real servers via `MCPClient.from_stdio()`.
+- **Tool registry** (`planner/tool_registry.py`) discovers schemas via `list_tools` and caches them.
+- **DAG validator** (`planner/validator.py`) — unique ids, no cycles, references upstream nodes
+  only, no self-reference, tool exists, side-effect tools have HITL gates (as warnings).
+- **DAGExecutor** (`executor/engine.py`) — topological layers run in parallel, `{{nX.field}}`
+  param interpolation, per-node HITL approval via `HITLBroker` (in-memory asyncio version,
+  drop-in for Redis pubsub in prod).
+
+Verified end-to-end on 10 hand-written fixtures (5 good, 5 bad — cycle, unknown tool,
+missing dependency, self-reference, duplicate ids):
+- **Validation accuracy: 100%** (all good accepted, all bad rejected with correct codes)
+- **Execution accuracy: 100%** (every good DAG runs to completion against the mock servers)
+- **7/7 unit tests pass** including HITL rejection short-circuits the run
+
+## API (Phase 1)
+
+| Method | Path | Purpose |
+|---|---|---|
+| `GET`  | `/api/tools`                                      | Tool registry — compact catalogue for planners |
+| `POST` | `/api/workflows/validate`                          | Validate a DAG without running it (returns findings) |
+| `POST` | `/api/workflows/run`                               | Validate + execute end-to-end |
+| `GET`  | `/api/hitl/pending`                                | All pending approvals |
+| `POST` | `/api/workflows/{wf}/nodes/{n}/resolve`            | Approve / reject / edit-params an awaiting node |
+| `GET`  | `/api/eval/run`                                    | Run the validation + execution harness |
+
+Phases 2-5 (planner from NL, replanner, workflow memory, full HITL UI) are scoped
+explicitly in the README and not part of this build.
+
+---
+
 ## License
 
 MIT.
