@@ -182,6 +182,69 @@ Watch execution live: `GET /api/workflows/{workflow_id}/stream` (SSE).
 
 ---
 
+## Phased scope — honest about ambition
+
+This is the most ambitious project in the portfolio. To avoid the "buzzword stew" failure mode, the build is **strictly phased** — each phase is a working system before the next starts.
+
+| Phase | Scope | Done when |
+|---|---|---|
+| **1 — Static DAG executor** | LangGraph runs hand-written DAGs against **one** MCP server (GitHub). No planner, no replanner. | A user submits a YAML DAG and it executes end-to-end with HITL on critical nodes |
+| **2 — Planner** | Add meta-agent that generates DAGs from NL. Add `dag_parser.py` validator. Still one MCP server. | A user submits a goal and gets a validated DAG that executes |
+| **3 — Replanner + workflow memory** | Failure-driven replanning, pgvector-backed workflow memory | A failing node triggers replanning; past successful workflows surface as templates |
+| **4 — Multi-MCP** | Add Jira + Slack MCP servers + the tool registry below | Cross-system workflows work end-to-end |
+| **5 — HITL UI** | `react-flow` graph editor + approval queue | Non-technical user can review and approve workflows |
+
+Phases 1–2 are the minimum viable submission. Phases 3–5 are optional depth, not commitments.
+
+## Tool registry architecture
+
+The Planner cannot generate valid DAGs without knowing what tools exist and what they accept.
+
+- **Source of truth**: each MCP server self-describes via MCP `list_tools` capability — returns a JSON Schema per tool's input.
+- **At planner startup**: discover all connected servers; cache schemas in Redis (TTL 5 min).
+- **At plan generation**: planner system prompt includes the registry as a compact catalog (tool_name, one-line description, input schema summary). NOT full schemas — that would bloat the prompt.
+- **At validation**: every `tool: "x.y"` reference in the generated DAG is checked against the registry. Cycle detection runs in parallel.
+- **On schema change**: if a tool's schema changes after a workflow was stored in memory, the workflow is marked `stale` and re-validated lazily on next retrieval.
+
+This is the part that, implemented well, demonstrates the production thinking the portfolio claims.
+
+## Acknowledged limits
+
+- **Dynamic DAG generation is hard.** LLMs frequently hallucinate tool names or input shapes. Validation catches it but adds latency and burns tokens on retries. Cap of 3 plan attempts per goal.
+- **Replanning isn't free.** A failure on node 6 of a 10-node DAG might require re-running prior nodes if they had side effects. Idempotency markers on each tool call let the executor know what to re-run — but **the burden is on the MCP server author** to mark which tools are idempotent.
+- **Workflow memory is biased.** Once 50 successful workflows for "create-bug-from-feedback" exist, the planner overweights them — even when the user's intent is subtly different. Periodic eviction of low-utility workflows + a "fresh plan" toggle.
+
+## Cost & Latency Budget
+
+| Operation | Budget |
+|---|---|
+| Plan generation (planner LLM call) | < 6s p95, < $0.04 |
+| DAG validation | < 200ms (local) |
+| Single MCP tool call (median) | < 800ms p95 |
+| End-to-end small workflow (3–5 nodes) | < 20s p95, < $0.10 |
+| Replan after failure | + 6s + $0.04 vs naive retry |
+| Workflow memory lookup (pgvector) | < 100ms p95 |
+
+## Evaluation methodology
+
+- **Generated DAG validity**: of 100 NL goals, what % produce a DAG that (a) parses, (b) references real tools, (c) executes without HITL rejection?
+- **Replanning ROI**: 50 forced failures. Measure success rate: blind retry vs replanner. Replanner should beat retry by ≥ 20pp.
+- **Workflow memory benefit**: after 50 stored workflows, measure plan-generation latency and quality on 20 new-but-similar goals. Cached templates should drop latency without dropping quality.
+- **Adversarial goals**: 10 ambiguous or impossible goals ("delete all Slack messages but keep important ones"). Does the system refuse cleanly with a useful explanation?
+
+## Failure modes considered
+
+| Failure | Mitigation |
+|---|---|
+| Planner hallucinates a tool that doesn't exist | Validation rejects; replan with explicit "tool X does not exist, valid tools are Y" feedback |
+| Cycle in generated DAG | Validator catches; up to 3 replan attempts |
+| MCP server timeout | Per-tool timeout (configurable); failure feeds replanner |
+| HITL approval times out (no human responds) | DAG paused, stored, resumable from approval point |
+| Workflow memory returns an obsolete template | Schema-staleness flag; planner ignores stale entries |
+| Concurrent DAGs touch the same resource | Pessimistic lock on resource IDs in MCP tool wrappers; out of scope for v1, deferred |
+
+---
+
 ## License
 
 MIT.

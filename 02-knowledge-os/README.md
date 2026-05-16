@@ -168,6 +168,69 @@ Each file in this scaffold has docstrings and method signatures matching the arc
 
 ---
 
+## Query routing — when NOT to use GraphRAG
+
+GraphRAG is not free. Two-hop traversal costs ~3× a vector lookup, and Cypher planning is unpredictable on large graphs. The system **routes queries** before deciding which path to take:
+
+```
+                ┌─────────────────────────┐
+                │   Incoming query        │
+                └────────────┬────────────┘
+                             │
+                ┌────────────▼────────────┐
+                │   Query classifier      │  small Claude call, JSON output
+                │   {lookup | multi_hop | │
+                │    aggregation | hybrid}│
+                └─────┬───────┬─────┬─────┘
+                      │       │     │
+                      ▼       ▼     ▼
+                 vector    graph   both
+                 only      only    (rerank)
+```
+
+- **Lookup** ("What is the SLA for tier 1 support?") → pure vector RAG. Fast, cheap.
+- **Multi-hop** ("Which projects depend on contracts signed by John before Q3?") → GraphRAG. The graph earns its keep.
+- **Aggregation** ("How many active deals over $500K in EMEA?") → Cypher only, no LLM at retrieval.
+- **Hybrid** (ambiguous) → both paths, merge, rerank.
+
+Vendor-honest take: ~60% of enterprise queries are lookups. Burning a graph traversal on those is waste.
+
+## Acknowledged limits
+
+- **Cold-start cost is real.** Extracting clean entities + relationships from a 10K-document corpus costs $200–400 in LLM calls plus several hours of human schema curation. Not hidden.
+- **LLM entity extraction drifts** on messy enterprise corpora. The system maintains a **schema lock** (`backend/graph/schema.yaml`) — new entity types proposed by the extractor are flagged for human approval, not silently merged.
+- **The graph rots faster than vectors.** A wrong edge ("John reports to Alice" when John left in March) actively misleads. Staleness Agent + confidence decay on edges not re-confirmed in N days mitigates but doesn't eliminate this.
+
+## Cost & Latency Budget
+
+| Operation | Budget |
+|---|---|
+| Ingest entity extraction (per doc, ~5K tokens) | < $0.04, < 8s |
+| Vector-only query | < 400ms p95, < $0.003 |
+| GraphRAG query (2-hop) | < 1.2s p95, < $0.015 |
+| Hybrid query | < 1.5s p95, < $0.02 |
+| Staleness agent daily run (10K nodes) | < 5 min, < $1 |
+
+## Evaluation methodology
+
+- **Test set**: 100 questions per category (lookup / multi-hop / aggregation), labeled with ground truth and the required documents
+- **Primary metrics**: per-category accuracy; **path-cited-correctly** for multi-hop (did the system explain which edges it used?)
+- **Comparison harness**: vector-only baseline vs GraphRAG, same corpus, same questions — measures the delta, not absolute score
+- **Adversarial subset**: 20 questions designed to fool vector-only retrieval (paraphrase mismatches, multi-hop disguised as simple)
+- **Decay test**: re-run the test set 30 days after corpus lock — measures accuracy bleed without re-ingestion
+
+## Failure modes considered
+
+| Failure | Mitigation |
+|---|---|
+| Entity extractor invents a relationship type | Schema lock — only types in `schema.yaml` accepted |
+| Two-hop explosion (1000+ candidate paths) | Path budget cap; if exceeded, fall back to vector-only and log for routing review |
+| Stale graph edge contradicts vector chunk | Confidence-weighted merge; staler edge loses |
+| Neo4j outage | Circuit breaker → vector-only fallback path |
+| New document with no extractable entities | Stored as vector-only chunk with `graph_orphan=true` flag |
+
+---
+
 ## License
 
 MIT.

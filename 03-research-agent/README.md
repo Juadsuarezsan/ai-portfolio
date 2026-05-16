@@ -152,6 +152,67 @@ The agent will plan, search, analyze, reflect, and generate a PDF report. Subseq
 
 ---
 
+## The controller policy (the hard part)
+
+The controller decides what enters working memory each turn and what gets evicted. Pure-LLM eviction is too expensive (one call per turn); LRU is too dumb (drops goal-relevant items). Hybrid policy:
+
+```
+score(item) = 0.5 * recency_score      # exp decay, half-life 10 turns
+            + 0.3 * relevance_score    # cosine sim to current goal
+            + 0.2 * pinned_boost       # explicit "keep" flag
+
+if working_tokens > budget:
+    evict items with lowest score until under budget
+    ties → prefer evicting older items
+    remaining ties → LLM tie-breaker (one judge call per batch of 5)
+```
+
+Key choices:
+- **Hybrid, not pure LLM**: keeps cost bounded
+- **Batched tie-breaker**: when 5+ items have identical scores, one judge call ranks them. Rare in practice (< 5% of turns).
+- **Pin flag**: the agent itself can mark "this finding is load-bearing for the current goal — don't evict"
+
+## Forgetting and context contamination
+
+Two production issues this controller addresses:
+
+1. **Forgetting curve**: items not retrieved decay in recency score; after 50 turns of disuse, even relevant items drop out of working memory and archive to episodic. Mirrors Ebbinghaus-style forgetting and is *desirable* — keeps working memory focused.
+2. **Context contamination**: when a new session starts, only the *most similar* prior session is loaded into working memory, not all of them. Diversity-aware retrieval prevents the agent from getting stuck in a previous session's framing when the new goal is similar-but-different.
+
+## Acknowledged limits
+
+- **Consolidation can lose nuance.** Extracting "durable facts" at session end summarizes — and summarization always discards. The system stores raw session transcripts alongside consolidated facts, so the raw record is recoverable.
+- **Semantic memory dedup is heuristic.** Two facts that say the same thing differently may be stored twice. A periodic LLM merge pass consolidates near-duplicates (daily, ~$2 for 10K-fact bases).
+- **No multi-user isolation in v1.** Memory is per-agent, not per-user. Multi-tenant deployment requires per-user namespacing — deferred.
+
+## Cost & Latency Budget
+
+| Operation | Budget |
+|---|---|
+| Single research turn (controller + LLM + tools) | < 6s p95, < $0.04 |
+| Session start (episodic similarity load) | < 500ms p95 |
+| Session end consolidation | < 4s, < $0.03 |
+| Semantic memory dedup pass (background, weekly) | < 10 min, < $5 |
+
+## Evaluation methodology
+
+- **Multi-session test**: 20 research topics, each spanning 3 sessions a week apart. Measure (a) does the agent recall prior findings? (b) does it avoid repeating tool calls? (c) does the final report cite findings from session 1?
+- **Token budget sweep**: same topic, vary working memory budget (4K / 16K / 64K). Measure quality vs cost — finds the elbow.
+- **Comparison**: stateless baseline (no memory) vs 3-tier — quality delta on multi-session topics
+- **Contamination test**: two near-similar topics ("GraphRAG vs RAG" and "GraphRAG implementation pitfalls") — does session 2 inappropriately inherit session 1's framing?
+
+## Failure modes considered
+
+| Failure | Mitigation |
+|---|---|
+| Controller evicts a pinned item | Hard rule + unit test: pinned items never evicted |
+| Semantic memory contains contradictions | Conflict detection on retrieval; both facts surfaced to LLM with timestamps |
+| LLM tie-breaker call fails | Fallback to recency-only ordering |
+| Token budget exceeded mid-turn | Aggressive evict-and-retry once; if still over, abort with explicit error |
+| Episodic drift (sessions describe outdated state) | Per-session staleness flag; LLM warns user when loading > 30-day-old session |
+
+---
+
 ## License
 
 MIT.

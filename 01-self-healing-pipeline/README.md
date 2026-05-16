@@ -198,6 +198,55 @@ Full schema at `http://localhost:8000/docs`.
 
 ---
 
+## Acknowledged limits
+
+- **Reflection plateaus after ~2-3 iterations.** Self-Refine (Madaan et al. 2023) shows that on hard tasks, additional reflection often *degrades* output rather than improving it. The hard cap of 3 reflects this — it is not a temporary throttle.
+- **The critic itself can hallucinate failures.** A confident-but-wrong "fail" verdict wastes a generation and pollutes episodic memory. Addressed in the calibration loop below, not by assumption.
+- **Constitutional principles are domain-specific.** The four shipped principles (completeness/accuracy/consistency/format) are tuned for structured document extraction. Conversational or creative tasks need a different set.
+
+## Calibrating the critic
+
+The critic is itself an LLM and can be wrong. To detect drift:
+
+1. **Gold set of 50 human-labeled cases** in `backend/eval/gold/` — each case has the document, correct extraction, and per-principle verdict.
+2. Before each release, `python -m backend.eval.calibrate` measures critic-vs-human agreement. Threshold: **Cohen's κ ≥ 0.85**. Below that, critic prompt or `pass_threshold` is regressing.
+3. **In production**, 1% of pass verdicts are sampled for human spot-check. Disagreements log to `critic_disagreements` and surface in Langfuse.
+
+Without this loop, "self-healing" is a marketing word.
+
+## Cost & Latency Budget
+
+| Operation | Budget (target) |
+|---|---|
+| Extractor call | < 4s p95, < $0.012 (Sonnet 4.5, ~3K in + 1K out) |
+| Critic call | < 2.5s p95, < $0.008 |
+| Full reflection iteration | < 10s p95, < $0.02 |
+| End-to-end worst case (3 reflections + synth) | < 35s p95, < $0.08 |
+| Episodic memory query (pgvector top-3) | < 80ms p95 |
+
+Budgets, not measurements. The Metrics table fills in real numbers once running.
+
+## Evaluation methodology
+
+- **Held-out test set**: 200 invoices hand-labeled (separate from calibration gold)
+- **Primary metric**: per-field exact match against ground truth
+- **Secondary**: tokens per successful extraction; reflection iteration distribution; critic-human disagreement rate
+- **Adversarial subset**: 30 documents with intentional flaws (missing tax_id, line items not summing to total, ambiguous dates) — measures what the critic catches that the extractor misses
+- **Continuous**: every prod query runs through the eval harness on a 1% sample
+
+## Failure modes considered
+
+| Failure | Detection | Recovery |
+|---|---|---|
+| Extractor returns malformed JSON | Pydantic ValidationError | Force one retry with stricter prompt; escalate if still fails |
+| Critic hallucinates "fail" on valid output | Spot-check sample + disagreement table | Tune `pass_threshold`; flag for review if rate > 5% |
+| Episodic memory poisoned by hallucinated failures | Confidence on entries; disagreement entries auto-purged | Calibration loop catches drift |
+| Reflection loop spins forever | Hard cap at 3 + total-tokens cap | Returns `needs_human_review` with full trace |
+| Same input keeps failing across reflections | Same principle < 0.6 for 3 iterations → abort | Returns partial extraction + diagnostic |
+| Cost overrun | Per-request token budget checked before each LLM call | Aborts with explicit budget error |
+
+---
+
 ## License
 
 MIT.

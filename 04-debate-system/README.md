@@ -148,6 +148,65 @@ Stream events:
 
 ---
 
+## Honest positioning — what debate actually buys you
+
+Multi-agent debate is **not** a reliable accuracy improvement. Du et al. 2023 ("Improving Factuality and Reasoning via Multi-Agent Debate") shows modest gains on structured reasoning (math, logic) and negligible-to-negative on open-ended tasks (strategy, creative).
+
+The honest case for using this system is **not** "more correct" — it is:
+
+1. **Auditable reasoning trail.** Decision-makers get five distinct lenses (optimist/skeptic/financial/risk/devil's advocate) with explicit arguments, not a single black-box recommendation. When the decision is wrong, the trail shows *why*.
+2. **Edge-case surfacing.** Adversarial roles (Skeptic, Devil's Advocate) force consideration of failures a single CoT would skip.
+3. **Consensus signal.** The numeric 0–1 consensus tells the decision-maker how settled the debate is — 0.4 means "this is contested, gather more data," which a single LLM never volunteers.
+
+If your task is "extract structured data from a document," don't use this — use P1. If your task is "should we acquire Company X?", this is the right tool.
+
+## Cost trade-off — when 15+ calls is worth it
+
+Single chain-of-thought: ~$0.04, 5s. Full debate (5 agents × 3 rounds + synth): ~$0.40, 60s. **10× cost, 12× latency.**
+
+Use only when:
+- The decision is reversible only at high cost (acquisitions, market entries, architectural commitments)
+- The asymmetry of being wrong is large (catastrophic downside or vice-versa)
+- Stakeholders will read the trail (board memos, design docs)
+
+Do **not** use for: real-time decisions, repetitive workflows, anything called more than ~10×/day.
+
+## Acknowledged limits
+
+- **The synthesizer is still one Claude call.** The 5 agents surface signal Claude alone would skip, but the final memo's quality ceiling is bounded by what Claude can compose. Ensemble synthesis (3 synthesizers + vote) tracked as Phase 2.
+- **Roles can collapse into "yes-and."** Even labeled agents drift toward agreement without active dissent. The Devil's Advocate + consensus-jump detection catches collapse — if consensus jumps from 0.3 to 0.95 in one round, the system logs a warning.
+- **Topic blindspots.** All five agents share the same training data. Retrieval-grounded evidence (each agent gets relevant docs before opening statements) is Phase 2.
+
+## Cost & Latency Budget
+
+| Operation | Budget |
+|---|---|
+| Single agent statement (1 round) | < 5s p95, < $0.025 |
+| Round 1 (5 parallel) | < 7s p95 (longest agent), < $0.13 |
+| Round 2 (sequential rebuttals, each reads all prior) | < 30s p95, < $0.13 |
+| Round 3 (parallel final) | < 7s p95, < $0.13 |
+| Synthesizer | < 8s p95, < $0.05 |
+| Full debate | < 60s p95, < $0.45 |
+
+## Evaluation methodology
+
+- **Decision quality test**: 30 strategic scenarios with retrospective ground truth. Compare: single CoT vs single CoT-with-self-reflection vs full debate. Tests whether the cost premium is bought.
+- **Audit trail quality**: human evaluators rate the trail's usefulness for understanding *why* the system recommended what it did (1–5 scale).
+- **Consensus calibration**: across 50 problems where ground truth exists, does high-consensus output correlate with correct outcomes? If consensus 0.95 = 70% correct, the score is uncalibrated.
+- **Adversarial sample**: 10 questions designed to elicit groupthink (leading phrasing, popular-but-wrong answers). Measures whether Skeptic/Devil's Advocate actually dissent.
+
+## Failure modes considered
+
+| Failure | Mitigation |
+|---|---|
+| All agents converge instantly (groupthink) | Consensus-jump detector; if round-2 > round-1 by 0.3+, log warning + Devil's Advocate gets forced-dissent prompt |
+| One agent crashes mid-round | Use last-cached statement from prior round + flag in audit trail |
+| Synthesizer ignores minority view | Memo includes minority position as a labeled section, not buried |
+| Cost overrun | Per-debate budget cap; aborts after 3rd-round budget exceeded with partial memo |
+| Redis loses state | Debate state checkpointed to Postgres at each round end; resumes from checkpoint |
+
+---
+
 ## License
 
 MIT.
