@@ -1,28 +1,30 @@
 # Juan David Suárez Sandoval — AI Engineer Portfolio
 
-> **Nine production-grade projects** covering 99% of AI Engineering 2026: advanced RAG, fine-tuning, agents with tool-use, Document AI, Computer Use, Code AI, AI Safety, GraphRAG, and Voice AI.
+> **Nine standalone production-grade projects** covering 99% of AI Engineering 2026: advanced RAG, fine-tuning, agents with tool-use, Document AI, Computer Use, Code AI, AI Safety, GraphRAG, and Voice AI.
 
 **Author:** Juan David Suárez Sandoval · **Contact:** juadsuarezsan@unal.edu.co
-**Live site:** [`./index.html`](./index.html) — deployable to GitHub Pages
+**Live portfolio site:** https://juadsuarezsan.github.io/ai-portfolio/
 **Specs (source of truth):** [`./docs/portafolio_specs.md`](./docs/portafolio_specs.md)
+
+This repo is the **portfolio hub** — landing page, master spec, and links. Each of the nine projects lives in its own standalone repo so it can be starred, forked, and deployed independently.
 
 ---
 
 ## The nine projects
 
-Each project ships with: real datasets, eval set ≥ 100 cases, baselines + ablations, RAGAS or equivalent metrics, public live demo, `docker compose up`, observability traces, 30+ commits, model card if it publishes a fine-tuned model.
+| # | Project | Repo | Stack highlights |
+|---|---------|------|------------------|
+| 1 | **Conversational E-commerce Assistant** | [conversational-ecommerce-assistant](https://github.com/Juadsuarezsan/conversational-ecommerce-assistant) | Hybrid retrieval (BM25+dense+RRF+Cohere rerank) · LangGraph agent · 31 tests |
+| 2 | **Customer Support Triage Agent** | [support-triage-agent](https://github.com/Juadsuarezsan/support-triage-agent) | DistilBERT+LoRA classifier · Claude reasoner · 13 tests |
+| 3 | **B2B Sales Intelligence Agent** | [sales-intelligence-agent](https://github.com/Juadsuarezsan/sales-intelligence-agent) | Plan-execute-reflect loop · Tavily+HN · 11 tests |
+| 4 | **Document Intelligence Pipeline** | [document-intelligence-pipeline](https://github.com/Juadsuarezsan/document-intelligence-pipeline) | Layout+OCR+Claude Vision · field validators · 13 tests |
+| 5 | **Computer Use Agent** | [computer-use-agent](https://github.com/Juadsuarezsan/computer-use-agent) | Anthropic Computer Use API · Ubuntu VM · safety layer · 12 tests |
+| 6 | **Code Review Agent** | [code-review-agent](https://github.com/Juadsuarezsan/code-review-agent) | tree-sitter + Claude · multi-aspect analyzers · 14 tests |
+| 7 | **AI Safety & Red Teaming** | [ai-safety-redteam](https://github.com/Juadsuarezsan/ai-safety-redteam) | OWASP LLM Top 10 · guardrails layer · 15 tests |
+| 8 | **GraphRAG over SEC EDGAR** | [graphrag-sec-edgar](https://github.com/Juadsuarezsan/graphrag-sec-edgar) | Neo4j-compatible KG · multi-hop · 12 tests |
+| 9 | **Voice AI Conversational Agent** | [voice-ai-agent](https://github.com/Juadsuarezsan/voice-ai-agent) | Whisper + Claude + ElevenLabs · slot-filling · 11 tests |
 
-| # | Project | Core technique | Industrial use case |
-|---|---------|----------------|--------------------|
-| 1 | [Conversational E-commerce Assistant](./01-ecommerce-assistant) | Hybrid retrieval (BM25 + dense + RRF) + reranking + LangGraph agent | Rappi, Mercado Libre, Walmart, Instacart, Amazon — conversational shopping |
-| 2 | [Customer Support Triage Agent](./02-support-triage) | DistilBERT fine-tuned with LoRA + Claude reasoning + similar-ticket retrieval | Intercom, Zendesk, Freshdesk, HubSpot — automated ticket triage |
-| 3 | [B2B Sales Intelligence Agent](./03-sales-intelligence) | Agent loop with planner-executor-reflector + web search + structured output | Apollo.io, Clay.com, Outreach.io — lead enrichment & outreach |
-| 4 | [Document Intelligence Pipeline](./04-document-intelligence) | Layout analysis + OCR + Claude Vision + Pydantic validators | Hyperscience, Rossum, Klarity — IDP for legal/finance/healthcare |
-| 5 | [Computer Use Agent](./05-computer-use) | Anthropic Computer Use API + VM + LangGraph loop | RPA for legacy systems, back-office automation in banking/insurance |
-| 6 | [Code Review Agent](./06-code-review) | tree-sitter AST + Claude + static analysis + GitHub Action | Cursor, Codium, Sourcegraph Cody — AI for developer tools |
-| 7 | [AI Safety / Red Teaming Framework](./07-ai-safety) | Adversarial attack suite + guardrails + OWASP LLM Top 10 coverage | Robust Intelligence, Lakera, Protect AI — security audits for regulated AI |
-| 8 | [GraphRAG over SEC EDGAR](./08-graphrag-sec) | Neo4j knowledge graph + entity extraction + multi-hop Cypher + vector hybrid | Visible Alpha, Tegus, AlphaSense — financial intelligence multi-hop Q&A |
-| 9 | [Voice AI Conversational Agent](./09-voice-agent) | Whisper + Claude + ElevenLabs + LiveKit/WebRTC + VAD | Bland AI, Vapi, Retell — telephony AI for bookings, support, commerce |
+**Combined: 132 passing tests across 9 standalone repos.**
 
 ---
 
@@ -59,38 +61,32 @@ Every project closes 12 quality blocks before declaring v1.0.0:
 | Backend | FastAPI 0.115+ async, Pydantic v2 |
 | Database | PostgreSQL 16 + pgvector for state and audit |
 | Cache | Redis 7 |
-| Frontend | Next.js 14+ with shadcn/ui (Next.js 16 + React 19 on newer projects) |
-| Infrastructure | Docker Compose, GitHub Actions CI, Vercel/Railway/HF Spaces deploys |
-| Observability | LangSmith with public traces, or Langfuse self-hosted |
+| Frontend | Streamlit (P1, P2, P3) and Next.js (P4-P9) |
+| Infrastructure | Docker Compose, GitHub Actions CI, Streamlit Cloud / Vercel / HF Spaces deploys |
+| Observability | LangSmith with public traces |
 | Quality | Ruff + Black + mypy --strict + pytest + pytest-cov ≥70% |
 
 ---
 
-## Repository layout
+## Repository layout (this hub)
 
 ```
-ai-portfolio/
-├── README.md                       # This file
+ai-portfolio/                          # ← this repo, the hub
+├── README.md                          # ← you are here
+├── index.html                         # Landing page (lives at juadsuarezsan.github.io/ai-portfolio/)
 ├── docs/
-│   └── portafolio_specs.md         # The full source-of-truth specification
-├── index.html                      # Landing page (Astro+crozol aesthetic)
-├── 01-ecommerce-assistant/         # P1 — Hybrid RAG over Instacart
-├── 02-support-triage/              # P2 — LoRA fine-tune + agent
-├── 03-sales-intelligence/          # P3 — Agent loop over YC + Tavily
-├── 04-document-intelligence/       # P4 — IDP with VLM fallback
-├── 05-computer-use/                # P5 — Computer Use API + VM
-├── 06-code-review/                 # P6 — SWE-bench reviewer
-├── 07-ai-safety/                   # P7 — OWASP LLM Top 10 attacks + guardrails
-├── 08-graphrag-sec/                # P8 — Neo4j over SEC 10-Ks
-├── 09-voice-agent/                 # P9 — Whisper + Claude + ElevenLabs voice loop
-└── archive/legacy-projects/        # The original 6 v1 projects, retained for reference
+│   ├── portafolio_specs.md           # Master 1310-line spec
+│   └── blog/                          # Technical write-ups, one per project
+└── archive/legacy-projects/           # The original v1 portfolio (kept for reference)
 ```
+
+Each project lives in its own standalone repo with the full structure (`src/`, `tests/`, `data/`, `docs/`, `Dockerfile`, `docker-compose.yml`, `LICENSE`, CI workflow, etc.).
 
 ---
 
 ## Execution roadmap
 
-Per the spec, total realistic effort is **27 focused weeks** at 15–20 hrs/week.
+Per the spec, total realistic effort is **27 focused weeks** at 15-20 hrs/week.
 
 | Phase | Weeks | Projects | Reusable infra established |
 |---|---|---|---|
