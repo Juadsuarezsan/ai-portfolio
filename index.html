@@ -564,6 +564,146 @@
     gap: 36px;
   }
   @media (max-width: 880px) { .project-grid { grid-template-columns: 1fr; gap: 28px; } }
+
+  /* ---------- v2 compact card grid for the 9-project listing ---------- */
+  .projects-grid-v2 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+    margin-top: 24px;
+  }
+  @media (max-width: 1080px) { .projects-grid-v2 { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 720px)  { .projects-grid-v2 { grid-template-columns: 1fr; } }
+  .project-card-v2 {
+    background: rgba(18, 20, 28, 0.55);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .project-card-v2::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(124,92,255,0.06), transparent 60%);
+    opacity: 0; transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .project-card-v2:hover {
+    border-color: var(--border-strong);
+    transform: translateY(-3px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+  }
+  .project-card-v2:hover::before { opacity: 1; }
+  .project-card-v2 .card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+  .project-card-v2 h3 {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    margin: 0;
+  }
+  .project-card-v2 .card-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent-2);
+    line-height: 1.55;
+    margin: 0;
+  }
+  .project-card-v2 .card-problem {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.55;
+    margin: 0;
+  }
+  .project-card-v2 .card-usecase {
+    font-size: 12px;
+    color: var(--text-dim);
+    padding: 8px 10px;
+    background: rgba(124, 92, 255, 0.06);
+    border-left: 2px solid var(--accent);
+    border-radius: 4px;
+  }
+  .project-card-v2 .card-usecase strong { color: var(--text); }
+  .project-card-v2 .card-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 4px;
+  }
+  .project-card-v2 .card-stack span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-dim);
+  }
+  .project-card-v2 .card-dataset {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-faint);
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+  }
+  .project-card-v2 .project-links {
+    display: flex;
+    gap: 14px;
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+  .project-card-v2 .project-links a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent-2);
+    transition: color 0.2s;
+  }
+  .project-card-v2 .project-links a:hover { color: var(--accent); }
+
+  .badge-planned {
+    background: rgba(251, 191, 36, 0.10);
+    border: 1px solid rgba(251, 191, 36, 0.30);
+    color: #fbbf24;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .badge-in-progress {
+    background: rgba(34, 211, 238, 0.10);
+    border: 1px solid rgba(34, 211, 238, 0.30);
+    color: var(--accent-2);
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .badge-done {
+    background: rgba(52, 211, 153, 0.10);
+    border: 1px solid rgba(52, 211, 153, 0.30);
+    color: #34d399;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
   .project-block + .project-block { margin-top: 24px; }
   .project-block h5 {
     font-family: 'JetBrains Mono', monospace;
@@ -1357,9 +1497,9 @@
     <div class="hero-badge">Open to AI Engineer roles · EU / USA · remote-first</div>
     <h1>I build AI systems that <span class="accent">survive Monday morning</span> in production.</h1>
     <p class="lede">
-      <strong>Juan David Suárez Sandoval</strong> — Full-Stack AI Engineer.
-      Six production-grade projects on multi-agent orchestration, persistent memory, hybrid retrieval, and the Model Context Protocol.
-      Every project ships with Docker, evaluation loops, and observability from day one — not as an afterthought.
+      <strong>Juan David Suárez Sandoval</strong> — AI Engineer.
+      Nine production-grade projects covering 99% of AI Engineering in 2026: hybrid RAG, fine-tuning with LoRA, agents with tool use, Document AI, Computer Use, Code AI, AI Safety, GraphRAG, and Voice AI.
+      Each one ships with real datasets, ≥100-case eval sets, baselines, Docker, observability and public demo — built against a 12-block Definition of Done.
     </p>
     <div class="hero-cta">
       <a class="btn btn-primary" href="#projects">View the work
@@ -1374,20 +1514,20 @@
     </div>
     <div class="hero-stats">
       <div>
-        <div class="stat-num">6</div>
-        <div class="stat-label">Production-grade designs</div>
+        <div class="stat-num">9</div>
+        <div class="stat-label">Projects targeting AI Engineering 2026</div>
       </div>
       <div>
-        <div class="stat-num">1<span class="unit">/ 6</span></div>
-        <div class="stat-label">Currently functional</div>
+        <div class="stat-num">12</div>
+        <div class="stat-label">Definition-of-Done blocks per project</div>
       </div>
       <div>
-        <div class="stat-num">15<span class="unit">+</span></div>
-        <div class="stat-label">Agent roles implemented</div>
+        <div class="stat-num">≥100</div>
+        <div class="stat-label">Eval cases with manual ground truth, per project</div>
       </div>
       <div>
         <div class="stat-num">100<span class="unit">%</span></div>
-        <div class="stat-label">Dockerized & traced</div>
+        <div class="stat-label">Dockerized, traced, with public demo</div>
       </div>
     </div>
   </div>
@@ -1537,467 +1677,193 @@
 <section id="projects">
   <div class="container">
     <div class="section-eyebrow">03 · The work</div>
-    <h2>Six projects, one philosophy</h2>
-    <p class="section-sub">Each project answers a distinct production question. Status is honest: one functional flagship and five scaffolded designs with full READMEs and code skeletons.</p>
+    <h2>Nine projects covering AI Engineering 2026</h2>
+    <p class="section-sub">Each one targets a real industrial use case, ships with a public dataset, ≥100-case eval set with manual ground truth, baselines and ablations, observability traces, and a public live demo. All built against the 12-block Definition of Done.</p>
 
-    <!-- PROJECT 01 -->
-    <article class="project-detail reveal">
-      <div class="project-head">
-        <span class="project-num">PROJECT 01 / 06</span>
-        <span class="badge badge-live">● Functional</span>
-      </div>
-      <h3>Self-Healing Multi-Agent Pipeline</h3>
-      <p class="project-subtitle">Constitutional AI critic · Bounded reflection · pgvector episodic memory</p>
+    <div class="projects-grid-v2">
 
-      <div class="project-grid">
-        <div>
-          <div class="project-block">
-            <h5>The problem</h5>
-            <p>In production, the most expensive AI failures are <strong>silent</strong>: a confident wrong invoice number propagates, a downstream system trusts the bad output, the wrong vendor gets paid. Standard pipelines treat the LLM as a black box — if it returns <em>something</em>, the pipeline returns "success."</p>
-            <p>This pipeline does the opposite: every output is adversarially evaluated by a critic, failures trigger a bounded reflection loop, and the system maintains an episodic memory of past errors that the critic consults before every evaluation.</p>
-          </div>
-
-          <div class="project-block">
-            <h5>Key architectural decisions</h5>
-            <table class="decisions">
-              <tr><td>LangGraph orchestration</td><td>Explicit, inspectable state transitions over LangChain's opaque chains</td></tr>
-              <tr><td>Constitutional AI critic</td><td>Per-principle scoring (4 axes) yields actionable feedback; single-rubric LLM-as-judge does not</td></tr>
-              <tr><td>Episodic memory in pgvector</td><td>Domain-specific failure patterns surface across thousands of past runs — reuses the Postgres we already need</td></tr>
-              <tr><td>Hard cap: 3 reflection iterations</td><td>Unbounded retry loops are a top-3 incident class for agents. Cap forces loud failures over silent token spend</td></tr>
-            </table>
-          </div>
-
-          <div class="project-block">
-            <h5>Lessons learned the hard way</h5>
-            <ul>
-              <li>Critics need <strong>memory, not just rubrics</strong>. A stateless critic re-makes the same mistake every run.</li>
-              <li>Constitutional principles must be <strong>evaluable, not philosophical</strong>. "Output should be helpful" is unscorable; "every required field has a non-empty value matching its type" is.</li>
-              <li>Reflection loops without hard caps burned $40 of credits on a single malformed PDF in week one.</li>
-            </ul>
-          </div>
+      <article class="project-card-v2 reveal">
+        <div class="card-head">
+          <span class="project-num">01</span>
+          <span class="badge badge-planned">◯ Planned</span>
         </div>
-
-        <div>
-          <div class="arch-card">
-            <h5>Architecture · LangGraph state machine</h5>
-            <svg viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <marker id="arr1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#8b6dff"/></marker>
-                <marker id="arrR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#ff9e6d"/></marker>
-              </defs>
-              <g font-family="JetBrains Mono, monospace" font-size="11" fill="#e8eaf0">
-                <!-- nodes -->
-                <rect x="20" y="20" width="100" height="36" rx="6" fill="#0f1118" stroke="#2a3142"/>
-                <text x="70" y="42" text-anchor="middle">Extractor</text>
-
-                <rect x="150" y="20" width="100" height="36" rx="6" fill="#0f1118" stroke="#2a3142"/>
-                <text x="200" y="42" text-anchor="middle">Validator</text>
-
-                <rect x="280" y="20" width="100" height="36" rx="6" fill="#0f1118" stroke="#8b6dff" stroke-width="1.5"/>
-                <text x="330" y="42" text-anchor="middle" fill="#8b6dff">Critic</text>
-
-                <rect x="280" y="130" width="100" height="36" rx="6" fill="#0f1118" stroke="#fbbf24"/>
-                <text x="330" y="152" text-anchor="middle" fill="#fbbf24">Reflection</text>
-
-                <rect x="150" y="220" width="100" height="36" rx="6" fill="#0f1118" stroke="#34d399"/>
-                <text x="200" y="242" text-anchor="middle" fill="#34d399">Synthesizer</text>
-
-                <rect x="20" y="130" width="100" height="36" rx="6" fill="#0f1118" stroke="#4dd0c2" stroke-dasharray="3,3"/>
-                <text x="70" y="148" text-anchor="middle" fill="#4dd0c2" font-size="10">Episodic Mem</text>
-                <text x="70" y="162" text-anchor="middle" fill="#5a5f6e" font-size="9">(pgvector)</text>
-
-                <!-- arrows -->
-                <line x1="120" y1="38" x2="148" y2="38" stroke="#8b6dff" marker-end="url(#arr1)"/>
-                <line x1="250" y1="38" x2="278" y2="38" stroke="#8b6dff" marker-end="url(#arr1)"/>
-                <line x1="330" y1="56" x2="330" y2="128" stroke="#ff9e6d" marker-end="url(#arrR)" stroke-dasharray="4,3"/>
-                <line x1="278" y1="148" x2="120" y2="38" stroke="#ff9e6d" marker-end="url(#arrR)" stroke-dasharray="4,3" fill="none"/>
-                <text x="200" y="100" fill="#ff9e6d" font-size="9" text-anchor="middle">reflect (≤3)</text>
-                <line x1="280" y1="148" x2="125" y2="148" stroke="#4dd0c2" marker-end="url(#arr1)" stroke-dasharray="2,2"/>
-                <text x="200" y="142" fill="#4dd0c2" font-size="9" text-anchor="middle">consults / writes</text>
-                <line x1="330" y1="56" x2="240" y2="220" stroke="#34d399" marker-end="url(#arr1)"/>
-                <text x="295" y="140" fill="#34d399" font-size="9">pass ≥ 0.85</text>
-              </g>
-            </svg>
-          </div>
-
-          <div class="metrics-card">
-            <div class="metric-head">
-              <h5>Target metrics</h5>
-              <span class="metric-note">vs no-reflection baseline</span>
-            </div>
-            <div class="metric">
-              <span class="metric-label">Extraction accuracy (invoice)</span>
-              <span class="metric-value">≥ 0.92</span>
-            </div>
-            <div class="metric">
-              <span class="metric-label">Avg retries / document</span>
-              <span class="metric-value">≤ 0.8</span>
-            </div>
-            <div class="metric">
-              <span class="metric-label">Token overhead vs baseline</span>
-              <span class="metric-value">+18%</span>
-            </div>
-            <div class="metric">
-              <span class="metric-label">Critic agreement w/ human</span>
-              <span class="metric-value">≥ 0.88 κ</span>
-            </div>
-          </div>
-
-          <div class="stack">
-            <span>LangGraph 0.2</span><span>Claude Sonnet 4.5</span><span>FastAPI</span><span>Pydantic v2</span><span>pgvector</span><span>SSE</span><span>Langfuse</span><span>Next.js 14</span>
-          </div>
+        <h3>Conversational E-commerce Assistant</h3>
+        <p class="card-sub">Hybrid retrieval · Reranking · Multi-turn cart agent</p>
+        <p class="card-problem">Customers search a 50K-product catalog in natural language, manage carts, request refunds. The system decides when to escalate to a human.</p>
+        <div class="card-usecase"><strong>Use case:</strong> Rappi, Mercado Libre, Walmart, Instacart, Amazon</div>
+        <div class="card-stack">
+          <span>Qdrant</span><span>pgvector</span><span>Chroma</span><span>BM25 + RRF</span><span>Cohere Rerank</span><span>Claude Sonnet 4.5</span><span>LangGraph</span><span>RAGAS</span><span>Streamlit</span>
         </div>
-      </div>
-
-      <div class="project-links">
-        <a href="./01-self-healing-pipeline/README.md">→ Full README</a>
-        <a href="./01-self-healing-pipeline/">→ Source tree</a>
-        <a href="#demo">→ Try the simulated run</a>
-      </div>
-    </article>
-
-    <!-- PROJECT 02 -->
-    <article class="project-detail reveal">
-      <div class="project-head">
-        <span class="project-num">PROJECT 02 / 06</span>
-        <span class="badge badge-scaffold">◐ Scaffolded</span>
-      </div>
-      <h3>Enterprise Knowledge OS · GraphRAG</h3>
-      <p class="project-subtitle">Neo4j + LlamaIndex · Entity extraction · Hybrid graph + vector retrieval</p>
-
-      <div class="project-grid">
-        <div>
-          <div class="project-block">
-            <h5>The problem</h5>
-            <p><code>vector.search()</code> can't answer multi-hop questions. "Which projects led by alumni of company X have shipped products that compete with our Y line?" needs <strong>relationships</strong>, not just similarity. A knowledge graph stores those relationships explicitly.</p>
-          </div>
-          <div class="project-block">
-            <h5>Key architectural decisions</h5>
-            <table class="decisions">
-              <tr><td>Neo4j over Postgres + recursive CTEs</td><td>Path queries, Cypher's pattern matching, APOC traversal — built for graphs, not bolted on</td></tr>
-              <tr><td>Hybrid: graph + vector</td><td>Graph for structure, vector for unstructured chunks. RRF fusion at retrieval</td></tr>
-              <tr><td>Background staleness agent</td><td>Flags entities whose embeddings drift from the source documents — knowledge decay is a real bug class</td></tr>
-            </table>
-          </div>
+        <div class="card-dataset">Instacart Market Basket (Kaggle, 3.4M orders)</div>
+        <div class="project-links">
+          <a href="./01-ecommerce-assistant/">→ Project folder</a>
+          <a href="./docs/portafolio_specs.md#proyecto-1--conversational-e-commerce-assistant">→ Full spec</a>
         </div>
-        <div>
-          <div class="arch-card">
-            <h5>Architecture · ingest → graph + vector</h5>
-            <svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg">
-              <defs><marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#4dd0c2"/></marker></defs>
-              <g font-family="JetBrains Mono, monospace" font-size="11" fill="#e8eaf0">
-                <rect x="20" y="20" width="100" height="36" rx="6" fill="#0f1118" stroke="#2a3142"/>
-                <text x="70" y="42" text-anchor="middle">Documents</text>
-                <rect x="150" y="20" width="100" height="36" rx="6" fill="#0f1118" stroke="#8b6dff"/>
-                <text x="200" y="42" text-anchor="middle" fill="#8b6dff">Entity LLM</text>
-                <rect x="280" y="20" width="100" height="36" rx="6" fill="#0f1118" stroke="#fbbf24"/>
-                <text x="330" y="42" text-anchor="middle" fill="#fbbf24">Triples</text>
-                <rect x="150" y="100" width="100" height="36" rx="6" fill="#0f1118" stroke="#4dd0c2"/>
-                <text x="200" y="122" text-anchor="middle" fill="#4dd0c2">Neo4j graph</text>
-                <rect x="280" y="100" width="100" height="36" rx="6" fill="#0f1118" stroke="#4dd0c2"/>
-                <text x="330" y="122" text-anchor="middle" fill="#4dd0c2">Vector store</text>
-                <rect x="150" y="180" width="230" height="36" rx="6" fill="#0f1118" stroke="#34d399"/>
-                <text x="265" y="202" text-anchor="middle" fill="#34d399">Hybrid retriever · RRF</text>
-                <line x1="120" y1="38" x2="148" y2="38" stroke="#8b6dff" marker-end="url(#arr2)"/>
-                <line x1="250" y1="38" x2="278" y2="38" stroke="#8b6dff" marker-end="url(#arr2)"/>
-                <line x1="330" y1="56" x2="330" y2="98" stroke="#4dd0c2" marker-end="url(#arr2)"/>
-                <line x1="200" y1="56" x2="200" y2="98" stroke="#4dd0c2" marker-end="url(#arr2)"/>
-                <line x1="200" y1="136" x2="200" y2="178" stroke="#34d399" marker-end="url(#arr2)"/>
-                <line x1="330" y1="136" x2="330" y2="178" stroke="#34d399" marker-end="url(#arr2)"/>
-              </g>
-            </svg>
-          </div>
-          <div class="metrics-card">
-            <div class="metric-head">
-              <h5>Target metrics</h5>
-              <span class="metric-note">multi-hop QA benchmark</span>
-            </div>
-            <div class="metric"><span class="metric-label">2-hop answer accuracy</span><span class="metric-value">≥ 0.78</span></div>
-            <div class="metric"><span class="metric-label">vs vector-only baseline</span><span class="metric-value">+0.22</span></div>
-            <div class="metric"><span class="metric-label">Entity extraction F1</span><span class="metric-value">≥ 0.85</span></div>
-            <div class="metric todo"><span class="metric-label">Staleness recall @ 7d</span><span class="metric-value">TBD</span></div>
-          </div>
-          <div class="stack">
-            <span>Neo4j 5 + APOC</span><span>LlamaIndex</span><span>Pydantic v2</span><span>react-force-graph</span><span>Cohere Rerank</span>
-          </div>
-        </div>
-      </div>
-      <div class="project-links">
-        <a href="./02-knowledge-os/README.md">→ Full README</a>
-        <a href="./02-knowledge-os/">→ Source tree</a>
-      </div>
-    </article>
+      </article>
 
-    <!-- PROJECT 03 -->
-    <article class="project-detail reveal">
-      <div class="project-head">
-        <span class="project-num">PROJECT 03 / 06</span>
-        <span class="badge badge-scaffold">◐ Scaffolded</span>
-      </div>
-      <h3>Autonomous Research Agent · MemGPT pattern</h3>
-      <p class="project-subtitle">Three-tier memory · Persistent state · Tavily + arXiv + PDF reports</p>
-
-      <div class="project-grid">
-        <div>
-          <div class="project-block">
-            <h5>The problem</h5>
-            <p>A research agent that "forgets" between sessions is a chatbot, not a researcher. The MemGPT paper showed that explicit memory tiering — working / episodic / semantic — with a controller that promotes and evicts beats relying on bigger context windows.</p>
-          </div>
-          <div class="project-block">
-            <h5>Key architectural decisions</h5>
-            <table class="decisions">
-              <tr><td>Three-tier memory</td><td>Working (in-context) / episodic (recent runs) / semantic (consolidated facts). Each tier has explicit promotion rules.</td></tr>
-              <tr><td>Memory controller as a node</td><td>Promotion and eviction are first-class graph nodes — inspectable in Langfuse, not buried in a hook</td></tr>
-              <tr><td>arXiv + Tavily + scraping</td><td>Mix of structured (arXiv API) and unstructured (Tavily) sources reduces source-bias in synthesized reports</td></tr>
-            </table>
-          </div>
+      <article class="project-card-v2 reveal">
+        <div class="card-head">
+          <span class="project-num">02</span>
+          <span class="badge badge-planned">◯ Planned</span>
         </div>
-        <div>
-          <div class="arch-card">
-            <h5>Architecture · memory tiers</h5>
-            <svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg">
-              <g font-family="JetBrains Mono, monospace" font-size="11">
-                <rect x="40" y="20" width="320" height="40" rx="6" fill="#0f1118" stroke="#8b6dff"/>
-                <text x="200" y="44" text-anchor="middle" fill="#8b6dff">WORKING · in-context · ~8k tok</text>
-                <rect x="60" y="90" width="280" height="40" rx="6" fill="#0f1118" stroke="#4dd0c2"/>
-                <text x="200" y="114" text-anchor="middle" fill="#4dd0c2">EPISODIC · pgvector · last 200 runs</text>
-                <rect x="80" y="160" width="240" height="40" rx="6" fill="#0f1118" stroke="#34d399"/>
-                <text x="200" y="184" text-anchor="middle" fill="#34d399">SEMANTIC · consolidated facts</text>
-                <text x="370" y="44" fill="#5a5f6e" font-size="9">↑ promote</text>
-                <text x="370" y="114" fill="#5a5f6e" font-size="9">↑ archive</text>
-              </g>
-            </svg>
-          </div>
-          <div class="metrics-card">
-            <div class="metric-head"><h5>Target metrics</h5><span class="metric-note">multi-session research task</span></div>
-            <div class="metric"><span class="metric-label">Cross-session recall</span><span class="metric-value">≥ 0.75</span></div>
-            <div class="metric"><span class="metric-label">Tokens per report</span><span class="metric-value">≤ 60k</span></div>
-            <div class="metric"><span class="metric-label">Sources per report</span><span class="metric-value">≥ 12</span></div>
-            <div class="metric todo"><span class="metric-label">Human-rated coherence</span><span class="metric-value">TBD</span></div>
-          </div>
-          <div class="stack">
-            <span>LangGraph</span><span>pgvector</span><span>Tavily</span><span>arXiv API</span><span>ReportLab</span><span>Next.js</span>
-          </div>
+        <h3>Customer Support Triage Agent</h3>
+        <p class="card-sub">DistilBERT fine-tuned with LoRA · Similar-ticket retrieval · Confidence-gated auto-resolve</p>
+        <p class="card-problem">Tickets arrive via email/Slack/chat. The system classifies intent and priority, retrieves similar resolved tickets, drafts a solution, and decides: auto-resolve, suggest, or escalate.</p>
+        <div class="card-usecase"><strong>Use case:</strong> Intercom, Zendesk, Freshdesk, HubSpot</div>
+        <div class="card-stack">
+          <span>DistilBERT + PEFT</span><span>HuggingFace Hub</span><span>Qdrant</span><span>Claude Sonnet 4.5</span><span>LangGraph</span><span>Next.js + shadcn</span><span>LangSmith</span>
         </div>
-      </div>
-      <div class="project-links">
-        <a href="./03-research-agent/README.md">→ Full README</a>
-        <a href="./03-research-agent/">→ Source tree</a>
-      </div>
-    </article>
-
-    <!-- PROJECT 04 -->
-    <article class="project-detail reveal">
-      <div class="project-head">
-        <span class="project-num">PROJECT 04 / 06</span>
-        <span class="badge badge-scaffold">◐ Scaffolded</span>
-      </div>
-      <h3>Multi-Agent Debate System · Society of Mind</h3>
-      <p class="project-subtitle">5 specialized agents · 3-round protocol · WebSocket streaming · Consensus measurement</p>
-
-      <div class="project-grid">
-        <div>
-          <div class="project-block">
-            <h5>The problem</h5>
-            <p>Single-agent reasoning collapses to the model's prior. Five agents with <strong>distinct, persistent perspectives</strong> — Optimist, Skeptic, Financial Analyst, Risk Officer, Devil's Advocate — generate dissent and surface tradeoffs that a single chain-of-thought hides.</p>
-          </div>
-          <div class="project-block">
-            <h5>Key architectural decisions</h5>
-            <table class="decisions">
-              <tr><td>5 roles, not 2</td><td>Two-agent "debate" collapses to majority. Five roles, structured three rounds, prevent groupthink</td></tr>
-              <tr><td>Three-round protocol</td><td>Opening · rebuttal · synthesis. Bounded, measurable, prevents infinite loops</td></tr>
-              <tr><td>Consensus score per round</td><td>Cosine similarity of agent positions over rounds. Measurable convergence, not vibes</td></tr>
-              <tr><td>WebSocket streaming</td><td>Each agent's tokens stream live to UI — debate is a watchable artifact, not a black box</td></tr>
-            </table>
-          </div>
+        <div class="card-dataset">Bitext (27K intents) + Twitter Customer Support (3M)</div>
+        <div class="project-links">
+          <a href="./02-support-triage/">→ Project folder</a>
+          <a href="./docs/portafolio_specs.md#proyecto-2--customer-support-triage-agent">→ Full spec</a>
         </div>
-        <div>
-          <div class="arch-card">
-            <h5>Architecture · debate flow</h5>
-            <svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg">
-              <defs><marker id="arr4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#8b6dff"/></marker></defs>
-              <g font-family="JetBrains Mono, monospace" font-size="10" fill="#e8eaf0">
-                <rect x="30" y="20" width="60" height="30" rx="4" fill="#0f1118" stroke="#34d399"/><text x="60" y="40" text-anchor="middle" fill="#34d399">Optim.</text>
-                <rect x="100" y="20" width="60" height="30" rx="4" fill="#0f1118" stroke="#ff5a72"/><text x="130" y="40" text-anchor="middle" fill="#ff5a72">Skeptic</text>
-                <rect x="170" y="20" width="60" height="30" rx="4" fill="#0f1118" stroke="#fbbf24"/><text x="200" y="40" text-anchor="middle" fill="#fbbf24">Finance</text>
-                <rect x="240" y="20" width="60" height="30" rx="4" fill="#0f1118" stroke="#4dd0c2"/><text x="270" y="40" text-anchor="middle" fill="#4dd0c2">Risk</text>
-                <rect x="310" y="20" width="60" height="30" rx="4" fill="#0f1118" stroke="#8b6dff"/><text x="340" y="40" text-anchor="middle" fill="#8b6dff">Devil</text>
-                <rect x="80" y="85" width="240" height="30" rx="4" fill="#0f1118" stroke="#2a3142"/><text x="200" y="105" text-anchor="middle">Round 1 · Opening positions</text>
-                <rect x="80" y="125" width="240" height="30" rx="4" fill="#0f1118" stroke="#2a3142"/><text x="200" y="145" text-anchor="middle">Round 2 · Rebuttals + consensus</text>
-                <rect x="80" y="165" width="240" height="30" rx="4" fill="#0f1118" stroke="#8b6dff"/><text x="200" y="185" text-anchor="middle" fill="#8b6dff">Round 3 · Executive synthesis</text>
-              </g>
-            </svg>
-          </div>
-          <div class="metrics-card">
-            <div class="metric-head"><h5>Target metrics</h5><span class="metric-note">vs single-agent CoT baseline</span></div>
-            <div class="metric"><span class="metric-label">Distinct considerations / decision</span><span class="metric-value">≥ 8</span></div>
-            <div class="metric"><span class="metric-label">Consensus convergence by R3</span><span class="metric-value">≥ 0.82</span></div>
-            <div class="metric"><span class="metric-label">Token cost vs single agent</span><span class="metric-value">~5×</span></div>
-            <div class="metric todo"><span class="metric-label">Exec-rated quality lift</span><span class="metric-value">TBD</span></div>
-          </div>
-          <div class="stack">
-            <span>LangGraph</span><span>Redis</span><span>WebSockets</span><span>Claude Opus</span><span>Next.js</span>
-          </div>
-        </div>
-      </div>
-      <div class="project-links">
-        <a href="./04-debate-system/README.md">→ Full README</a>
-        <a href="./04-debate-system/">→ Source tree</a>
-      </div>
-    </article>
+      </article>
 
-    <!-- PROJECT 05 -->
-    <article class="project-detail reveal">
-      <div class="project-head">
-        <span class="project-num">PROJECT 05 / 06</span>
-        <span class="badge badge-scaffold">◐ Scaffolded</span>
-      </div>
-      <h3>Adaptive Workflow Engine · MCP</h3>
-      <p class="project-subtitle">Meta-agent generates DAGs at runtime · MCP servers · Human-in-the-loop approvals</p>
-
-      <div class="project-grid">
-        <div>
-          <div class="project-block">
-            <h5>The problem</h5>
-            <p>Hardcoded workflows break the moment the business changes. A meta-agent that <strong>generates the DAG from natural language</strong> and executes via Model Context Protocol servers turns any new business request into a runnable pipeline without engineering work.</p>
-          </div>
-          <div class="project-block">
-            <h5>Key architectural decisions</h5>
-            <table class="decisions">
-              <tr><td>MCP, not custom tool APIs</td><td>Standardized protocol means GitHub/Jira/Slack/Drive integrations are reusable, swappable, auditable</td></tr>
-              <tr><td>Planner learns from past DAGs</td><td>Successful workflows are embedded; planner retrieves similar past plans before generating</td></tr>
-              <tr><td>HITL approvals on critical nodes</td><td>"Send email" or "post to channel" require explicit approval. Auditable, reversible.</td></tr>
-            </table>
-          </div>
+      <article class="project-card-v2 reveal">
+        <div class="card-head">
+          <span class="project-num">03</span>
+          <span class="badge badge-planned">◯ Planned</span>
         </div>
-        <div>
-          <div class="arch-card">
-            <h5>Architecture · plan → execute → approve</h5>
-            <svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg">
-              <defs><marker id="arr5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#8b6dff"/></marker></defs>
-              <g font-family="JetBrains Mono, monospace" font-size="11" fill="#e8eaf0">
-                <rect x="20" y="20" width="100" height="36" rx="6" fill="#0f1118" stroke="#8b6dff"/><text x="70" y="42" text-anchor="middle" fill="#8b6dff">Meta-agent</text>
-                <rect x="150" y="20" width="100" height="36" rx="6" fill="#0f1118" stroke="#fbbf24"/><text x="200" y="42" text-anchor="middle" fill="#fbbf24">DAG</text>
-                <rect x="280" y="20" width="100" height="36" rx="6" fill="#0f1118" stroke="#4dd0c2"/><text x="330" y="42" text-anchor="middle" fill="#4dd0c2">Executor</text>
-                <rect x="20" y="100" width="100" height="36" rx="6" fill="#0f1118" stroke="#2a3142"/><text x="70" y="122" text-anchor="middle" font-size="10">MCP · GitHub</text>
-                <rect x="140" y="100" width="100" height="36" rx="6" fill="#0f1118" stroke="#2a3142"/><text x="190" y="122" text-anchor="middle" font-size="10">MCP · Jira</text>
-                <rect x="260" y="100" width="100" height="36" rx="6" fill="#0f1118" stroke="#2a3142"/><text x="310" y="122" text-anchor="middle" font-size="10">MCP · Slack</text>
-                <rect x="120" y="170" width="180" height="36" rx="6" fill="#0f1118" stroke="#ff9e6d"/><text x="210" y="192" text-anchor="middle" fill="#ff9e6d">HITL approval gate</text>
-                <line x1="120" y1="38" x2="148" y2="38" stroke="#8b6dff" marker-end="url(#arr5)"/>
-                <line x1="250" y1="38" x2="278" y2="38" stroke="#8b6dff" marker-end="url(#arr5)"/>
-                <line x1="330" y1="56" x2="310" y2="98" stroke="#8b6dff" marker-end="url(#arr5)"/>
-                <line x1="330" y1="56" x2="190" y2="98" stroke="#8b6dff" marker-end="url(#arr5)"/>
-                <line x1="330" y1="56" x2="70" y2="98" stroke="#8b6dff" marker-end="url(#arr5)"/>
-              </g>
-            </svg>
-          </div>
-          <div class="metrics-card">
-            <div class="metric-head"><h5>Target metrics</h5><span class="metric-note">first-shot DAG correctness</span></div>
-            <div class="metric"><span class="metric-label">Valid DAG (no edits) @ first pass</span><span class="metric-value">≥ 0.70</span></div>
-            <div class="metric"><span class="metric-label">After 1 reflection</span><span class="metric-value">≥ 0.90</span></div>
-            <div class="metric"><span class="metric-label">Avg nodes / workflow</span><span class="metric-value">5–12</span></div>
-            <div class="metric"><span class="metric-label">MCP servers supported</span><span class="metric-value">4+</span></div>
-          </div>
-          <div class="stack">
-            <span>MCP</span><span>LangGraph</span><span>pgvector</span><span>react-flow</span><span>FastAPI</span>
-          </div>
+        <h3>B2B Sales Intelligence Agent</h3>
+        <p class="card-sub">Planner-executor-reflector agent loop · Web search · Personalized outreach</p>
+        <p class="card-problem">Receives a list of target companies, researches each on public web and news, builds a structured profile, generates personalized cold outreach. Measures lift over template-only and single-pass baselines.</p>
+        <div class="card-usecase"><strong>Use case:</strong> Apollo.io, Clay.com, Outreach.io</div>
+        <div class="card-stack">
+          <span>Claude Sonnet 4.5</span><span>Tavily</span><span>HackerNews API</span><span>selectolax</span><span>Pydantic v2</span><span>LangGraph</span><span>Next.js</span>
         </div>
-      </div>
-      <div class="project-links">
-        <a href="./05-workflow-engine/README.md">→ Full README</a>
-        <a href="./05-workflow-engine/">→ Source tree</a>
-      </div>
-    </article>
-
-    <!-- PROJECT 06 -->
-    <article class="project-detail reveal">
-      <div class="project-head">
-        <span class="project-num">PROJECT 06 / 06</span>
-        <span class="badge badge-scaffold">◐ Scaffolded</span>
-      </div>
-      <h3>Agentic RAG · Vector DB Benchmark</h3>
-      <p class="project-subtitle">pgvector vs Qdrant vs Pinecone · Contextual retrieval · RRF hybrid · Auto-optimizer agent</p>
-
-      <div class="project-grid">
-        <div>
-          <div class="project-block">
-            <h5>The problem</h5>
-            <p>Most RAG implementations stop at "we chose Pinecone." This project asks the harder question: <strong>which one actually performs better on your corpus, and by how much?</strong> Three vector stores run in parallel, all queries dual-written, all metrics tracked.</p>
-          </div>
-          <div class="project-block">
-            <h5>Key architectural decisions</h5>
-            <table class="decisions">
-              <tr><td>Three stores in parallel</td><td>Same corpus, same queries, same eval. Real apples-to-apples — published benchmarks rarely are</td></tr>
-              <tr><td>Anthropic's contextual retrieval</td><td>~49% retrieval failure reduction by prepending chunk context. Free quality lift before any reranker</td></tr>
-              <tr><td>Hybrid: BM25 + vector + rerank</td><td>RRF fusion of lexical + semantic + Cohere rerank. Each stage measured independently</td></tr>
-              <tr><td>Auto-optimizer agent</td><td>Watches Ragas scores; when faithfulness drops, tunes chunk size / rerank-k / fusion weights, A/B's against held-out set</td></tr>
-            </table>
-          </div>
-          <div class="project-block">
-            <h5>What this proves to hiring teams</h5>
-            <ul>
-              <li>I measure things instead of citing them.</li>
-              <li>I know that "use a vector DB" is the easy half of RAG — the chunking, fusion, and eval loop is the hard half.</li>
-              <li>I treat optimization as a closed loop, not a one-off tuning session.</li>
-            </ul>
-          </div>
+        <div class="card-dataset">YC Companies (~5K with metadata)</div>
+        <div class="project-links">
+          <a href="./03-sales-intelligence/">→ Project folder</a>
+          <a href="./docs/portafolio_specs.md#proyecto-3--b2b-sales-intelligence-agent">→ Full spec</a>
         </div>
-        <div>
-          <div class="arch-card">
-            <h5>Architecture · parallel retrieval + closed-loop tuning</h5>
-            <svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg">
-              <defs><marker id="arr6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#8b6dff"/></marker></defs>
-              <g font-family="JetBrains Mono, monospace" font-size="11" fill="#e8eaf0">
-                <rect x="150" y="10" width="100" height="30" rx="6" fill="#0f1118" stroke="#2a3142"/><text x="200" y="30" text-anchor="middle">Query</text>
-                <rect x="20" y="70" width="100" height="30" rx="6" fill="#0f1118" stroke="#8b6dff"/><text x="70" y="90" text-anchor="middle" fill="#8b6dff">pgvector</text>
-                <rect x="150" y="70" width="100" height="30" rx="6" fill="#0f1118" stroke="#4dd0c2"/><text x="200" y="90" text-anchor="middle" fill="#4dd0c2">Qdrant</text>
-                <rect x="280" y="70" width="100" height="30" rx="6" fill="#0f1118" stroke="#ff9e6d"/><text x="330" y="90" text-anchor="middle" fill="#ff9e6d">Pinecone</text>
-                <rect x="120" y="130" width="160" height="30" rx="6" fill="#0f1118" stroke="#fbbf24"/><text x="200" y="150" text-anchor="middle" fill="#fbbf24">RRF + Cohere rerank</text>
-                <rect x="80" y="180" width="100" height="30" rx="6" fill="#0f1118" stroke="#34d399"/><text x="130" y="200" text-anchor="middle" fill="#34d399">Ragas eval</text>
-                <rect x="220" y="180" width="100" height="30" rx="6" fill="#0f1118" stroke="#34d399"/><text x="270" y="200" text-anchor="middle" fill="#34d399">Optimizer</text>
-                <line x1="200" y1="40" x2="70" y2="68" stroke="#8b6dff" marker-end="url(#arr6)"/>
-                <line x1="200" y1="40" x2="200" y2="68" stroke="#8b6dff" marker-end="url(#arr6)"/>
-                <line x1="200" y1="40" x2="330" y2="68" stroke="#8b6dff" marker-end="url(#arr6)"/>
-                <line x1="70" y1="100" x2="160" y2="128" stroke="#8b6dff" marker-end="url(#arr6)"/>
-                <line x1="200" y1="100" x2="200" y2="128" stroke="#8b6dff" marker-end="url(#arr6)"/>
-                <line x1="330" y1="100" x2="240" y2="128" stroke="#8b6dff" marker-end="url(#arr6)"/>
-                <line x1="180" y1="160" x2="130" y2="178" stroke="#34d399" marker-end="url(#arr6)"/>
-                <line x1="220" y1="160" x2="270" y2="178" stroke="#34d399" marker-end="url(#arr6)"/>
-                <line x1="270" y1="210" x2="270" y2="225" stroke="#34d399" stroke-dasharray="2,2"/>
-                <line x1="270" y1="225" x2="60" y2="225" stroke="#34d399" stroke-dasharray="2,2"/>
-                <line x1="60" y1="225" x2="60" y2="85" stroke="#34d399" stroke-dasharray="2,2" marker-end="url(#arr6)"/>
-                <text x="60" y="240" fill="#5a5f6e" font-size="9">retune params</text>
-              </g>
-            </svg>
-          </div>
-          <div class="metrics-card">
-            <div class="metric-head"><h5>Target benchmarks</h5><span class="metric-note">held-out QA set · n=500</span></div>
-            <div class="metric"><span class="metric-label">Ragas faithfulness (hybrid)</span><span class="metric-value">≥ 0.88</span></div>
-            <div class="metric"><span class="metric-label">vs vector-only baseline</span><span class="metric-value">+0.14</span></div>
-            <div class="metric"><span class="metric-label">P95 query latency</span><span class="metric-value">≤ 800ms</span></div>
-            <div class="metric"><span class="metric-label">Auto-tune episodes / week</span><span class="metric-value">~3</span></div>
-          </div>
-          <div class="stack">
-            <span>pgvector</span><span>Qdrant</span><span>Pinecone</span><span>Cohere Rerank v3</span><span>Ragas</span><span>recharts</span><span>BM25</span>
-          </div>
-        </div>
-      </div>
-      <div class="project-links">
-        <a href="./06-agentic-rag/README.md">→ Full README</a>
-        <a href="./06-agentic-rag/">→ Source tree</a>
-        <a href="#benchmarks">→ Live benchmark comparison</a>
-      </div>
-    </article>
+      </article>
 
+      <article class="project-card-v2 reveal">
+        <div class="card-head">
+          <span class="project-num">04</span>
+          <span class="badge badge-planned">◯ Planned</span>
+        </div>
+        <h3>Document Intelligence Pipeline</h3>
+        <p class="card-sub">Layout analysis · OCR · Claude Vision fallback · Per-field confidence</p>
+        <p class="card-problem">Extracts structured data from complex PDFs: contracts, financial reports, medical forms, scanned forms with tables and multi-column layouts. Auto-approves high-confidence; routes low-confidence to human review.</p>
+        <div class="card-usecase"><strong>Use case:</strong> Hyperscience, Rossum, Klarity</div>
+        <div class="card-stack">
+          <span>unstructured 0.16</span><span>Tesseract / PaddleOCR</span><span>Claude Vision</span><span>Camelot</span><span>Table Transformer</span><span>Pydantic v2</span><span>Next.js + PDF viewer</span>
+        </div>
+        <div class="card-dataset">FUNSD (199 forms) + DocVQA (12.7K docs) + PubLayNet (360K pages)</div>
+        <div class="project-links">
+          <a href="./04-document-intelligence/">→ Project folder</a>
+          <a href="./docs/portafolio_specs.md#proyecto-4--document-intelligence-pipeline">→ Full spec</a>
+        </div>
+      </article>
+
+      <article class="project-card-v2 reveal">
+        <div class="card-head">
+          <span class="project-num">05</span>
+          <span class="badge badge-planned">◯ Planned</span>
+        </div>
+        <h3>Computer Use Agent</h3>
+        <p class="card-sub">Anthropic Computer Use API · Virtualized Ubuntu VM · Action-verification loop</p>
+        <p class="card-problem">Operates a virtualized desktop by reading screenshots and emitting clicks/keystrokes. Automates back-office workflows in legacy systems that don't expose APIs.</p>
+        <div class="card-usecase"><strong>Use case:</strong> RPA for banking/insurance, legacy-system extraction</div>
+        <div class="card-stack">
+          <span>Claude Sonnet 4.5 (computer_use tool)</span><span>Ubuntu 22.04 + Xvfb</span><span>xdotool</span><span>VNC</span><span>LangGraph</span><span>Next.js + VNC viewer</span>
+        </div>
+        <div class="card-dataset">Custom eval (20 tasks) + OSWorld + WebArena benchmarks</div>
+        <div class="project-links">
+          <a href="./05-computer-use/">→ Project folder</a>
+          <a href="./docs/portafolio_specs.md#proyecto-5--computer-use-agent">→ Full spec</a>
+        </div>
+      </article>
+
+      <article class="project-card-v2 reveal">
+        <div class="card-head">
+          <span class="project-num">06</span>
+          <span class="badge badge-planned">◯ Planned</span>
+        </div>
+        <h3>Code Review Agent</h3>
+        <p class="card-sub">tree-sitter AST · Multi-aspect parallel analyzers · GitHub Action</p>
+        <p class="card-problem">Reviews pull requests inline: detects bugs, flags security patterns, identifies missing tests, suggests performance improvements. Filters by severity to avoid drowning the developer.</p>
+        <div class="card-usecase"><strong>Use case:</strong> Cursor, Codium, Sourcegraph Cody, Codacy</div>
+        <div class="card-stack">
+          <span>Claude Sonnet 4.5</span><span>tree-sitter</span><span>ruff + mypy</span><span>semgrep</span><span>PyGithub</span><span>LangGraph</span><span>Next.js + diff viewer</span>
+        </div>
+        <div class="card-dataset">SWE-bench Lite (300 issues) + CodeReviewer (642K diff/review pairs)</div>
+        <div class="project-links">
+          <a href="./06-code-review/">→ Project folder</a>
+          <a href="./docs/portafolio_specs.md#proyecto-6--code-review-agent">→ Full spec</a>
+        </div>
+      </article>
+
+      <article class="project-card-v2 reveal">
+        <div class="card-head">
+          <span class="project-num">07</span>
+          <span class="badge badge-planned">◯ Planned</span>
+        </div>
+        <h3>AI Safety & Red Teaming Framework</h3>
+        <p class="card-sub">OWASP LLM Top 10 coverage · Adversarial attack suite · Guardrails layer</p>
+        <p class="card-problem">Evaluates other LLM-based systems for vulnerabilities: prompt injection, jailbreaks, PII leakage, hallucinations. Implements guardrails and produces security audit reports.</p>
+        <div class="card-usecase"><strong>Use case:</strong> Robust Intelligence, Lakera, Protect AI, HiddenLayer</div>
+        <div class="card-stack">
+          <span>guardrails-ai / NeMo</span><span>Presidio (PII)</span><span>garak (NVIDIA)</span><span>giskard</span><span>protectai/deberta</span><span>Next.js dashboard</span>
+        </div>
+        <div class="card-dataset">HarmBench (400) + JailbreakBench (100) + ToxicChat (10K)</div>
+        <div class="project-links">
+          <a href="./07-ai-safety/">→ Project folder</a>
+          <a href="./docs/portafolio_specs.md#proyecto-7--ai-safety-y-red-teaming-framework">→ Full spec</a>
+        </div>
+      </article>
+
+      <article class="project-card-v2 reveal">
+        <div class="card-head">
+          <span class="project-num">08</span>
+          <span class="badge badge-planned">◯ Planned</span>
+        </div>
+        <h3>GraphRAG over SEC EDGAR</h3>
+        <p class="card-sub">Knowledge graph from 10-K filings · Cypher traversal · Hybrid graph + vector retrieval</p>
+        <p class="card-problem">Answers complex multi-hop questions over S&P 500 ecosystem: who supplies whom, who sits on competing boards, which companies share regulatory exposure. Microsoft GraphRAG technique applied to public financials.</p>
+        <div class="card-usecase"><strong>Use case:</strong> Visible Alpha, Tegus, AlphaSense, M&A advisory</div>
+        <div class="card-stack">
+          <span>Neo4j 5 + APOC + GDS</span><span>neo4j-graphrag</span><span>Claude Sonnet 4.5</span><span>Voyage AI</span><span>Pydantic v2</span><span>Next.js + react-force-graph-2d</span>
+        </div>
+        <div class="card-dataset">SEC EDGAR 10-K filings (S&P 500, last 5 years, ~10K docs)</div>
+        <div class="project-links">
+          <a href="./08-graphrag-sec/">→ Project folder</a>
+          <a href="./docs/portafolio_specs.md#proyecto-8--graphrag-sobre-sec-edgar">→ Full spec</a>
+        </div>
+      </article>
+
+      <article class="project-card-v2 reveal">
+        <div class="card-head">
+          <span class="project-num">09</span>
+          <span class="badge badge-planned">◯ Planned</span>
+        </div>
+        <h3>Voice AI Conversational Agent</h3>
+        <p class="card-sub">Whisper STT · Claude reasoning · ElevenLabs TTS · Sub-second turn latency</p>
+        <p class="card-problem">Telephony customer service: caller talks, system transcribes, reasons, retrieves from KB, synthesizes natural voice response. Target: under 800ms end-to-end per turn to feel conversational.</p>
+        <div class="card-usecase"><strong>Use case:</strong> Bland AI, Vapi, Retell, Hume — booking/support/commerce by voice</div>
+        <div class="card-stack">
+          <span>Whisper-large-v3</span><span>Claude Sonnet 4.5</span><span>ElevenLabs / XTTS-v2</span><span>LiveKit / Twilio</span><span>silero-vad</span><span>LangGraph</span><span>Next.js + WebRTC</span>
+        </div>
+        <div class="card-dataset">Mozilla Common Voice + LibriSpeech + Spoken-SQuAD + MultiWOZ 2.4</div>
+        <div class="project-links">
+          <a href="./09-voice-agent/">→ Project folder</a>
+          <a href="./docs/portafolio_specs.md#proyecto-9--voice-ai-conversational-agent">→ Full spec</a>
+        </div>
+      </article>
+
+    </div>
   </div>
 </section>
+
 
 <!-- ============ LIVE DEMO ============ -->
 <section id="demo">
   <div class="container">
-    <div class="section-eyebrow">04 · Live demo · Project 01</div>
-    <h2>Watch the self-healing loop run</h2>
-    <p class="section-sub">A simulated execution of the LangGraph state machine on a malformed invoice. The critic flags the failure, the extractor reflects, episodic memory is consulted. No real LLM calls — the timing and scores match the actual run profile.</p>
+    <div class="section-eyebrow">04 · Live demo · Reference pattern</div>
+    <h2>How a self-correcting pipeline looks live</h2>
+    <p class="section-sub">A LangGraph state machine running on a malformed invoice — a reference pattern that anchors several projects (Conversational Assistant, Document Intelligence, Code Review Agent). Critic flags failure → extractor reflects → episodic memory consulted → synthesis. Replaced project-specific demos go in each project's own folder.</p>
 
     <div class="demo-card reveal">
       <div class="demo-header">
