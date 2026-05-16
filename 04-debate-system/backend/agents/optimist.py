@@ -15,3 +15,18 @@ Each round:
   manageable, exaggerated, or already mitigated.
 - Final: state your final stance, explicitly noting any argument that shifted you.
 """
+    stub_base_stance = "yes"
+    stub_lean_strength = +0.6
+    stub_key_points = [
+        "market growth precedent supports upside",
+        "first-mover advantage compounds",
+        "downside is bounded relative to upside",
+    ]
+    stub_topic_keywords_positive = (
+        "streaming", "platform", "grow", "growth", "expand", "first-mover",
+        "build", "invest", "pivot", "innovate", "scale", "saas", "revenue", "freeze",
+        "technical debt", "velocity", "saas",
+    )
+    stub_topic_keywords_negative = (
+        "speculative", "bubble", "leveraged", "20x", "principles", "ethics",
+    )

@@ -207,6 +207,41 @@ Do **not** use for: real-time decisions, repetitive workflows, anything called m
 
 ---
 
+## Running the eval harness
+
+```bash
+cd backend/
+python -m eval.runner                  # human-readable report
+python -m eval.runner --json           # CI / dashboards
+python -m eval.runner --min-decision 0.6
+python -m unittest tests.test_debate -v
+```
+
+The eval runs the full 3-round, 5-agent debate on five decision scenarios
+with retrospective ground truth (Blockbuster vs streaming, Tulip Mania,
+tech-debt freeze, defense pivot, ambiguous M&A). It measures:
+
+- **decision_quality** — did the system land on the right side?
+- **consensus_calibration** — high-consensus answers should be more correct
+- **groupthink_catch_rate** — obvious-call agreement rate
+- **audit_trail_complete** — all 15 statements (5 agents x 3 rounds) emitted in order
+
+With offline deterministic stubs (no LLM), the harness reaches
+**60% decision quality, 100% consensus calibration on high-confidence cases,
+100% audit-trail completeness, 6/6 unit tests pass.** Real Claude agents
+should push decision quality higher; the harness exists to catch regressions
+in the moderator / synthesizer / Devil's Advocate retargeting logic.
+
+## API
+
+| Method | Path | Purpose |
+|---|---|---|
+| `POST`     | `/api/debate`                 | Run a debate synchronously, return executive memo + statements |
+| `WEBSOCKET`| `/ws/debate/{session_id}`     | Stream each agent statement live (event types: `round_start`, `agent_statement`, `round_end`, `debate_complete`) |
+| `GET`      | `/api/eval/run`               | Run the scenario eval and return JSON |
+
+---
+
 ## License
 
 MIT.

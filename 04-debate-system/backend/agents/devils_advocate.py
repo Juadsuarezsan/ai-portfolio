@@ -1,4 +1,7 @@
-from agents.base_agent import BaseDebateAgent
+"""Devil's Advocate — stance re-targets the current majority each round."""
+from __future__ import annotations
+
+from agents.base_agent import BaseDebateAgent, STANCE_VALUES, Stance, Statement
 
 
 class DevilsAdvocateAgent(BaseDebateAgent):
@@ -15,3 +18,41 @@ Rules:
 - In the final round, you may converge with consensus *only if* the debate has
   produced new evidence you cannot honestly argue against.
 """
+    stub_base_stance: Stance = "neutral"
+    stub_lean_strength = 0.0
+    stub_key_points = [
+        "majority appears to underweight an unsexy alternative",
+        "implicit assumptions deserve adversarial probing",
+        "convergence this fast is itself a red flag",
+    ]
+
+    def generate_statement_stub(
+        self,
+        *,
+        problem: str,
+        debate_history: list[Statement],
+        round_type,
+        round_number: int,
+    ) -> Statement:
+        # Inspect the room's stance distribution from the most recent completed round.
+        if debate_history:
+            # consider the latest completed round only
+            latest_round = max(s.round for s in debate_history)
+            latest = [s for s in debate_history if s.round == latest_round and s.role != self.role_name]
+            mean = sum(STANCE_VALUES[s.stance] for s in latest) / max(1, len(latest))
+        else:
+            mean = 0.0
+        # Argue against the majority but with damped magnitude — DA is a critic of
+        # consensus, not a counter-majority. Avoids exactly cancelling the room.
+        target = -0.6 * mean if abs(mean) > 0.15 else 0.0
+        stance = self._axis_to_stance(target)
+        content = (
+            f"[{self.role_name}] {round_type.capitalize()} — "
+            f"room mean stance={mean:+.2f}, taking counter-position at axis={target:+.2f}. "
+            f"Key points: {'; '.join(self.stub_key_points)}."
+        )
+        return Statement(
+            role=self.role_name, round=round_number, round_type=round_type,
+            content=content, key_points=list(self.stub_key_points),
+            confidence=0.7, stance=stance,
+        )

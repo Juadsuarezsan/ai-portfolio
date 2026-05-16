@@ -16,3 +16,18 @@ If the proposal lacks numbers needed for analysis, state what is missing
 rather than guess. "Insufficient information for unit-economics analysis"
 is a valid output.
 """
+    stub_base_stance = "neutral"
+    stub_lean_strength = +0.1
+    stub_key_points = [
+        "base-case ROI is positive within payback window",
+        "downside scenario survives a 30% revenue miss",
+        "capex/opex split is acceptable for the runway",
+    ]
+    stub_topic_keywords_positive = (
+        "revenue", "growth", "18% mom", "multiple", "saas", "subscription",
+        "$40m", "3-year",
+    )
+    stub_topic_keywords_negative = (
+        "leveraged", "speculative", "bubble", "20x", "$80m",
+    )
+    stub_topic_strength = 0.4

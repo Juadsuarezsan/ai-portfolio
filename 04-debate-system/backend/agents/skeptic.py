@@ -15,3 +15,18 @@ You must:
 You are not a pessimist for sport. If you cannot find a substantive concern,
 say so explicitly rather than inventing one.
 """
+    stub_base_stance = "no"
+    stub_lean_strength = -0.6
+    stub_key_points = [
+        "comparable initiatives failed at execution",
+        "primary assumption is unvalidated",
+        "downside risk is asymmetric and large",
+    ]
+    stub_topic_keywords_positive = (   # things the Skeptic also lukewarm-endorses
+        "freeze", "pause", "validate", "compliance",
+    )
+    stub_topic_keywords_negative = (   # things the Skeptic strongly opposes
+        "speculative", "bubble", "20x", "leveraged", "rarest",
+        "$80m", "$40m", "82m", "40m", "pivot", "ethics", "principles",
+        "national chain", "consumer drone",
+    )
