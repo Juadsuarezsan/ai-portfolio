@@ -1,0 +1,43 @@
+{
+  "id": "case_042",
+  "document_type": "contract",
+  "content": "MASTER SERVICES AGREEMENT\nContract: CTR-20267-468\nEffective: 2026-03-01\nProvider: MARLOW CHEMICAL\nClient:   Halcyon Foods Inc.\nTerm:     12 months\nTotal contract value: $73,000.00 USD\nAuto-renewal: yes, unless 60-day notice\n",
+  "extraction": {
+    "contract_number": "CTR-20267-468",
+    "parties": {
+      "provider": "MARLOW CHEMICAL",
+      "client": "Halcyon Foods Inc."
+    },
+    "effective_date": "2026-03-01",
+    "term_months": 24,
+    "total_value": 73000.0,
+    "currency": "USD",
+    "auto_renewal": true
+  },
+  "structural_check": {
+    "required_fields_present": true
+  },
+  "human_verdict": {
+    "principles": {
+      "completeness": {
+        "score": 0.94,
+        "notes": "All required fields populated."
+      },
+      "accuracy": {
+        "score": 0.5,
+        "notes": "term_months extracted as 24, source says 12. Changes renewal/expiry by months."
+      },
+      "consistency": {
+        "score": 0.92,
+        "notes": "Internal math consistent."
+      },
+      "format": {
+        "score": 0.93,
+        "notes": "Shapes correct."
+      }
+    },
+    "overall_pass": false,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

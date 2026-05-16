@@ -1,0 +1,63 @@
+{
+  "id": "case_037",
+  "document_type": "invoice",
+  "content": "STERLING FACILITIES\nNIT: 901.118.665-7\nInvoice: STE-2026-9903\nDate: 2026-01-21\n\nBill To: Riverwood Capital\n\nItem                                       Qty   Unit Price       Total\n  Monthly retainer                            2    $3,200.00   $6,400.00\n  On-site audit (per day)                     3    $1,100.00   $3,300.00\n  Custom report                               4      $410.00   $1,640.00\n\nSubtotal:                                             $11,340.00\nVAT (19%):                                             $2,154.60\nTotal:                                                $13,494.60\n\nCurrency: USD\nPayment terms: NET 30",
+  "extraction": {
+    "invoice_number": "STE-2026-9903",
+    "vendor": "STERLING FACILITIES",
+    "vendor_tax_id": "901.118.665-7",
+    "issue_date": "January 21, 2026",
+    "currency": "USD",
+    "line_items": [
+      {
+        "description": "Monthly retainer",
+        "qty": 2,
+        "unit_price": 3200.0,
+        "total": 6400.0
+      },
+      {
+        "description": "On-site audit (per day)",
+        "qty": 3,
+        "unit_price": 1100.0,
+        "total": 3300.0
+      },
+      {
+        "description": "Custom report",
+        "qty": 4,
+        "unit_price": 410.0,
+        "total": 1640.0
+      }
+    ],
+    "subtotal": 11340.0,
+    "tax": 2154.6,
+    "total": 13494.6,
+    "payment_terms": "NET 30"
+  },
+  "structural_check": {
+    "sum_matches_total": true,
+    "line_items_present": true
+  },
+  "human_verdict": {
+    "principles": {
+      "completeness": {
+        "score": 0.94,
+        "notes": "All required fields populated."
+      },
+      "accuracy": {
+        "score": 0.94,
+        "notes": "Values match source verbatim."
+      },
+      "consistency": {
+        "score": 0.93,
+        "notes": "Internal math consistent."
+      },
+      "format": {
+        "score": 0.55,
+        "notes": "issue_date extracted as 'January 21, 2026' — not ISO-8601. Downstream date math will fail."
+      }
+    },
+    "overall_pass": false,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

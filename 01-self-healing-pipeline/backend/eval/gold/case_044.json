@@ -1,0 +1,63 @@
+{
+  "id": "case_044",
+  "document_type": "invoice",
+  "content": "SUMMIT CARGO LINES\nNIT: 900.305.918-4\nInvoice: SUM-2026-1415\nDate: 2026-01-04\n\nBill To: Brightline Logistics\n\nItem                                       Qty   Unit Price       Total\n  Quarterly consulting retainer               2    $4,500.00   $9,000.00\n  Logistics planning workshop                 5    $1,800.00   $9,000.00\n  Hardware install (per unit)                 6      $240.00   $1,440.00\n\nSubtotal:                                             $19,440.00\nVAT (19%):                                             $3,693.60\nTotal:                                                $23,133.60\n\nCurrency: USD\nPayment terms: NET 30",
+  "extraction": {
+    "invoice_number": "SUM-2026-1415",
+    "vendor": "SUMMIT CARGO LINES",
+    "vendor_tax_id": "900.305.918-4",
+    "issue_date": "2026-01-04",
+    "currency": "USD",
+    "line_items": [
+      {
+        "description": "Quarterly consulting retainer",
+        "qty": 2,
+        "unit_price": 4500.0,
+        "total": 9000.0
+      },
+      {
+        "description": "Logistics planning workshop",
+        "qty": 5,
+        "unit_price": 1800.0,
+        "total": 9000.0
+      },
+      {
+        "description": "Hardware install (per unit)",
+        "qty": 6,
+        "unit_price": 240.0,
+        "total": 1440.0
+      }
+    ],
+    "subtotal": 19440.0,
+    "tax": 3693.6,
+    "total": 23133.6,
+    "payment_terms": "NET 30"
+  },
+  "structural_check": {
+    "sum_matches_total": true,
+    "line_items_present": true
+  },
+  "human_verdict": {
+    "principles": {
+      "completeness": {
+        "score": 0.94,
+        "notes": "All required fields populated."
+      },
+      "accuracy": {
+        "score": 0.96,
+        "notes": "Values match source verbatim."
+      },
+      "consistency": {
+        "score": 0.95,
+        "notes": "Internal math consistent."
+      },
+      "format": {
+        "score": 0.94,
+        "notes": "Shapes correct."
+      }
+    },
+    "overall_pass": true,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "id": "case_034",
+  "document_type": "purchase_order",
+  "content": "PURCHASE ORDER PO-64361\nDate: 2026-02-28\nVendor: BLACKWOOD STAFFING\nBuyer:  Greenline Hospitality Group\n\nItem                                       Qty   Unit       Total\n  Replacement filter                         13    $32.50     $422.50\n  Stainless steel fasteners (box)            15    $18.50     $277.50\n  Protective coating (gallon)                14    $92.00   $1,288.00\n  Industrial grade adhesive (5L)              3    $64.00     $192.00\n\nTotal: $2,180.00\nDelivery by: 2026-06-06",
+  "extraction": {
+    "po_number": "PO-64361",
+    "vendor": "BLACKWOOD STAFFING",
+    "buyer": "Greenline Hospitality Group",
+    "issue_date": "2026-02-28",
+    "delivery_date": "2026-06-06",
+    "line_items": [
+      {
+        "description": "Replacement filter",
+        "qty": 13,
+        "unit_price": 32.5,
+        "total": 422.5
+      },
+      {
+        "description": "Stainless steel fasteners (box)",
+        "qty": 15,
+        "unit_price": 18.5,
+        "total": 277.5
+      },
+      {
+        "description": "Protective coating (gallon)",
+        "qty": 14,
+        "unit_price": 92.0,
+        "total": 1288.0
+      },
+      {
+        "description": "Industrial grade adhesive (5L)",
+        "qty": 3,
+        "unit_price": 64.0,
+        "total": 192.0
+      }
+    ],
+    "total": 2130.0
+  },
+  "structural_check": {
+    "sum_matches_total": false,
+    "line_items_present": true
+  },
+  "human_verdict": {
+    "principles": {
+      "completeness": {
+        "score": 0.94,
+        "notes": "All required fields populated."
+      },
+      "accuracy": {
+        "score": 0.7,
+        "notes": "Total extracted as 2130.0; sum of line items is 2180.0."
+      },
+      "consistency": {
+        "score": 0.35,
+        "notes": "Total extracted as 2130.0; sum of line items is 2180.0."
+      },
+      "format": {
+        "score": 0.94,
+        "notes": "Shapes correct."
+      }
+    },
+    "overall_pass": false,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "id": "case_011",
+  "document_type": "receipt",
+  "content": "OAKRIDGE FREIGHT — Receipt R-923901\nDate: 2026-02-13\nAmount: $366.88 USD\nPayment: card_visa_4112\n",
+  "extraction": {
+    "receipt_number": "R-923901",
+    "vendor": "OAKRIDGE FREIGHT",
+    "issue_date": "2026-02-13",
+    "total": 366.88,
+    "currency": "USD",
+    "payment_method": "card_visa_4112"
+  },
+  "structural_check": {
+    "required_fields_present": true
+  },
+  "human_verdict": {
+    "principles": {
+      "completeness": {
+        "score": 0.94,
+        "notes": "All required fields populated."
+      },
+      "accuracy": {
+        "score": 0.95,
+        "notes": "Values match source verbatim."
+      },
+      "consistency": {
+        "score": 0.94,
+        "notes": "Internal math consistent."
+      },
+      "format": {
+        "score": 0.94,
+        "notes": "Shapes correct."
+      }
+    },
+    "overall_pass": true,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "id": "case_017",
+  "document_type": "invoice",
+  "content": "GRANITEPOINT LEGAL\nNIT: 900.665.331-1\nInvoice: GRA-2026-6069\nDate: 2026-03-03\n\nBill To: Pinecrest Marketing\n\nItem                                       Qty   Unit Price       Total\n  Hardware install (per unit)                 3      $240.00     $720.00\n  Software license seat                       2       $95.00     $190.00\n  On-site audit (per day)                     2    $1,100.00   $2,200.00\n\nSubtotal:                                              $3,110.00\nVAT (19%):                                               $590.90\nTotal:                                                 $3,700.90\n\nCurrency: USD\nPayment terms: NET 30",
+  "extraction": {
+    "invoice_number": "GRA-2026-6069",
+    "vendor": "GRANITEPOINT LEGAL",
+    "vendor_tax_id": "900.665.331-1",
+    "issue_date": "2026-03-03",
+    "currency": "USD",
+    "line_items": [
+      {
+        "description": "Hardware install (per unit)",
+        "qty": 3,
+        "unit_price": 240.0,
+        "total": 720.0
+      },
+      {
+        "description": "Software license seat",
+        "qty": 2,
+        "unit_price": 95.0,
+        "total": 190.0
+      },
+      {
+        "description": "On-site audit (per day)",
+        "qty": 2,
+        "unit_price": 1100.0,
+        "total": 2200.0
+      }
+    ],
+    "subtotal": 3110.0,
+    "tax": 590.9,
+    "total": 3800.9,
+    "payment_terms": "NET 30"
+  },
+  "structural_check": {
+    "sum_matches_total": false,
+    "line_items_present": true
+  },
+  "human_verdict": {
+    "principles": {
+      "completeness": {
+        "score": 0.94,
+        "notes": "All required fields populated."
+      },
+      "accuracy": {
+        "score": 0.72,
+        "notes": "Total extracted as $3800.90; subtotal + tax = $3700.90. Internal contradiction the critic must catch."
+      },
+      "consistency": {
+        "score": 0.35,
+        "notes": "Total extracted as $3800.90; subtotal + tax = $3700.90. Internal contradiction the critic must catch."
+      },
+      "format": {
+        "score": 0.94,
+        "notes": "Shapes correct."
+      }
+    },
+    "overall_pass": false,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "id": "case_021",
+  "document_type": "purchase_order",
+  "content": "PURCHASE ORDER PO-70310\nDate: 2026-05-19\nVendor: MARLOW CHEMICAL\nBuyer:  Pinecrest Marketing\n\nItem                                       Qty   Unit       Total\n  Calibration kit                            20   $410.00   $8,200.00\n  Sensor module v3                            6   $145.00     $870.00\n\nTotal: $9,070.00\nDelivery by: 2026-06-04",
+  "extraction": {
+    "po_number": "PO-70310",
+    "vendor": "MARLOW CHEMICAL",
+    "buyer": "Pinecrest Marketing",
+    "issue_date": "2026-05-19",
+    "delivery_date": "2026-06-04",
+    "line_items": [
+      {
+        "description": "Calibration kit",
+        "qty": 20,
+        "unit_price": 410.0,
+        "total": 8200.0
+      },
+      {
+        "description": "Sensor module v3",
+        "qty": 6,
+        "unit_price": 145.0,
+        "total": 870.0
+      }
+    ],
+    "total": 9070.0
+  },
+  "structural_check": {
+    "sum_matches_total": true,
+    "line_items_present": true
+  },
+  "human_verdict": {
+    "principles": {
+      "completeness": {
+        "score": 0.94,
+        "notes": "All required fields populated."
+      },
+      "accuracy": {
+        "score": 0.95,
+        "notes": "Values match source verbatim."
+      },
+      "consistency": {
+        "score": 0.95,
+        "notes": "Internal math consistent."
+      },
+      "format": {
+        "score": 0.94,
+        "notes": "Shapes correct."
+      }
+    },
+    "overall_pass": true,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

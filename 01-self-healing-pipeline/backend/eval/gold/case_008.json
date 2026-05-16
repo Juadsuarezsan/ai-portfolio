@@ -1,0 +1,68 @@
+{
+  "id": "case_008",
+  "document_type": "invoice",
+  "content": "AURORA HVAC SERVICES\nNIT: 901.788.221-9\nInvoice: AUR-2026-3034\nDate: 2026-04-25\n\nBill To: Meridian Health Network\n\nItem                                       Qty   Unit Price       Total\n  Hardware install (per unit)                 3      $240.00     $720.00\n  Software license seat                       1       $95.00      $95.00\n  Quarterly consulting retainer               3    $4,500.00  $13,500.00\n  Logistics planning workshop                 3    $1,800.00   $5,400.00\n\nSubtotal:                                             $19,715.00\nVAT (19%):                                             $3,745.85\nTotal:                                                $23,460.85\n\nCurrency: USD\nPayment terms: NET 15",
+  "extraction": {
+    "invoice_number": "AUR-2026-3034",
+    "vendor": "AURORA HVAC SERVICES",
+    "vendor_tax_id": "901.788.221-9",
+    "issue_date": "2026-04-25",
+    "line_items": [
+      {
+        "description": "Hardware install (per unit)",
+        "qty": 3,
+        "unit_price": 240.0,
+        "total": 720.0
+      },
+      {
+        "description": "Software license seat",
+        "qty": 1,
+        "unit_price": 95.0,
+        "total": 95.0
+      },
+      {
+        "description": "Quarterly consulting retainer",
+        "qty": 3,
+        "unit_price": 4500.0,
+        "total": 13500.0
+      },
+      {
+        "description": "Logistics planning workshop",
+        "qty": 3,
+        "unit_price": 1800.0,
+        "total": 5400.0
+      }
+    ],
+    "subtotal": 19715.0,
+    "tax": 3745.85,
+    "total": 23460.85,
+    "payment_terms": "NET 15"
+  },
+  "structural_check": {
+    "sum_matches_total": true,
+    "line_items_present": true
+  },
+  "human_verdict": {
+    "principles": {
+      "completeness": {
+        "score": 0.62,
+        "notes": "Missing currency field. Source has USD explicitly. Downstream FX conversion will silently default."
+      },
+      "accuracy": {
+        "score": 0.94,
+        "notes": "Values match source verbatim."
+      },
+      "consistency": {
+        "score": 0.93,
+        "notes": "Internal math consistent."
+      },
+      "format": {
+        "score": 0.93,
+        "notes": "Shapes correct."
+      }
+    },
+    "overall_pass": false,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

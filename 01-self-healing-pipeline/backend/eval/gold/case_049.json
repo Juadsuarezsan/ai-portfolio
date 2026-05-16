@@ -1,0 +1,68 @@
+{
+  "id": "case_049",
+  "document_type": "invoice",
+  "content": "CASCADE BIOMATERIALS\nNIT: 901.220.448-7\nInvoice: CAS-2026-9320\nDate: 2026-02-27\n\nBill To: Lakeview Hospitality Group\n\nItem                                       Qty   Unit Price       Total\n  Monthly retainer                            3    $3,200.00   $9,600.00\n  Equipment lease (monthly)                   1      $380.00     $380.00\n  Annual support package                      3    $2,800.00   $8,400.00\n  Logistics planning workshop                 4    $1,800.00   $7,200.00\n\nSubtotal:                                             $25,580.00\nVAT (19%):                                             $4,860.20\nTotal:                                                $30,440.20\n\nCurrency: USD\nPayment terms: NET 30",
+  "extraction": {
+    "invoice_number": "CAS-2026-9320",
+    "vendor": "CASCADE BIOMATERIALS",
+    "vendor_tax_id": "901.220.448-7",
+    "issue_date": "2026-02-27",
+    "line_items": [
+      {
+        "description": "Monthly retainer",
+        "qty": 3,
+        "unit_price": 3200.0,
+        "total": 9600.0
+      },
+      {
+        "description": "Equipment lease (monthly)",
+        "qty": 1,
+        "unit_price": 380.0,
+        "total": 380.0
+      },
+      {
+        "description": "Annual support package",
+        "qty": 3,
+        "unit_price": 2800.0,
+        "total": 8400.0
+      },
+      {
+        "description": "Logistics planning workshop",
+        "qty": 4,
+        "unit_price": 1800.0,
+        "total": 7200.0
+      }
+    ],
+    "subtotal": 25580.0,
+    "tax": 4860.2,
+    "total": 30440.2,
+    "payment_terms": "NET 30"
+  },
+  "structural_check": {
+    "sum_matches_total": true,
+    "line_items_present": true
+  },
+  "human_verdict": {
+    "principles": {
+      "completeness": {
+        "score": 0.62,
+        "notes": "Missing currency field. Source has USD explicitly. Downstream FX conversion will silently default."
+      },
+      "accuracy": {
+        "score": 0.94,
+        "notes": "Values match source verbatim."
+      },
+      "consistency": {
+        "score": 0.93,
+        "notes": "Internal math consistent."
+      },
+      "format": {
+        "score": 0.93,
+        "notes": "Shapes correct."
+      }
+    },
+    "overall_pass": false,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "id": "case_020",
+  "document_type": "receipt",
+  "content": "HORIZON DATAWORKS — Receipt R-967519\nDate: 2026-01-11\nAmount: $54.71 USD\nPayment: card_visa_4112\n",
+  "extraction": {
+    "receipt_number": "R-967519",
+    "vendor": "HORIZON DATAWORKS",
+    "issue_date": "2026.01.11",
+    "total": 54.71,
+    "currency": "USD",
+    "payment_method": "card_visa_4112"
+  },
+  "structural_check": {
+    "required_fields_present": true
+  },
+  "human_verdict": {
+    "principles": {
+      "completeness": {
+        "score": 0.94,
+        "notes": "All required fields populated."
+      },
+      "accuracy": {
+        "score": 0.94,
+        "notes": "Values match source verbatim."
+      },
+      "consistency": {
+        "score": 0.93,
+        "notes": "Internal math consistent."
+      },
+      "format": {
+        "score": 0.55,
+        "notes": "Date uses dots, not ISO-8601 dashes."
+      }
+    },
+    "overall_pass": false,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "id": "case_046",
+  "document_type": "contract",
+  "content": "MASTER SERVICES AGREEMENT\nContract: CTR-20261-909\nEffective: 2026-02-01\nProvider: CASCADE BIOMATERIALS\nClient:   Pinecrest Marketing\nTerm:     12 months\nTotal contract value: $110,000.00 USD\nAuto-renewal: yes, unless 60-day notice\n",
+  "extraction": {
+    "contract_number": "CTR-20261-909",
+    "parties": {
+      "provider": "CASCADE BIOMATERIALS",
+      "client": "Pinecrest Marketing"
+    },
+    "effective_date": "2026-02-01",
+    "term_months": 12,
+    "total_value": 110000.0,
+    "currency": "USD",
+    "auto_renewal": true
+  },
+  "structural_check": {
+    "required_fields_present": true
+  },
+  "human_verdict": {
+    "principles": {
+      "completeness": {
+        "score": 0.95,
+        "notes": "All required fields populated."
+      },
+      "accuracy": {
+        "score": 0.95,
+        "notes": "Values match source verbatim."
+      },
+      "consistency": {
+        "score": 0.94,
+        "notes": "Internal math consistent."
+      },
+      "format": {
+        "score": 0.94,
+        "notes": "Shapes correct."
+      }
+    },
+    "overall_pass": true,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

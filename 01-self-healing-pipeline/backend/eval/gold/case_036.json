@@ -1,0 +1,69 @@
+{
+  "id": "case_036",
+  "document_type": "invoice",
+  "content": "AURORA HVAC SERVICES\nNIT: 901.788.221-9\nInvoice: AUR-2026-4667\nDate: 2026-01-07\n\nBill To: Driftwood Construction LLC\n\nItem                                       Qty   Unit Price       Total\n  Software license seat                       3       $95.00     $285.00\n  Logistics planning workshop                 2    $1,800.00   $3,600.00\n  On-site audit (per day)                     1    $1,100.00   $1,100.00\n  Hardware install (per unit)                 1      $240.00     $240.00\n\nSubtotal:                                              $5,225.00\nVAT (19%):                                               $992.75\nTotal:                                                 $6,217.75\n\nCurrency: USD\nPayment terms: NET 30",
+  "extraction": {
+    "invoice_number": "AUR-2026-4667",
+    "vendor": "AURORA HVAC SERVICES",
+    "vendor_tax_id": "901.788.221-9",
+    "issue_date": "January 7, 2026",
+    "currency": "USD",
+    "line_items": [
+      {
+        "description": "Software license seat",
+        "qty": 3,
+        "unit_price": 95.0,
+        "total": 285.0
+      },
+      {
+        "description": "Logistics planning workshop",
+        "qty": 2,
+        "unit_price": 1800.0,
+        "total": 3600.0
+      },
+      {
+        "description": "On-site audit (per day)",
+        "qty": 1,
+        "unit_price": 1100.0,
+        "total": 1100.0
+      },
+      {
+        "description": "Hardware install (per unit)",
+        "qty": 1,
+        "unit_price": 240.0,
+        "total": 240.0
+      }
+    ],
+    "subtotal": 5225.0,
+    "tax": 992.75,
+    "total": 6217.75,
+    "payment_terms": "NET 30"
+  },
+  "structural_check": {
+    "sum_matches_total": true,
+    "line_items_present": true
+  },
+  "human_verdict": {
+    "principles": {
+      "completeness": {
+        "score": 0.94,
+        "notes": "All required fields populated."
+      },
+      "accuracy": {
+        "score": 0.94,
+        "notes": "Values match source verbatim."
+      },
+      "consistency": {
+        "score": 0.93,
+        "notes": "Internal math consistent."
+      },
+      "format": {
+        "score": 0.55,
+        "notes": "issue_date extracted as 'January 7, 2026' — not ISO-8601. Downstream date math will fail."
+      }
+    },
+    "overall_pass": false,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

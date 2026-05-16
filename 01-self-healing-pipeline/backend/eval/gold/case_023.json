@@ -1,0 +1,59 @@
+{
+  "id": "case_023",
+  "document_type": "purchase_order",
+  "content": "PURCHASE ORDER PO-85402\nDate: 2026-01-21\nVendor: PIVOTGRID SYSTEMS LLC\nBuyer:  Brightline Logistics\n\nItem                                       Qty   Unit       Total\n  Industrial grade adhesive (5L)             15    $64.00     $960.00\n  Sensor module v3                           13   $145.00   $1,885.00\n  Stainless steel fasteners (box)            19    $18.50     $351.50\n\nTotal: $3,196.50\nDelivery by: 2026-06-07",
+  "extraction": {
+    "po_number": "PO-85402",
+    "vendor": "PIVOTGRID SYSTEMS LLC",
+    "buyer": "Brightline Logistics",
+    "issue_date": "2026-01-21",
+    "line_items": [
+      {
+        "description": "Industrial grade adhesive (5L)",
+        "qty": 15,
+        "unit_price": 64.0,
+        "total": 960.0
+      },
+      {
+        "description": "Sensor module v3",
+        "qty": 13,
+        "unit_price": 145.0,
+        "total": 1885.0
+      },
+      {
+        "description": "Stainless steel fasteners (box)",
+        "qty": 19,
+        "unit_price": 18.5,
+        "total": 351.5
+      }
+    ],
+    "total": 3196.5
+  },
+  "structural_check": {
+    "sum_matches_total": true,
+    "line_items_present": true
+  },
+  "human_verdict": {
+    "principles": {
+      "completeness": {
+        "score": 0.6,
+        "notes": "delivery_date missing. SLA tracking will fail downstream."
+      },
+      "accuracy": {
+        "score": 0.94,
+        "notes": "Values match source verbatim."
+      },
+      "consistency": {
+        "score": 0.93,
+        "notes": "Internal math consistent."
+      },
+      "format": {
+        "score": 0.93,
+        "notes": "Shapes correct."
+      }
+    },
+    "overall_pass": false,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "id": "case_050",
+  "document_type": "contract",
+  "content": "MASTER SERVICES AGREEMENT\nContract: CTR-20265-672\nEffective: 2026-05-01\nProvider: HORIZON DATAWORKS\nClient:   Meridian Health Network\nTerm:     24 months\nTotal contract value: $41,000.00 USD\nAuto-renewal: yes, unless 60-day notice\n",
+  "extraction": {
+    "contract_number": "CTR-20265-672",
+    "parties": {
+      "provider": "HORIZON DATAWORKS",
+      "client": "Meridian Health Network"
+    },
+    "effective_date": "2026/05/01",
+    "term_months": 24,
+    "total_value": 41000.0,
+    "currency": "USD",
+    "auto_renewal": true
+  },
+  "structural_check": {
+    "required_fields_present": true
+  },
+  "human_verdict": {
+    "principles": {
+      "completeness": {
+        "score": 0.94,
+        "notes": "All required fields populated."
+      },
+      "accuracy": {
+        "score": 0.93,
+        "notes": "Values match source verbatim."
+      },
+      "consistency": {
+        "score": 0.93,
+        "notes": "Internal math consistent."
+      },
+      "format": {
+        "score": 0.58,
+        "notes": "effective_date uses '/' separators, not ISO-8601 dashes."
+      }
+    },
+    "overall_pass": false,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

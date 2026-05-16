@@ -1,0 +1,63 @@
+{
+  "id": "case_028",
+  "document_type": "invoice",
+  "content": "BLACKWOOD STAFFING\nNIT: 900.880.557-2\nInvoice: BLA-2026-7248\nDate: 2026-02-02\n\nBill To: Driftwood Construction LLC\n\nItem                                       Qty   Unit Price       Total\n  Hardware install (per unit)                 2      $240.00     $480.00\n  Annual support package                      1    $2,800.00   $2,800.00\n  Training session (half-day)                 2      $550.00   $1,100.00\n\nSubtotal:                                              $4,380.00\nVAT (19%):                                               $832.20\nTotal:                                                 $5,212.20\n\nCurrency: USD\nPayment terms: NET 30",
+  "extraction": {
+    "invoice_number": "BLA-2026-7248",
+    "vendor": "BLACKWOOD STAFFING",
+    "vendor_tax_id": "900.880.557-2",
+    "issue_date": "2026-02-02",
+    "currency": "USD",
+    "line_items": [
+      {
+        "description": "Hardware install (per unit)",
+        "qty": 2,
+        "unit_price": 240.0,
+        "total": 480.0
+      },
+      {
+        "description": "Annual support package",
+        "qty": 1,
+        "unit_price": 2800.0,
+        "total": 2800.0
+      },
+      {
+        "description": "Training session (half-day)",
+        "qty": 2,
+        "unit_price": 550.0,
+        "total": 1100.0
+      }
+    ],
+    "subtotal": 4380.0,
+    "tax": 832.2,
+    "total": 5212.2,
+    "payment_terms": "NET 30"
+  },
+  "structural_check": {
+    "sum_matches_total": true,
+    "line_items_present": true
+  },
+  "human_verdict": {
+    "principles": {
+      "completeness": {
+        "score": 0.94,
+        "notes": "All required fields populated."
+      },
+      "accuracy": {
+        "score": 0.96,
+        "notes": "Values match source verbatim."
+      },
+      "consistency": {
+        "score": 0.95,
+        "notes": "Internal math consistent."
+      },
+      "format": {
+        "score": 0.94,
+        "notes": "Shapes correct."
+      }
+    },
+    "overall_pass": true,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "id": "case_024",
+  "document_type": "purchase_order",
+  "content": "PURCHASE ORDER PO-73545\nDate: 2026-01-10\nVendor: HORIZON DATAWORKS\nBuyer:  Brightline Logistics\n\nItem                                       Qty   Unit       Total\n  Calibration kit                            19   $410.00   $7,790.00\n  Industrial grade adhesive (5L)              7    $64.00     $448.00\n  Protective coating (gallon)                 3    $92.00     $276.00\n\nTotal: $8,514.00\nDelivery by: 2026-02-25",
+  "extraction": {
+    "po_number": "PO-73545",
+    "vendor": "HORIZON DATAWORKS",
+    "buyer": "Brightline Logistics",
+    "issue_date": "2026-01-10",
+    "delivery_date": "2026-02-25",
+    "line_items": [
+      {
+        "description": "Calibration kit",
+        "qty": 19,
+        "unit_price": 410.0,
+        "total": 7790.0
+      },
+      {
+        "description": "Industrial grade adhesive (5L)",
+        "qty": 7,
+        "unit_price": 64.0,
+        "total": 448.0
+      },
+      {
+        "description": "Protective coating (gallon)",
+        "qty": 3,
+        "unit_price": 92.0,
+        "total": 276.0
+      }
+    ],
+    "total": "$8,514.00"
+  },
+  "structural_check": {
+    "sum_matches_total": true,
+    "line_items_present": true
+  },
+  "human_verdict": {
+    "principles": {
+      "completeness": {
+        "score": 0.94,
+        "notes": "All required fields populated."
+      },
+      "accuracy": {
+        "score": 0.93,
+        "notes": "Values match source verbatim."
+      },
+      "consistency": {
+        "score": 0.93,
+        "notes": "Internal math consistent."
+      },
+      "format": {
+        "score": 0.58,
+        "notes": "Total extracted as a string with currency symbol, not numeric."
+      }
+    },
+    "overall_pass": false,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "id": "case_041",
+  "document_type": "contract",
+  "content": "MASTER SERVICES AGREEMENT\nContract: CTR-20264-269\nEffective: 2026-03-01\nProvider: AURORA HVAC SERVICES\nClient:   Driftwood Construction LLC\nTerm:     6 months\nTotal contract value: $43,000.00 USD\nAuto-renewal: yes, unless 60-day notice\n",
+  "extraction": {
+    "contract_number": "CTR-20264-269",
+    "parties": {
+      "provider": "AURORA HVAC SERVICES",
+      "client": "Driftwood Construction LLC"
+    },
+    "effective_date": "2026-03-01",
+    "term_months": 6,
+    "total_value": 43000.0,
+    "currency": "USD",
+    "auto_renewal": true
+  },
+  "structural_check": {
+    "required_fields_present": true
+  },
+  "human_verdict": {
+    "principles": {
+      "completeness": {
+        "score": 0.95,
+        "notes": "All required fields populated."
+      },
+      "accuracy": {
+        "score": 0.95,
+        "notes": "Values match source verbatim."
+      },
+      "consistency": {
+        "score": 0.94,
+        "notes": "Internal math consistent."
+      },
+      "format": {
+        "score": 0.94,
+        "notes": "Shapes correct."
+      }
+    },
+    "overall_pass": true,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

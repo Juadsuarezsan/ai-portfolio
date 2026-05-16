@@ -1,0 +1,60 @@
+{
+  "id": "case_026",
+  "document_type": "purchase_order",
+  "content": "PURCHASE ORDER PO-97564\nDate: 2026-02-11\nVendor: BLACKWOOD STAFFING\nBuyer:  Brightline Logistics\n\nItem                                       Qty   Unit       Total\n  Calibration kit                             5   $410.00   $2,050.00\n  Sensor module v3                            4   $145.00     $580.00\n  Replacement filter                         19    $32.50     $617.50\n\nTotal: $3,247.50\nDelivery by: 2026-03-22",
+  "extraction": {
+    "po_number": "PO-97564",
+    "vendor": "BLACKWOOD STAFFING",
+    "buyer": "Brightline Logistics",
+    "issue_date": "2026-02-11",
+    "delivery_date": "2026-03-22",
+    "line_items": [
+      {
+        "description": "Calibration kit",
+        "qty": 6,
+        "unit_price": 410.0,
+        "total": 2050.0
+      },
+      {
+        "description": "Sensor module v3",
+        "qty": 4,
+        "unit_price": 145.0,
+        "total": 580.0
+      },
+      {
+        "description": "Replacement filter",
+        "qty": 19,
+        "unit_price": 32.5,
+        "total": 617.5
+      }
+    ],
+    "total": 3247.5
+  },
+  "structural_check": {
+    "sum_matches_total": true,
+    "line_items_present": true
+  },
+  "human_verdict": {
+    "principles": {
+      "completeness": {
+        "score": 0.94,
+        "notes": "All required fields populated."
+      },
+      "accuracy": {
+        "score": 0.6,
+        "notes": "First line qty extracted as 6, source says 5. Note: total still matches source total."
+      },
+      "consistency": {
+        "score": 0.55,
+        "notes": "First line qty extracted as 6, source says 5. Note: total still matches source total."
+      },
+      "format": {
+        "score": 0.93,
+        "notes": "Shapes correct."
+      }
+    },
+    "overall_pass": false,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

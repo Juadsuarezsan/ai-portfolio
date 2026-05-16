@@ -1,0 +1,54 @@
+{
+  "id": "case_013",
+  "document_type": "purchase_order",
+  "content": "PURCHASE ORDER PO-79610\nDate: 2026-04-16\nVendor: HARBORLIGHT MEDIA\nBuyer:  Greenline Hospitality Group\n\nItem                                       Qty   Unit       Total\n  Industrial grade adhesive (5L)              6    $64.00     $384.00\n  Protective coating (gallon)                 5    $92.00     $460.00\n\nTotal: $844.00\nDelivery by: 2026-02-27",
+  "extraction": {
+    "po_number": "PO-79610",
+    "vendor": "HARBORLIGHT MEDIA",
+    "buyer": "Greenline Hospitality Group",
+    "issue_date": "2026-04-16",
+    "delivery_date": "2026-02-27",
+    "line_items": [
+      {
+        "description": "Industrial grade adhesive (5L)",
+        "qty": 6,
+        "unit_price": 64.0,
+        "total": 384.0
+      },
+      {
+        "description": "Protective coating (gallon)",
+        "qty": 5,
+        "unit_price": 92.0,
+        "total": 460.0
+      }
+    ],
+    "total": 844.0
+  },
+  "structural_check": {
+    "sum_matches_total": true,
+    "line_items_present": true
+  },
+  "human_verdict": {
+    "principles": {
+      "completeness": {
+        "score": 0.94,
+        "notes": "All required fields populated."
+      },
+      "accuracy": {
+        "score": 0.95,
+        "notes": "Values match source verbatim."
+      },
+      "consistency": {
+        "score": 0.95,
+        "notes": "Internal math consistent."
+      },
+      "format": {
+        "score": 0.94,
+        "notes": "Shapes correct."
+      }
+    },
+    "overall_pass": true,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

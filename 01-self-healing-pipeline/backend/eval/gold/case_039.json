@@ -1,0 +1,63 @@
+{
+  "id": "case_039",
+  "document_type": "invoice",
+  "content": "SUMMIT CARGO LINES\nNIT: 900.305.918-4\nInvoice: SUM-2026-7807\nDate: 2026-03-24\n\nBill To: Lakeview Hospitality Group\n\nItem                                       Qty   Unit Price       Total\n  Monthly retainer                            5    $3,200.00  $16,000.00\n  Quarterly consulting retainer               3    $4,500.00  $13,500.00\n  Custom report                               5      $410.00   $2,050.00\n\nSubtotal:                                             $31,550.00\nVAT (19%):                                             $5,994.50\nTotal:                                                $37,544.50\n\nCurrency: USD\nPayment terms: Due on receipt",
+  "extraction": {
+    "invoice_number": "SUM-2026-7807",
+    "vendor": "SUMMIT CARGO LINES",
+    "vendor_tax_id": "900.305.918-4",
+    "issue_date": "2026-03-24",
+    "currency": "USD",
+    "line_items": [
+      {
+        "description": "Monthly retainer",
+        "qty": 5,
+        "unit_price": 3200.0,
+        "total": 16000.0
+      },
+      {
+        "description": "Quarterly consulting retainer",
+        "qty": 3,
+        "unit_price": 4500.0,
+        "total": 13500.0
+      },
+      {
+        "description": "Custom report",
+        "qty": 5,
+        "unit_price": 410.0,
+        "total": 2050.0
+      }
+    ],
+    "subtotal": 31550.0,
+    "tax": 5994.5,
+    "total": 37544.5,
+    "payment_terms": "Due on receipt"
+  },
+  "structural_check": {
+    "sum_matches_total": true,
+    "line_items_present": true
+  },
+  "human_verdict": {
+    "principles": {
+      "completeness": {
+        "score": 0.94,
+        "notes": "All required fields populated."
+      },
+      "accuracy": {
+        "score": 0.96,
+        "notes": "Values match source verbatim."
+      },
+      "consistency": {
+        "score": 0.95,
+        "notes": "Internal math consistent."
+      },
+      "format": {
+        "score": 0.94,
+        "notes": "Shapes correct."
+      }
+    },
+    "overall_pass": true,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

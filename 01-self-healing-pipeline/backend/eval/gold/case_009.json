@@ -1,0 +1,63 @@
+{
+  "id": "case_009",
+  "document_type": "invoice",
+  "content": "VERTEX AGRO S.A.S.\nNIT: 901.044.876-8\nInvoice: VER-2026-3921\nDate: 2026-02-16\n\nBill To: Brightline Logistics\n\nItem                                       Qty   Unit Price       Total\n  Hardware install (per unit)                 3      $240.00     $720.00\n  Custom report                               2      $410.00     $820.00\n  Training session (half-day)                 1      $550.00     $550.00\n\nSubtotal:                                              $2,090.00\nVAT (19%):                                               $397.10\nTotal:                                                 $2,487.10\n\nCurrency: USD\nPayment terms: NET 45",
+  "extraction": {
+    "invoice_number": "VER-2026-3921",
+    "vendor": "VERTEX AGRO S.A.S.",
+    "vendor_tax_id": "901.044.876-8",
+    "issue_date": "2026-02-16",
+    "currency": "USD",
+    "line_items": [
+      {
+        "description": "Hardware install (per unit)",
+        "qty": 3,
+        "unit_price": 240.0,
+        "total": 720.0
+      },
+      {
+        "description": "Custom report",
+        "qty": 2,
+        "unit_price": 410.0,
+        "total": 820.0
+      },
+      {
+        "description": "Training session (half-day)",
+        "qty": 1,
+        "unit_price": 550.0,
+        "total": 550.0
+      }
+    ],
+    "subtotal": 2090.0,
+    "tax": 397.1,
+    "total": 2487.1,
+    "payment_terms": "NET 45"
+  },
+  "structural_check": {
+    "sum_matches_total": true,
+    "line_items_present": true
+  },
+  "human_verdict": {
+    "principles": {
+      "completeness": {
+        "score": 0.94,
+        "notes": "All required fields populated."
+      },
+      "accuracy": {
+        "score": 0.96,
+        "notes": "Values match source verbatim."
+      },
+      "consistency": {
+        "score": 0.95,
+        "notes": "Internal math consistent."
+      },
+      "format": {
+        "score": 0.94,
+        "notes": "Shapes correct."
+      }
+    },
+    "overall_pass": true,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

@@ -220,9 +220,14 @@ python -m eval.calibrate --json       # machine-readable, for CI gates
 python -m eval.calibrate --min-kappa 0.85
 ```
 
-- Gold set in `backend/eval/gold/*.json` — **5 cases seeded**, target 50.
-  Each case is a document + extraction + per-principle human verdict.
-  Format spec and "what NOT to do" in `backend/eval/gold/README.md`.
+- Gold set in `backend/eval/gold/*.json` — **50 cases (5 hand-labeled + 45 procedurally generated)**.
+  - `case_001..005`: hand-labeled, one case per failure principle plus a clean one.
+  - `case_006..050`: produced by `python -m eval.gold.make_gold` (deterministic seed 20260515).
+    Failures are injected into the extraction with verdicts correct *by construction* —
+    re-runnable, balanced across document types (invoice/contract/PO/receipt) and failure principles.
+  - Marginals on the seeded set: 62-82% pass rate per principle — comfortably inside the
+    30-70% range where Cohen's κ is well-behaved.
+  - Format spec and "what NOT to do" in `backend/eval/gold/README.md`.
 - The calibrator runs the production `CriticAgent` against each gold case,
   with `NullEpisodicMemory` so the result is independent of whatever errors
   happen to be in production memory at the moment.
@@ -255,13 +260,55 @@ catches.
 `backend/eval/spotcheck.py` wires into the orchestrator. On every critic
 call, with probability `SPOTCHECK_RATE` (default 0.01), the
 (document, critic report) is inserted into `critic_disagreements` with
-`status='pending_review'`. A reviewer later sets `status='reviewed'` and
-fills `human_verdict`. The reviewed rows feed the same κ formula as the
-static gold calibrator — production-side calibration.
+`status='pending_review'`.
 
 ```env
 SPOTCHECK_RATE=0.01    # set to 0 to disable in dev
 ```
+
+### Review endpoints (admin)
+
+The reviewer interacts with the queue through `/api/eval/*`:
+
+| Method | Path | Purpose |
+|---|---|---|
+| `GET`  | `/api/eval/disagreements?status=pending_review&limit=20` | List rows in the queue |
+| `GET`  | `/api/eval/disagreements/{id}`                            | Inspect a single row (full critic report) |
+| `POST` | `/api/eval/disagreements/{id}/review`                      | Submit human verdict; sets `status` to `reviewed` or `dismissed` |
+| `GET`  | `/api/eval/calibration/prod`                              | Cohen's κ across every reviewed row — production-side calibration |
+
+POST body for `/review`:
+
+```json
+{
+  "human_verdict": {
+    "principles": {
+      "completeness": {"score": 0.95, "notes": "all fields ok"},
+      "accuracy":     {"score": 0.55, "notes": "tax_id wrong"},
+      "consistency":  {"score": 0.90, "notes": "math consistent"},
+      "format":       {"score": 0.93, "notes": "ISO date"}
+    },
+    "overall_pass": false
+  },
+  "reviewer": "JDS",
+  "status": "reviewed"
+}
+```
+
+Production calibration complements the static gold calibrator: the gold set
+anchors the prompt against an unchanging reference, the prod set drifts with
+the real query distribution. Both feeding the same κ formula keeps the
+methodology consistent.
+
+### Unit tests for the metric
+
+```bash
+python -m unittest tests.test_metrics -v
+```
+
+Covers perfect agreement, complete disagreement (κ = -1), chance agreement
+(κ = 0), the known-value case (80% agreement / 50-50 marginals → κ = 0.6),
+bounds, and degenerate inputs.
 
 Without this loop, "self-healing" is a marketing word.
 

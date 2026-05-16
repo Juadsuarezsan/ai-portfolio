@@ -1,0 +1,39 @@
+{
+  "id": "case_015",
+  "document_type": "receipt",
+  "content": "HARBORLIGHT MEDIA — Receipt R-966615\nDate: 2026-02-07\nAmount: $249.55 USD\nPayment: card_visa_4112\n",
+  "extraction": {
+    "receipt_number": "R-966615",
+    "vendor": "HARBORLIGHT MEDIA",
+    "issue_date": "2026-02-07",
+    "total": 249.55,
+    "currency": "USD",
+    "payment_method": "card_visa_4112"
+  },
+  "structural_check": {
+    "required_fields_present": true
+  },
+  "human_verdict": {
+    "principles": {
+      "completeness": {
+        "score": 0.94,
+        "notes": "All required fields populated."
+      },
+      "accuracy": {
+        "score": 0.95,
+        "notes": "Values match source verbatim."
+      },
+      "consistency": {
+        "score": 0.94,
+        "notes": "Internal math consistent."
+      },
+      "format": {
+        "score": 0.94,
+        "notes": "Shapes correct."
+      }
+    },
+    "overall_pass": true,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "id": "case_033",
+  "document_type": "contract",
+  "content": "MASTER SERVICES AGREEMENT\nContract: CTR-20268-217\nEffective: 2026-01-01\nProvider: BLACKWOOD STAFFING\nClient:   Lakeview Hospitality Group\nTerm:     12 months\nTotal contract value: $17,000.00 USD\nAuto-renewal: yes, unless 60-day notice\n",
+  "extraction": {
+    "contract_number": "CTR-20268-217",
+    "parties": {
+      "provider": "BLACKWOOD STAFFING",
+      "client": "Lakeview Hospitality Group"
+    },
+    "effective_date": "2026-01-01",
+    "term_months": 12,
+    "total_value": 17000.0,
+    "currency": "USD"
+  },
+  "structural_check": {
+    "required_fields_present": true
+  },
+  "human_verdict": {
+    "principles": {
+      "completeness": {
+        "score": 0.58,
+        "notes": "auto_renewal flag missing. Source explicitly states yes — legal risk if downstream assumes default."
+      },
+      "accuracy": {
+        "score": 0.94,
+        "notes": "Values match source verbatim."
+      },
+      "consistency": {
+        "score": 0.92,
+        "notes": "Internal math consistent."
+      },
+      "format": {
+        "score": 0.93,
+        "notes": "Shapes correct."
+      }
+    },
+    "overall_pass": false,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

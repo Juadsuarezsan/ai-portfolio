@@ -1,0 +1,39 @@
+{
+  "id": "case_045",
+  "document_type": "receipt",
+  "content": "HARBORLIGHT MEDIA — Receipt R-900534\nDate: 2026-04-18\nAmount: $402.94 USD\nPayment: card_mc_7770\n",
+  "extraction": {
+    "receipt_number": "R-900534",
+    "vendor": "HARBORLIGHT MEDIA",
+    "issue_date": "2026-04-18",
+    "total": 402.94,
+    "currency": "EUR",
+    "payment_method": "card_mc_7770"
+  },
+  "structural_check": {
+    "required_fields_present": true
+  },
+  "human_verdict": {
+    "principles": {
+      "completeness": {
+        "score": 0.94,
+        "notes": "All required fields populated."
+      },
+      "accuracy": {
+        "score": 0.55,
+        "notes": "Currency extracted as EUR but source says USD. FX mis-conversion."
+      },
+      "consistency": {
+        "score": 0.4,
+        "notes": "Currency extracted as EUR but source says USD. FX mis-conversion."
+      },
+      "format": {
+        "score": 0.93,
+        "notes": "Shapes correct."
+      }
+    },
+    "overall_pass": false,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "id": "case_027",
+  "document_type": "invoice",
+  "content": "GRANITEPOINT LEGAL\nNIT: 900.665.331-1\nInvoice: GRA-2026-4752\nDate: 2026-05-28\n\nBill To: Lakeview Hospitality Group\n\nItem                                       Qty   Unit Price       Total\n  Equipment lease (monthly)                   3      $380.00   $1,140.00\n  Custom report                               2      $410.00     $820.00\n  Quarterly consulting retainer               1    $4,500.00   $4,500.00\n\nSubtotal:                                              $6,460.00\nVAT (19%):                                             $1,227.40\nTotal:                                                 $7,687.40\n\nCurrency: USD\nPayment terms: Due on receipt",
+  "extraction": {
+    "invoice_number": "GRA-2026-4752",
+    "vendor": "GRANITEPOINT LEGAL",
+    "vendor_tax_id": "900.665.331-1",
+    "issue_date": "2026-05-28",
+    "currency": "USD",
+    "line_items": [
+      {
+        "description": "Equipment lease (monthly)",
+        "qty": 3,
+        "unit_price": 380.0,
+        "total": 1140.0
+      },
+      {
+        "description": "Custom report",
+        "qty": 2,
+        "unit_price": 410.0,
+        "total": 820.0
+      },
+      {
+        "description": "Quarterly consulting retainer",
+        "qty": 1,
+        "unit_price": 4500.0,
+        "total": 4500.0
+      }
+    ],
+    "subtotal": 6460.0,
+    "tax": 1227.4,
+    "total": 7787.4,
+    "payment_terms": "Due on receipt"
+  },
+  "structural_check": {
+    "sum_matches_total": false,
+    "line_items_present": true
+  },
+  "human_verdict": {
+    "principles": {
+      "completeness": {
+        "score": 0.94,
+        "notes": "All required fields populated."
+      },
+      "accuracy": {
+        "score": 0.72,
+        "notes": "Total extracted as $7787.40; subtotal + tax = $7687.40. Internal contradiction the critic must catch."
+      },
+      "consistency": {
+        "score": 0.35,
+        "notes": "Total extracted as $7787.40; subtotal + tax = $7687.40. Internal contradiction the critic must catch."
+      },
+      "format": {
+        "score": 0.94,
+        "notes": "Shapes correct."
+      }
+    },
+    "overall_pass": false,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

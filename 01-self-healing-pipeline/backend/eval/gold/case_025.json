@@ -1,0 +1,63 @@
+{
+  "id": "case_025",
+  "document_type": "invoice",
+  "content": "PROCYON RESEARCH\nNIT: 800.701.992-4\nInvoice: PRO-2026-1409\nDate: 2026-03-15\n\nBill To: Halcyon Foods Inc.\n\nItem                                       Qty   Unit Price       Total\n  Logistics planning workshop                 4    $1,800.00   $7,200.00\n  On-site audit (per day)                     2    $1,100.00   $2,200.00\n  Training session (half-day)                 5      $550.00   $2,750.00\n\nSubtotal:                                             $12,150.00\nVAT (19%):                                             $2,308.50\nTotal:                                                $14,458.50\n\nCurrency: USD\nPayment terms: NET 30",
+  "extraction": {
+    "invoice_number": "PRO-2026-1409",
+    "vendor": "PROCYON RESEARCH",
+    "vendor_tax_id": "800.701.992-9",
+    "issue_date": "2026-03-15",
+    "currency": "USD",
+    "line_items": [
+      {
+        "description": "Logistics planning workshop",
+        "qty": 4,
+        "unit_price": 1800.0,
+        "total": 7200.0
+      },
+      {
+        "description": "On-site audit (per day)",
+        "qty": 2,
+        "unit_price": 1100.0,
+        "total": 2200.0
+      },
+      {
+        "description": "Training session (half-day)",
+        "qty": 5,
+        "unit_price": 550.0,
+        "total": 2750.0
+      }
+    ],
+    "subtotal": 12150.0,
+    "tax": 2308.5,
+    "total": 14458.5,
+    "payment_terms": "NET 30"
+  },
+  "structural_check": {
+    "sum_matches_total": true,
+    "line_items_present": true
+  },
+  "human_verdict": {
+    "principles": {
+      "completeness": {
+        "score": 0.95,
+        "notes": "All required fields populated."
+      },
+      "accuracy": {
+        "score": 0.55,
+        "notes": "vendor_tax_id extracted ending in -9, source ends -4. Single-digit error, high blast radius (used for AP matching)."
+      },
+      "consistency": {
+        "score": 0.92,
+        "notes": "Internal math consistent."
+      },
+      "format": {
+        "score": 0.93,
+        "notes": "Shapes correct."
+      }
+    },
+    "overall_pass": false,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

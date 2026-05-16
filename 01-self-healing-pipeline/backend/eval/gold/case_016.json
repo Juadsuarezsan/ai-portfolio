@@ -1,0 +1,69 @@
+{
+  "id": "case_016",
+  "document_type": "invoice",
+  "content": "HARBORLIGHT MEDIA\nNIT: 800.927.114-0\nInvoice: HAR-2026-2036\nDate: 2026-03-11\n\nBill To: Greenline Hospitality Group\n\nItem                                       Qty   Unit Price       Total\n  Quarterly consulting retainer               1    $4,500.00   $4,500.00\n  Hardware install (per unit)                 1      $240.00     $240.00\n  Annual support package                      5    $2,800.00  $14,000.00\n  Software license seat                       1       $95.00      $95.00\n\nSubtotal:                                             $18,835.00\nVAT (19%):                                             $3,578.65\nTotal:                                                $22,413.65\n\nCurrency: USD\nPayment terms: NET 45",
+  "extraction": {
+    "invoice_number": "HAR-2026-2036",
+    "vendor": "HARBORLIGHT MEDIA",
+    "vendor_tax_id": "800.927.114-0",
+    "issue_date": "2026-03-11",
+    "currency": "USD",
+    "line_items": [
+      {
+        "description": "Quarterly consulting retainer",
+        "qty": 1,
+        "unit_price": 4500.0,
+        "total": 4500.0
+      },
+      {
+        "description": "Hardware install (per unit)",
+        "qty": 1,
+        "unit_price": 240.0,
+        "total": 240.0
+      },
+      {
+        "description": "Annual support package",
+        "qty": 5,
+        "unit_price": 2800.0,
+        "total": 14000.0
+      },
+      {
+        "description": "Software license seat",
+        "qty": 1,
+        "unit_price": 95.0,
+        "total": 95.0
+      }
+    ],
+    "subtotal": 18835.0,
+    "tax": 3578.65,
+    "total": 22413.65,
+    "payment_terms": "NET 45"
+  },
+  "structural_check": {
+    "sum_matches_total": true,
+    "line_items_present": true
+  },
+  "human_verdict": {
+    "principles": {
+      "completeness": {
+        "score": 0.94,
+        "notes": "All required fields populated."
+      },
+      "accuracy": {
+        "score": 0.96,
+        "notes": "Values match source verbatim."
+      },
+      "consistency": {
+        "score": 0.95,
+        "notes": "Internal math consistent."
+      },
+      "format": {
+        "score": 0.94,
+        "notes": "Shapes correct."
+      }
+    },
+    "overall_pass": true,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

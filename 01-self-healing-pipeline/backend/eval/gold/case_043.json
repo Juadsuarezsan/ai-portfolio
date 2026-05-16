@@ -1,0 +1,63 @@
+{
+  "id": "case_043",
+  "document_type": "invoice",
+  "content": "MARLOW CHEMICAL\nNIT: 900.557.114-5\nInvoice: MAR-2026-5899\nDate: 2026-01-28\n\nBill To: Riverwood Capital\n\nItem                                       Qty   Unit Price       Total\n  Hardware install (per unit)                 3      $240.00     $720.00\n  Training session (half-day)                 4      $550.00   $2,200.00\n  Compliance audit                            4    $5,200.00  $20,800.00\n\nSubtotal:                                             $23,720.00\nVAT (19%):                                             $4,506.80\nTotal:                                                $28,226.80\n\nCurrency: USD\nPayment terms: Due on receipt",
+  "extraction": {
+    "invoice_number": "MAR-2026-5899",
+    "vendor": "MARLOW CHEMICAL",
+    "vendor_tax_id": "900.557.114-5",
+    "issue_date": "January 28, 2026",
+    "currency": "USD",
+    "line_items": [
+      {
+        "description": "Hardware install (per unit)",
+        "qty": 3,
+        "unit_price": 240.0,
+        "total": 720.0
+      },
+      {
+        "description": "Training session (half-day)",
+        "qty": 4,
+        "unit_price": 550.0,
+        "total": 2200.0
+      },
+      {
+        "description": "Compliance audit",
+        "qty": 4,
+        "unit_price": 5200.0,
+        "total": 20800.0
+      }
+    ],
+    "subtotal": 23720.0,
+    "tax": 4506.8,
+    "total": 28226.8,
+    "payment_terms": "Due on receipt"
+  },
+  "structural_check": {
+    "sum_matches_total": true,
+    "line_items_present": true
+  },
+  "human_verdict": {
+    "principles": {
+      "completeness": {
+        "score": 0.94,
+        "notes": "All required fields populated."
+      },
+      "accuracy": {
+        "score": 0.94,
+        "notes": "Values match source verbatim."
+      },
+      "consistency": {
+        "score": 0.93,
+        "notes": "Internal math consistent."
+      },
+      "format": {
+        "score": 0.55,
+        "notes": "issue_date extracted as 'January 28, 2026' — not ISO-8601. Downstream date math will fail."
+      }
+    },
+    "overall_pass": false,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

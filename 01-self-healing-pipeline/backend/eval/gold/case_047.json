@@ -1,0 +1,38 @@
+{
+  "id": "case_047",
+  "document_type": "receipt",
+  "content": "KESTREL CYBER LTD. — Receipt R-990923\nDate: 2026-01-14\nAmount: $201.54 USD\nPayment: card_visa_4112\n",
+  "extraction": {
+    "receipt_number": "R-990923",
+    "vendor": "KESTREL CYBER LTD.",
+    "issue_date": "2026-01-14",
+    "total": 201.54,
+    "currency": "USD"
+  },
+  "structural_check": {
+    "required_fields_present": true
+  },
+  "human_verdict": {
+    "principles": {
+      "completeness": {
+        "score": 0.6,
+        "notes": "payment_method missing. Reconciliation will fail."
+      },
+      "accuracy": {
+        "score": 0.94,
+        "notes": "Values match source verbatim."
+      },
+      "consistency": {
+        "score": 0.93,
+        "notes": "Internal math consistent."
+      },
+      "format": {
+        "score": 0.93,
+        "notes": "Shapes correct."
+      }
+    },
+    "overall_pass": false,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

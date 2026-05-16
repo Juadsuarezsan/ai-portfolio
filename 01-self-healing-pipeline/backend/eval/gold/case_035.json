@@ -1,0 +1,57 @@
+{
+  "id": "case_035",
+  "document_type": "invoice",
+  "content": "VERTEX AGRO S.A.S.\nNIT: 901.044.876-8\nInvoice: VER-2026-7843\nDate: 2026-02-09\n\nBill To: Lakeview Hospitality Group\n\nItem                                       Qty   Unit Price       Total\n  Annual support package                      4    $2,800.00  $11,200.00\n  Compliance audit                            3    $5,200.00  $15,600.00\n\nSubtotal:                                             $26,800.00\nVAT (19%):                                             $5,092.00\nTotal:                                                $31,892.00\n\nCurrency: USD\nPayment terms: NET 45",
+  "extraction": {
+    "invoice_number": "VER-2026-7843",
+    "vendor": "VERTEX AGRO S.A.S.",
+    "vendor_tax_id": "901.044.876-3",
+    "issue_date": "2026-02-09",
+    "currency": "USD",
+    "line_items": [
+      {
+        "description": "Annual support package",
+        "qty": 4,
+        "unit_price": 2800.0,
+        "total": 11200.0
+      },
+      {
+        "description": "Compliance audit",
+        "qty": 3,
+        "unit_price": 5200.0,
+        "total": 15600.0
+      }
+    ],
+    "subtotal": 26800.0,
+    "tax": 5092.0,
+    "total": 31892.0,
+    "payment_terms": "NET 45"
+  },
+  "structural_check": {
+    "sum_matches_total": true,
+    "line_items_present": true
+  },
+  "human_verdict": {
+    "principles": {
+      "completeness": {
+        "score": 0.95,
+        "notes": "All required fields populated."
+      },
+      "accuracy": {
+        "score": 0.55,
+        "notes": "vendor_tax_id extracted ending in -3, source ends -8. Single-digit error, high blast radius (used for AP matching)."
+      },
+      "consistency": {
+        "score": 0.92,
+        "notes": "Internal math consistent."
+      },
+      "format": {
+        "score": 0.93,
+        "notes": "Shapes correct."
+      }
+    },
+    "overall_pass": false,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

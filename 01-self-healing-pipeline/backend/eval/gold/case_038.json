@@ -1,0 +1,69 @@
+{
+  "id": "case_038",
+  "document_type": "invoice",
+  "content": "HARBORLIGHT MEDIA\nNIT: 800.927.114-0\nInvoice: HAR-2026-2871\nDate: 2026-03-20\n\nBill To: Lakeview Hospitality Group\n\nItem                                       Qty   Unit Price       Total\n  On-site audit (per day)                     2    $1,100.00   $2,200.00\n  Compliance audit                            2    $5,200.00  $10,400.00\n  Engineering design review                   1    $1,450.00   $1,450.00\n  Training session (half-day)                 4      $550.00   $2,200.00\n\nSubtotal:                                             $16,250.00\nVAT (19%):                                             $3,087.50\nTotal:                                                $19,337.50\n\nCurrency: USD\nPayment terms: NET 30",
+  "extraction": {
+    "invoice_number": "HAR-2026-2871",
+    "vendor": "HARBORLIGHT MEDIA",
+    "vendor_tax_id": "800.927.114-0",
+    "issue_date": "2026-03-20",
+    "currency": "USD",
+    "line_items": [
+      {
+        "description": "On-site audit (per day)",
+        "qty": 2,
+        "unit_price": 1100.0,
+        "total": 2200.0
+      },
+      {
+        "description": "Compliance audit",
+        "qty": 2,
+        "unit_price": 5200.0,
+        "total": 10400.0
+      },
+      {
+        "description": "Engineering design review",
+        "qty": 1,
+        "unit_price": 1450.0,
+        "total": 1450.0
+      },
+      {
+        "description": "Training session (half-day)",
+        "qty": 4,
+        "unit_price": 550.0,
+        "total": 2200.0
+      }
+    ],
+    "subtotal": 16250.0,
+    "tax": 3087.5,
+    "total": 19437.5,
+    "payment_terms": "NET 30"
+  },
+  "structural_check": {
+    "sum_matches_total": false,
+    "line_items_present": true
+  },
+  "human_verdict": {
+    "principles": {
+      "completeness": {
+        "score": 0.94,
+        "notes": "All required fields populated."
+      },
+      "accuracy": {
+        "score": 0.72,
+        "notes": "Total extracted as $19437.50; subtotal + tax = $19337.50. Internal contradiction the critic must catch."
+      },
+      "consistency": {
+        "score": 0.35,
+        "notes": "Total extracted as $19437.50; subtotal + tax = $19337.50. Internal contradiction the critic must catch."
+      },
+      "format": {
+        "score": 0.94,
+        "notes": "Shapes correct."
+      }
+    },
+    "overall_pass": false,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

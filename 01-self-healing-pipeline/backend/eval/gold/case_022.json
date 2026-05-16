@@ -1,0 +1,57 @@
+{
+  "id": "case_022",
+  "document_type": "invoice",
+  "content": "STERLING FACILITIES\nNIT: 901.118.665-7\nInvoice: STE-2026-6365\nDate: 2026-01-21\n\nBill To: Meridian Health Network\n\nItem                                       Qty   Unit Price       Total\n  Monthly retainer                            6    $3,200.00  $19,200.00\n  Logistics planning workshop                 5    $1,800.00   $9,000.00\n\nSubtotal:                                             $28,200.00\nVAT (19%):                                             $5,358.00\nTotal:                                                $33,558.00\n\nCurrency: USD\nPayment terms: 2/10 NET 30",
+  "extraction": {
+    "invoice_number": "STE-2026-6365",
+    "vendor": "STERLING FACILITIES",
+    "vendor_tax_id": "901.118.665-7",
+    "issue_date": "2026-01-21",
+    "currency": "USD",
+    "line_items": [
+      {
+        "description": "Monthly retainer",
+        "qty": 6,
+        "unit_price": 3200.0,
+        "total": 19200.0
+      },
+      {
+        "description": "Logistics planning workshop",
+        "qty": 5,
+        "unit_price": 1800.0,
+        "total": 9000.0
+      }
+    ],
+    "subtotal": 28200.0,
+    "tax": 5358.0,
+    "total": 33558.0,
+    "payment_terms": "2/10 NET 30"
+  },
+  "structural_check": {
+    "sum_matches_total": true,
+    "line_items_present": true
+  },
+  "human_verdict": {
+    "principles": {
+      "completeness": {
+        "score": 0.94,
+        "notes": "All required fields populated."
+      },
+      "accuracy": {
+        "score": 0.96,
+        "notes": "Values match source verbatim."
+      },
+      "consistency": {
+        "score": 0.95,
+        "notes": "Internal math consistent."
+      },
+      "format": {
+        "score": 0.94,
+        "notes": "Shapes correct."
+      }
+    },
+    "overall_pass": true,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

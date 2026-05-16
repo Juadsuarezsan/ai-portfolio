@@ -1,0 +1,63 @@
+{
+  "id": "case_030",
+  "document_type": "invoice",
+  "content": "BLACKWOOD STAFFING\nNIT: 900.880.557-2\nInvoice: BLA-2026-5456\nDate: 2026-01-26\n\nBill To: Greenline Hospitality Group\n\nItem                                       Qty   Unit Price       Total\n  Quarterly consulting retainer               5    $4,500.00  $22,500.00\n  Monthly retainer                            4    $3,200.00  $12,800.00\n  Equipment lease (monthly)                   1      $380.00     $380.00\n\nSubtotal:                                             $35,680.00\nVAT (19%):                                             $6,779.20\nTotal:                                                $42,459.20\n\nCurrency: USD\nPayment terms: Due on receipt",
+  "extraction": {
+    "invoice_number": "BLA-2026-5456",
+    "vendor": "BLACKWOOD STAFFING",
+    "vendor_tax_id": "900.880.557-6",
+    "issue_date": "2026-01-26",
+    "currency": "USD",
+    "line_items": [
+      {
+        "description": "Quarterly consulting retainer",
+        "qty": 5,
+        "unit_price": 4500.0,
+        "total": 22500.0
+      },
+      {
+        "description": "Monthly retainer",
+        "qty": 4,
+        "unit_price": 3200.0,
+        "total": 12800.0
+      },
+      {
+        "description": "Equipment lease (monthly)",
+        "qty": 1,
+        "unit_price": 380.0,
+        "total": 380.0
+      }
+    ],
+    "subtotal": 35680.0,
+    "tax": 6779.2,
+    "total": 42459.2,
+    "payment_terms": "Due on receipt"
+  },
+  "structural_check": {
+    "sum_matches_total": true,
+    "line_items_present": true
+  },
+  "human_verdict": {
+    "principles": {
+      "completeness": {
+        "score": 0.95,
+        "notes": "All required fields populated."
+      },
+      "accuracy": {
+        "score": 0.55,
+        "notes": "vendor_tax_id extracted ending in -6, source ends -2. Single-digit error, high blast radius (used for AP matching)."
+      },
+      "consistency": {
+        "score": 0.92,
+        "notes": "Internal math consistent."
+      },
+      "format": {
+        "score": 0.93,
+        "notes": "Shapes correct."
+      }
+    },
+    "overall_pass": false,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

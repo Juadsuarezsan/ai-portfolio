@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sse_starlette.sse import EventSourceResponse
 
 from agents.orchestrator import build_graph, run_pipeline, stream_pipeline
+from api.eval_router import router as eval_router
 from api.schemas import ProcessRequest, ProcessResponse
 from config import get_settings
 from memory.episodic import EpisodicMemory
@@ -37,6 +38,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(eval_router)
 
 
 @app.get("/health")
