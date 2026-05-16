@@ -206,11 +206,62 @@ Full schema at `http://localhost:8000/docs`.
 
 ## Calibrating the critic
 
-The critic is itself an LLM and can be wrong. To detect drift:
+The critic is itself an LLM and can be wrong. The calibrator is shipped in
+`backend/eval/` and is wired into the orchestrator's critic node.
 
-1. **Gold set of 50 human-labeled cases** in `backend/eval/gold/` — each case has the document, correct extraction, and per-principle verdict.
-2. Before each release, `python -m backend.eval.calibrate` measures critic-vs-human agreement. Threshold: **Cohen's κ ≥ 0.85**. Below that, critic prompt or `pass_threshold` is regressing.
-3. **In production**, 1% of pass verdicts are sampled for human spot-check. Disagreements log to `critic_disagreements` and surface in Langfuse.
+### Static gold-set calibration
+
+```bash
+# from inside backend/
+python -m eval.calibrate              # full run, requires ANTHROPIC_API_KEY
+python -m eval.calibrate --dry-run    # offline stub critic, no API call
+python -m eval.calibrate --verbose    # show per-principle disagreement detail
+python -m eval.calibrate --json       # machine-readable, for CI gates
+python -m eval.calibrate --min-kappa 0.85
+```
+
+- Gold set in `backend/eval/gold/*.json` — **5 cases seeded**, target 50.
+  Each case is a document + extraction + per-principle human verdict.
+  Format spec and "what NOT to do" in `backend/eval/gold/README.md`.
+- The calibrator runs the production `CriticAgent` against each gold case,
+  with `NullEpisodicMemory` so the result is independent of whatever errors
+  happen to be in production memory at the moment.
+- Compares critic vs human on the `overall_pass` verdict *and* on each of the
+  four principles. Reports Cohen's κ for each.
+- **Exit code 1** when overall κ or any principle κ falls below `--min-kappa`
+  (default 0.85) — suitable as a CI gate before release.
+
+What the seed reports (with the deterministic stub critic) gives you out of the box:
+
+```
+Per-principle kappa:
+  completeness   k=+1.000  [ok]
+  accuracy       k=+1.000  [ok]
+  consistency    k=+1.000  [ok]
+  format         k=+1.000  [ok]
+
+Disagreements (1):
+  case_003 [invoice]  critic=PASS (0.85)  human=FAIL
+```
+
+The per-principle agreement is perfect on the seed, but case_003 surfaces the
+exact failure mode the calibrator is designed for: the critic mechanically
+passes because `mean(scores) >= threshold`, while the human says fail because
+a missing currency field is downstream-fatal. That gap is what the loop
+catches.
+
+### Production spot-check
+
+`backend/eval/spotcheck.py` wires into the orchestrator. On every critic
+call, with probability `SPOTCHECK_RATE` (default 0.01), the
+(document, critic report) is inserted into `critic_disagreements` with
+`status='pending_review'`. A reviewer later sets `status='reviewed'` and
+fills `human_verdict`. The reviewed rows feed the same κ formula as the
+static gold calibrator — production-side calibration.
+
+```env
+SPOTCHECK_RATE=0.01    # set to 0 to disable in dev
+```
 
 Without this loop, "self-healing" is a marketing word.
 

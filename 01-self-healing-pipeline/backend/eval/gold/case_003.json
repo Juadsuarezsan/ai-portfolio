@@ -1,0 +1,31 @@
+{
+  "id": "case_003",
+  "document_type": "invoice",
+  "content": "TIDEWATER SUPPLIES INC.\nNIT: 901.882.554-3\nInvoice: TW-44129\nDate: 2026-04-08\n\nBill to: Greenline Hospitality Group\n\n  Cleaning supplies (box of 24) x 5  @ $48.00   $240.00\n  Industrial mop set            x 2  @ $89.50   $179.00\n\nSubtotal ................................ $419.00\nVAT (19%) ............................... $ 79.61\nTotal ................................... $498.61\n\nPayment terms: NET 15\nCurrency: USD",
+  "extraction": {
+    "invoice_number": "TW-44129",
+    "vendor": "TIDEWATER SUPPLIES INC.",
+    "vendor_tax_id": "901.882.554-3",
+    "issue_date": "2026-04-08",
+    "line_items": [
+      {"description": "Cleaning supplies (box of 24)", "qty": 5, "unit_price": 48.0, "total": 240.0},
+      {"description": "Industrial mop set", "qty": 2, "unit_price": 89.5, "total": 179.0}
+    ],
+    "subtotal": 419.0,
+    "tax": 79.61,
+    "total": 498.61,
+    "payment_terms": "NET 15"
+  },
+  "structural_check": {"sum_matches_total": true, "line_items_present": true},
+  "human_verdict": {
+    "principles": {
+      "completeness": {"score": 0.62, "notes": "Missing currency field. Currency is explicit in source (USD) but not extracted — downstream FX conversion will silently default."},
+      "accuracy":     {"score": 0.95, "notes": "Everything that was extracted is correct."},
+      "consistency":  {"score": 0.94, "notes": "Math consistent."},
+      "format":       {"score": 0.93, "notes": "Dates/numbers in the right shapes."}
+    },
+    "overall_pass": false,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

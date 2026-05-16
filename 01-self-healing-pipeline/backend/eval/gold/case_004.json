@@ -1,0 +1,33 @@
+{
+  "id": "case_004",
+  "document_type": "invoice",
+  "content": "FORGECRAFT IRONWORKS\nTax ID: 800.301.998-2\nInvoice: FC-2026-3331\nIssued: 2026-01-22\n\nClient: Driftwood Construction LLC\n\nItem                                  Qty    Price       Line total\nReinforcement bar (12mm, 6m)           80    $14.50      $1,160.00\nWelding labor (hours)                  24    $42.00      $1,008.00\nMisc fasteners (lot)                    1    $   89.00   $   89.00\n\nSubtotal:                                                 $2,257.00\nVAT (19%):                                                $  428.83\nTotal due:                                                $2,685.83\n\nCurrency: USD\nPayment: NET 30",
+  "extraction": {
+    "invoice_number": "FC-2026-3331",
+    "vendor": "FORGECRAFT IRONWORKS",
+    "vendor_tax_id": "800.301.998-2",
+    "issue_date": "2026-01-22",
+    "currency": "USD",
+    "line_items": [
+      {"description": "Reinforcement bar (12mm, 6m)", "qty": 80, "unit_price": 14.5, "total": 1160.0},
+      {"description": "Welding labor (hours)",        "qty": 24, "unit_price": 42.0, "total": 1008.0},
+      {"description": "Misc fasteners (lot)",         "qty": 1,  "unit_price": 89.0, "total": 89.0}
+    ],
+    "subtotal": 2257.0,
+    "tax": 428.83,
+    "total": 2785.83,
+    "payment_terms": "NET 30"
+  },
+  "structural_check": {"sum_matches_total": false, "line_items_present": true},
+  "human_verdict": {
+    "principles": {
+      "completeness": {"score": 0.94, "notes": "All required fields populated."},
+      "accuracy":     {"score": 0.72, "notes": "Total extracted as 2785.83 but source clearly shows 2685.83. Off by $100 — would post wrong payment."},
+      "consistency":  {"score": 0.35, "notes": "Subtotal + tax = 2685.83, but extracted total is 2785.83. Internal contradiction the critic must catch."},
+      "format":       {"score": 0.94, "notes": "Shapes are correct, the values are just wrong."}
+    },
+    "overall_pass": false,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "id": "case_001",
+  "document_type": "invoice",
+  "content": "ACME CONSULTING S.A.S.\nNIT: 900.123.456-1\nInvoice: INV-2026-0042\nDate: 2026-03-14\n\nBill To: Northstar Logistics LLC\n\nItem                          Qty   Unit Price   Total\nStrategy workshop (4h)          1      $1,200.00  $1,200.00\nFollow-up audit                 2      $   450.00  $  900.00\n\nSubtotal:                                           $2,100.00\nVAT (19%):                                          $  399.00\nTotal:                                              $2,499.00\n\nCurrency: USD\nPayment terms: NET 30",
+  "extraction": {
+    "invoice_number": "INV-2026-0042",
+    "vendor": "ACME CONSULTING S.A.S.",
+    "vendor_tax_id": "900.123.456-1",
+    "issue_date": "2026-03-14",
+    "currency": "USD",
+    "line_items": [
+      {"description": "Strategy workshop (4h)", "qty": 1, "unit_price": 1200.0, "total": 1200.0},
+      {"description": "Follow-up audit", "qty": 2, "unit_price": 450.0, "total": 900.0}
+    ],
+    "subtotal": 2100.0,
+    "tax": 399.0,
+    "total": 2499.0,
+    "payment_terms": "NET 30"
+  },
+  "structural_check": {"sum_matches_total": true, "line_items_present": true},
+  "human_verdict": {
+    "principles": {
+      "completeness": {"score": 0.95, "notes": "All required fields populated."},
+      "accuracy":     {"score": 0.96, "notes": "Numbers and identifiers match the source verbatim."},
+      "consistency":  {"score": 0.94, "notes": "Subtotal + tax = total. Line items sum matches subtotal."},
+      "format":       {"score": 0.93, "notes": "ISO-8601 date, numeric values numeric."}
+    },
+    "overall_pass": true,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

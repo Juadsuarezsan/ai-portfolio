@@ -1,0 +1,32 @@
+{
+  "id": "case_005",
+  "document_type": "invoice",
+  "content": "MERIDIAN PRINTWORKS\nNIT: 900.774.601-4\nInvoice: MP-7821\nDate: March 4, 2026\n\nBilled to: Pinecrest Marketing\n\n  Brochure print run (1000)  $   620.00\n  Glossy lamination          $    95.00\n\nSubtotal ............................. $   715.00\nVAT (19%) ............................ $   135.85\nTotal ................................ $   850.85\n\nPayment terms: Due on receipt\nCurrency: USD",
+  "extraction": {
+    "invoice_number": "MP-7821",
+    "vendor": "MERIDIAN PRINTWORKS",
+    "vendor_tax_id": "900.774.601-4",
+    "issue_date": "March 4, 2026",
+    "currency": "USD",
+    "line_items": [
+      {"description": "Brochure print run (1000)", "qty": 1, "unit_price": 620.0, "total": 620.0},
+      {"description": "Glossy lamination",         "qty": 1, "unit_price": 95.0,  "total": 95.0}
+    ],
+    "subtotal": 715.0,
+    "tax": 135.85,
+    "total": 850.85,
+    "payment_terms": "Due on receipt"
+  },
+  "structural_check": {"sum_matches_total": true, "line_items_present": true},
+  "human_verdict": {
+    "principles": {
+      "completeness": {"score": 0.94, "notes": "All required fields populated."},
+      "accuracy":     {"score": 0.94, "notes": "Values match the source."},
+      "consistency":  {"score": 0.93, "notes": "Subtotal + tax = total."},
+      "format":       {"score": 0.55, "notes": "issue_date extracted as 'March 4, 2026' — not ISO-8601. Downstream date math will fail."}
+    },
+    "overall_pass": false,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

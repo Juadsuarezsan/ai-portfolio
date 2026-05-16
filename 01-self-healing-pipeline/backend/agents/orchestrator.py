@@ -10,6 +10,7 @@ from agents.synthesizer import SynthesizerAgent
 from agents.validator import ValidatorAgent
 from api.schemas import CriticReport, PipelineEvent, ProcessResponse
 from config import Settings
+from eval.spotcheck import SpotCheckLogger
 from memory.episodic import EpisodicMemory
 
 
@@ -38,6 +39,7 @@ def build_graph(memory: EpisodicMemory, settings: Settings):
     validator = ValidatorAgent()
     critic = CriticAgent(model=model, memory=memory, pass_threshold=settings.critic_pass_threshold)
     synthesizer = SynthesizerAgent()
+    spot_check = SpotCheckLogger(pool=getattr(memory, "_pool", None))
 
     async def extract_node(state: PipelineState) -> dict[str, Any]:
         extracted = await extractor.run(
@@ -60,6 +62,11 @@ def build_graph(memory: EpisodicMemory, settings: Settings):
             source=state["content"],
             extracted=state["extracted"],
             structural=state["structural"],
+        )
+        await spot_check.maybe_log(
+            document_type=state["document_type"],
+            document_hash=_doc_hash(state["content"]),
+            report=report,
         )
         return {"critic": report}
 

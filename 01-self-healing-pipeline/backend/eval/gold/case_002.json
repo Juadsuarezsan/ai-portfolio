@@ -1,0 +1,32 @@
+{
+  "id": "case_002",
+  "document_type": "invoice",
+  "content": "BLUEHARBOR ANALYTICS LTD.\nVAT/Tax ID: 800.557.211-7\nInvoice number: BH-2026-Q1-088\nIssued: 2026-02-01\n\nClient: Riverwood Capital\n\n  1x  Quarterly retainer .......... $7,500.00\n  3x  Custom report .............. $   600.00 each ($1,800.00)\n\nSubtotal ................................ $9,300.00\nVAT (19%) ............................... $1,767.00\nTotal due ............................... $11,067.00\n\nCurrency: USD\nDue: 2026-03-01",
+  "extraction": {
+    "invoice_number": "BH-2026-Q1-088",
+    "vendor": "BLUEHARBOR ANALYTICS LTD.",
+    "vendor_tax_id": "800.557.211-9",
+    "issue_date": "2026-02-01",
+    "currency": "USD",
+    "line_items": [
+      {"description": "Quarterly retainer", "qty": 1, "unit_price": 7500.0, "total": 7500.0},
+      {"description": "Custom report", "qty": 3, "unit_price": 600.0, "total": 1800.0}
+    ],
+    "subtotal": 9300.0,
+    "tax": 1767.0,
+    "total": 11067.0,
+    "payment_terms": "Due 2026-03-01"
+  },
+  "structural_check": {"sum_matches_total": true, "line_items_present": true},
+  "human_verdict": {
+    "principles": {
+      "completeness": {"score": 0.95, "notes": "All required fields populated."},
+      "accuracy":     {"score": 0.55, "notes": "vendor_tax_id extracted as 800.557.211-9 but source says ...-7. Single-digit error, high blast radius (used for matching in AP)."},
+      "consistency":  {"score": 0.92, "notes": "Math is self-consistent (7500 + 1800 = 9300; 9300 + 1767 = 11067)."},
+      "format":       {"score": 0.93, "notes": "Date ISO-8601, currency code valid."}
+    },
+    "overall_pass": false,
+    "reviewer": "JDS",
+    "reviewed_at": "2026-05-15"
+  }
+}

@@ -32,3 +32,24 @@ CREATE TABLE IF NOT EXISTS pipeline_runs (
 
 CREATE INDEX IF NOT EXISTS pipeline_runs_doctype_idx
     ON pipeline_runs (document_type, created_at DESC);
+
+-- Production spot-check queue. Populated by SpotCheckLogger when a random
+-- 1% (SPOTCHECK_RATE) of critic verdicts is flagged for human review.
+-- Reviewers later set status='reviewed' and fill human_verdict.
+-- Calibration uses the reviewed rows to compute production-side Cohen's kappa,
+-- complementing the static gold-set calibration.
+CREATE TABLE IF NOT EXISTS critic_disagreements (
+    id              BIGSERIAL PRIMARY KEY,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    reviewed_at     TIMESTAMPTZ,
+    document_type   TEXT NOT NULL,
+    document_hash   TEXT NOT NULL,
+    critic_report   JSONB NOT NULL,
+    human_verdict   JSONB,
+    status          TEXT NOT NULL DEFAULT 'pending_review'
+                     CHECK (status IN ('pending_review','reviewed','dismissed')),
+    reviewer        TEXT
+);
+
+CREATE INDEX IF NOT EXISTS critic_disagreements_status_idx
+    ON critic_disagreements (status, created_at DESC);
