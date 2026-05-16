@@ -302,11 +302,11 @@ h2 {
   margin-right: 5px;
 }
 .demo-body {
-  height: 720px;
+  height: clamp(480px, 70vh, 720px);
   position: relative;
   background: #06070d;
 }
-@media (max-width: 900px) { .demo-body { height: 560px; } }
+@media (max-width: 900px) { .demo-body { height: clamp(420px, 65vh, 560px); } }
 
 .arch-figure {
   background: var(--bg-card);
