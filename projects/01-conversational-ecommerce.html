@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#06070d" />
+<title>P01 — Conversational E-commerce Assistant · Juan David Suárez Sánchez</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='12' fill='%237c5cff'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="_styles.css" />
+
+<style>
+  /* P01-specific extras (metrics table) */
+  .metrics-table-wrap {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  .metrics-table-head {
+    padding: 20px 26px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-elev);
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 12px;
+  }
+  .metrics-table-head h4 { font-size: 15.5px; font-weight: 600; letter-spacing: -0.01em; }
+  .metrics-table-head .legend {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--text-faint);
+    display: flex; gap: 14px; align-items: center;
+  }
+  .metrics-table-head .legend .swatch {
+    display: inline-block; width: 10px; height: 10px;
+    background: var(--accent); border-radius: 2px; margin-right: 5px;
+    vertical-align: -1px;
+  }
+  .metrics-table-head .legend .target {
+    color: var(--warning);
+    border: 1px solid rgba(251,191,36,0.3);
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 9.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  table.metrics { width: 100%; border-collapse: collapse; }
+  table.metrics th, table.metrics td {
+    padding: 13px 26px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  table.metrics th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px; letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    font-weight: 600;
+  }
+  table.metrics tr:last-child td { border-bottom: 0; }
+  table.metrics td.system { color: var(--text); font-weight: 500; width: 220px; }
+  table.metrics td.val {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-dim); font-variant-numeric: tabular-nums;
+  }
+  table.metrics tr.winner td {
+    background: rgba(124,92,255,0.06);
+    color: var(--text); font-weight: 600;
+  }
+  table.metrics tr.winner td.val { color: var(--text); }
+  table.metrics tr.winner td.system::before { content: '★ '; color: var(--accent); }
+  .metrics-bar {
+    display: inline-block;
+    width: 60px; height: 5px;
+    margin-left: 10px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    overflow: hidden;
+    vertical-align: 1px;
+  }
+  .metrics-bar > div {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  }
+  .decisions-row {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 14px;
+    padding: 10px 0;
+    border-bottom: 1px dashed rgba(255,255,255,0.06);
+    font-size: 13px;
+  }
+  .decisions-row:last-child { border-bottom: 0; }
+  .decisions-row .choice {
+    color: var(--text); font-weight: 500;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+  .decisions-row .choice .vs { color: var(--text-faint); margin: 0 4px; }
+  .decisions-row .choice .yes { color: var(--accent-2); }
+  .decisions-row .choice .no { color: var(--text-faint); text-decoration: line-through; }
+  .decisions-row .why { color: var(--text-dim); line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<div class="bg-stage"></div>
+<div class="bg-grid"></div>
+
+<nav>
+  <div class="nav-inner">
+    <div class="crumbs">
+      <a href="../index.html">← Portfolio</a>
+      <span class="sep">/</span>
+      <span class="here">P01 · Conversational E-commerce</span>
+    </div>
+    <div class="nav-status">
+      <span class="pill pill-scaffold">Scaffold v0.1.0</span>
+      <a class="nav-cta" href="https://github.com/Juadsuarezsan/conversational-ecommerce-assistant" target="_blank" rel="noopener">View on GitHub →</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero container" data-screen-label="01 Hero">
+  <div class="hero-eyebrow">P01 · Hybrid RAG · LangGraph · Multi-turn</div>
+  <h1>Customers ask in plain English. The agent <span class="em">answers with citations, manages the cart, and knows when to call a human.</span></h1>
+  <p class="lede">
+    A production-grade <strong>conversational commerce agent</strong> over the Instacart catalog
+    (49,688 products, 134 aisles, 21 departments). Hybrid retrieval — BM25 + dense (voyage-3) + RRF
+    fusion + Cohere rerank v3 — feeds a LangGraph supervisor that routes between product search,
+    cart ops, refund handling, and human escalation. Three vector databases benchmarked head-to-head
+    with RAGAS.
+  </p>
+
+  <div class="meta-strip">
+    <div>
+      <div class="meta-label">Status</div>
+      <div class="meta-value">Scaffold · 43 files in src/<br/><span class="alt">v0.1.0 · roadmap below</span></div>
+    </div>
+    <div>
+      <div class="meta-label">Role</div>
+      <div class="meta-value">Solo AI engineer<br/><span class="alt">design + impl + deploy</span></div>
+    </div>
+    <div>
+      <div class="meta-label">Dataset</div>
+      <div class="meta-value">Instacart · 3.4M orders<br/><span class="alt">CC BY-NC-SA · Kaggle</span></div>
+    </div>
+    <div>
+      <div class="meta-label">Target metric</div>
+      <div class="meta-value">P@5 ≥ 0.80 · Faithfulness ≥ 0.90<br/><span class="alt">vs. ≈0.61 BM25 baseline</span></div>
+    </div>
+  </div>
+</header>
+
+<section data-screen-label="02 Overview">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">01 · The problem</div>
+      <h2>Generic vector search loses 30% of intent before it leaves the retriever.</h2>
+      <p class="section-sub">
+        The defaults — single-pass dense retrieval, no reranking, no structured filters —
+        ship sub-70% precision on real catalog queries. Below is what production-grade looks like.
+      </p>
+    </div>
+
+    <div class="overview">
+      <div class="ov-card problem reveal">
+        <div class="ov-card-tag">The naive baseline fails because</div>
+        <h4>Catalog queries are 4 problems wearing one trench coat.</h4>
+        <p><strong>"Lactose-free breakfast for kids under $10"</strong> is simultaneously a semantic match
+        (breakfast, lactose-free), an attribute filter (price), a contextual constraint (children),
+        and a ranking task (best fit first). A single embedding similarity scores all four at once and gets none right.</p>
+        <p>Add multi-turn context — "now add the first two to my cart" — and the failure mode multiplies.
+        A real assistant must classify intent, route to the right tool, preserve state, and know when to escalate.</p>
+      </div>
+      <div class="ov-card solution reveal">
+        <div class="ov-card-tag">What this project does instead</div>
+        <h4>A LangGraph supervisor over five specialized handlers.</h4>
+        <p><strong>Intent Router</strong> classifies between product_search, cart_op, order_status, refund,
+        and escalate. Each route runs only the tools it needs.</p>
+        <p><strong>Hybrid Retriever</strong> runs BM25 + dense vectors in parallel, fuses with
+        Reciprocal Rank Fusion (k=60), and reranks the top-20 with Cohere v3 to a final top-5.</p>
+        <p><strong>Cart Manager</strong> is stateful Pydantic models on Postgres. <strong>Refund Handler</strong>
+        applies an explicit policy: value &gt; $100 or sensitive category triggers human supervisor.
+        <strong>Synthesizer</strong> generates responses with product-id citations to every claim.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="03 Architecture">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">02 · System diagram</div>
+      <h2>One supervisor, five handlers, full audit log.</h2>
+      <p class="section-sub">Every node logs its input, output, and tokens to LangSmith. Postgres is the source of truth for state; Redis caches sessions; Qdrant stores embeddings.</p>
+    </div>
+
+    <div class="arch-figure reveal">
+      <h5>// LangGraph state machine — supervisor pattern</h5>
+      <svg viewBox="0 0 1180 460" xmlns="http://www.w3.org/2000/svg">
+        <g transform="translate(490, 20)">
+          <rect width="200" height="44" rx="8" fill="rgba(124,92,255,0.08)" stroke="#7c5cff" stroke-width="1.2"/>
+          <text x="100" y="20" font-family="Inter" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">User Message</text>
+          <text x="100" y="35" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">chat · voice · email</text>
+        </g>
+        <path d="M 590 64 L 590 100" stroke="#7c5cff" stroke-width="1.5" fill="none"/>
+        <g transform="translate(450, 100)">
+          <rect width="280" height="60" rx="8" fill="rgba(124,92,255,0.10)" stroke="#7c5cff" stroke-width="1.5"/>
+          <text x="140" y="24" font-family="Inter" font-size="14" font-weight="700" fill="#fff" text-anchor="middle">Intent Router (Claude · structured)</text>
+          <text x="140" y="44" font-family="JetBrains Mono" font-size="10.5" fill="#22d3ee" text-anchor="middle">{ intent, filters, escalation_signals }</text>
+        </g>
+        <g stroke="rgba(124,92,255,0.4)" stroke-width="1.2" fill="none">
+          <path d="M 590 160 C 590 195, 110 195, 110 230"/>
+          <path d="M 590 160 C 590 195, 320 195, 320 230"/>
+          <path d="M 590 160 L 590 230"/>
+          <path d="M 590 160 C 590 195, 820 195, 820 230"/>
+          <path d="M 590 160 C 590 195, 1060 195, 1060 230"/>
+        </g>
+        <g transform="translate(20, 230)">
+          <rect width="180" height="160" rx="8" fill="rgba(255,255,255,0.02)" stroke="#22d3ee" stroke-width="1"/>
+          <text x="90" y="22" font-family="Inter" font-size="13" font-weight="600" fill="#22d3ee" text-anchor="middle">Hybrid Retriever</text>
+          <line x1="20" y1="32" x2="160" y2="32" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+          <g font-family="JetBrains Mono" font-size="10.5" fill="#d5dae6">
+            <text x="20" y="52">→ BM25 sparse</text>
+            <text x="20" y="72">→ Dense (Qdrant)</text>
+            <text x="20" y="92">→ RRF fusion k=60</text>
+            <text x="20" y="112">→ Cohere v3 rerank</text>
+          </g>
+          <text x="90" y="142" font-family="JetBrains Mono" font-size="9.5" fill="#5a5f6e" text-anchor="middle">top 20 → top 5</text>
+        </g>
+        <g transform="translate(225, 230)">
+          <rect width="195" height="80" rx="8" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+          <text x="97" y="22" font-family="Inter" font-size="13" font-weight="600" fill="#e7ecf5" text-anchor="middle">Structured SQL</text>
+          <line x1="20" y1="32" x2="175" y2="32" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+          <text x="20" y="52" font-family="JetBrains Mono" font-size="10.5" fill="#d5dae6">price · stock · cat</text>
+          <text x="20" y="68" font-family="JetBrains Mono" font-size="10.5" fill="#9aa3b8">→ Postgres 16</text>
+        </g>
+        <g transform="translate(490, 230)">
+          <rect width="200" height="80" rx="8" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+          <text x="100" y="22" font-family="Inter" font-size="13" font-weight="600" fill="#e7ecf5" text-anchor="middle">Cart Manager</text>
+          <line x1="20" y1="32" x2="180" y2="32" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+          <text x="20" y="52" font-family="JetBrains Mono" font-size="10.5" fill="#d5dae6">add · remove · update</text>
+          <text x="20" y="68" font-family="JetBrains Mono" font-size="10.5" fill="#9aa3b8">Pydantic · Redis TTL</text>
+        </g>
+        <g transform="translate(720, 230)">
+          <rect width="200" height="80" rx="8" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+          <text x="100" y="22" font-family="Inter" font-size="13" font-weight="600" fill="#e7ecf5" text-anchor="middle">Refund Handler</text>
+          <line x1="20" y1="32" x2="180" y2="32" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+          <text x="20" y="52" font-family="JetBrains Mono" font-size="10.5" fill="#d5dae6">policy check</text>
+          <text x="20" y="68" font-family="JetBrains Mono" font-size="10.5" fill="#fbbf24">→ escalate if &gt;$100</text>
+        </g>
+        <g transform="translate(950, 230)">
+          <rect width="200" height="80" rx="8" fill="rgba(251,191,36,0.04)" stroke="#fbbf24" stroke-width="1" stroke-dasharray="3 3"/>
+          <text x="100" y="22" font-family="Inter" font-size="13" font-weight="600" fill="#fbbf24" text-anchor="middle">Human Escalation</text>
+          <line x1="20" y1="32" x2="180" y2="32" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+          <text x="20" y="52" font-family="JetBrains Mono" font-size="10.5" fill="#d5dae6">supervisor inbox</text>
+          <text x="20" y="68" font-family="JetBrains Mono" font-size="10.5" fill="#9aa3b8">Slack · email · pager</text>
+        </g>
+        <g stroke="rgba(124,92,255,0.35)" stroke-width="1.2" fill="none">
+          <path d="M 110 390 C 110 410, 590 410, 590 410"/>
+          <path d="M 320 310 C 320 360, 590 360, 590 410"/>
+          <path d="M 590 310 L 590 410"/>
+          <path d="M 820 310 C 820 360, 590 360, 590 410"/>
+        </g>
+        <g transform="translate(450, 410)">
+          <rect width="280" height="44" rx="8" fill="rgba(52,211,153,0.06)" stroke="#34d399" stroke-width="1.2"/>
+          <text x="140" y="20" font-family="Inter" font-size="13" font-weight="700" fill="#34d399" text-anchor="middle">Response Synthesizer</text>
+          <text x="140" y="36" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">Claude · citations · audit log</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="04 Demo 1 Install">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">03 · Demo 1 of 2 · Install &amp; benchmark</div>
+      <h2>From <span style="color:var(--accent-2)">git clone</span> to a benchmarked system.</h2>
+      <p class="section-sub">
+        Press play. The terminal walks through repo clone, env config, the real Docker stack
+        (postgres + qdrant + redis + api + streamlit), <span class="mono">uv pip install</span>,
+        dataset download with checksum, hybrid index build across three vector DBs in parallel,
+        a 100-query benchmark, a RAGAS faithfulness eval, and Streamlit launch.
+      </p>
+    </div>
+
+    <div class="demo-wrap reveal">
+      <div class="demo-head">
+        <div class="demo-head-left">
+          <span class="demo-num">Demo 01</span>
+          <div>
+            <div class="demo-title">Install &amp; benchmark — full transcript</div>
+            <div class="demo-desc">8 steps · 88s · zsh + docker + uv + ragas</div>
+          </div>
+        </div>
+        <div class="demo-hints">
+          <span><kbd>SPACE</kbd> play / pause</span>
+          <span><kbd>←</kbd><kbd>→</kbd> seek</span>
+          <span><kbd>0</kbd> reset</span>
+        </div>
+      </div>
+      <div class="demo-body" id="demo-terminal"></div>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="05 Demo 2 System">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">04 · Demo 2 of 2 · System in motion</div>
+      <h2>Watch four turns flow through every node — including the supervisor escalation.</h2>
+      <p class="section-sub">
+        Chat on the left, the LangGraph state machine on the right. Nodes pulse purple when active,
+        turn green when done, and yellow when a refund policy triggers human handoff. Live latency
+        and cost stats stream into the top bar.
+      </p>
+    </div>
+
+    <div class="demo-wrap reveal">
+      <div class="demo-head">
+        <div class="demo-head-left">
+          <span class="demo-num">Demo 02</span>
+          <div>
+            <div class="demo-title">Query lifecycle — 4 turns end-to-end</div>
+            <div class="demo-desc">product_search → cart_op → refund (auto) → refund (escalate)</div>
+          </div>
+        </div>
+        <div class="demo-hints">
+          <span><kbd>SPACE</kbd> play / pause</span>
+          <span><kbd>←</kbd><kbd>→</kbd> seek</span>
+          <span><kbd>0</kbd> reset</span>
+        </div>
+      </div>
+      <div class="demo-body" id="demo-system"></div>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="06 Metrics">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">05 · Target metrics</div>
+      <h2>The reranker should pay for itself at +0.08 P@5.</h2>
+      <p class="section-sub">
+        Eval set: 100 ground-truth queries (30 lookup · 30 semantic · 20 compare · 20 multi-turn).
+        Numbers below are <strong>targets</strong> derived from published RAG benchmarks and the
+        spec's success criteria. Real numbers replace these once <span class="mono">eval/runs/*.json</span>
+        is committed.
+      </p>
+    </div>
+
+    <div class="metrics-table-wrap reveal">
+      <div class="metrics-table-head">
+        <h4>Retrieval benchmark — 4 systems × 100 queries</h4>
+        <div class="legend">
+          <span><span class="swatch"></span>target winner</span>
+          <span class="target">target values</span>
+        </div>
+      </div>
+      <table class="metrics">
+        <thead>
+          <tr>
+            <th>system</th>
+            <th>P@5</th>
+            <th>Recall@10</th>
+            <th>nDCG@10</th>
+            <th>Faithfulness</th>
+            <th>p95 latency</th>
+            <th>$ / 1k queries</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="system">BM25 only (baseline)</td>
+            <td class="val">0.612 <span class="metrics-bar"><div style="width:61%"></div></span></td>
+            <td class="val">0.704</td>
+            <td class="val">0.658</td>
+            <td class="val">—</td>
+            <td class="val">180 ms</td>
+            <td class="val">$0.04</td>
+          </tr>
+          <tr>
+            <td class="system">Dense only (Qdrant + voyage-3)</td>
+            <td class="val">0.678 <span class="metrics-bar"><div style="width:68%"></div></span></td>
+            <td class="val">0.741</td>
+            <td class="val">0.712</td>
+            <td class="val">—</td>
+            <td class="val">240 ms</td>
+            <td class="val">$0.18</td>
+          </tr>
+          <tr>
+            <td class="system">Hybrid + RRF (k=60)</td>
+            <td class="val">0.741 <span class="metrics-bar"><div style="width:74%"></div></span></td>
+            <td class="val">0.812</td>
+            <td class="val">0.788</td>
+            <td class="val">—</td>
+            <td class="val">290 ms</td>
+            <td class="val">$0.22</td>
+          </tr>
+          <tr class="winner">
+            <td class="system">Hybrid + Cohere rerank v3</td>
+            <td class="val">0.823 <span class="metrics-bar"><div style="width:82%"></div></span></td>
+            <td class="val">0.849</td>
+            <td class="val">0.844</td>
+            <td class="val">0.91</td>
+            <td class="val">480 ms</td>
+            <td class="val">$1.21</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="07 Stack">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">06 · Stack &amp; decisions</div>
+      <h2>Every choice has a "why this, not that".</h2>
+      <p class="section-sub">Pinned versions from <span class="mono">pyproject.toml</span>. Five architectural decisions documented in <span class="mono">docs/decisions.md</span> — the trade-off is explicit and the alternative is named.</p>
+    </div>
+
+    <div class="detail-grid">
+      <div class="detail-card reveal">
+        <h4>Stack — pinned versions</h4>
+        <div class="stack-group">
+          <div class="stack-group-title">Runtime</div>
+          <div class="stack-pills">
+            <span class="stack-pill">Python<span class="ver">3.11</span></span>
+            <span class="stack-pill">FastAPI<span class="ver">0.115.0</span></span>
+            <span class="stack-pill">uvicorn<span class="ver">0.32.0</span></span>
+            <span class="stack-pill">Pydantic<span class="ver">2.9.2</span></span>
+          </div>
+        </div>
+        <div class="stack-group">
+          <div class="stack-group-title">Orchestration</div>
+          <div class="stack-pills">
+            <span class="stack-pill">LangGraph<span class="ver">0.2.45</span></span>
+            <span class="stack-pill">langchain-anthropic<span class="ver">0.2.4</span></span>
+            <span class="stack-pill">anthropic<span class="ver">0.39.0</span></span>
+          </div>
+        </div>
+        <div class="stack-group">
+          <div class="stack-group-title">Retrieval</div>
+          <div class="stack-pills">
+            <span class="stack-pill">voyageai<span class="ver">0.3.2</span></span>
+            <span class="stack-pill">qdrant-client<span class="ver">1.12.0</span></span>
+            <span class="stack-pill">pgvector<span class="ver">0.3.6</span></span>
+            <span class="stack-pill">chromadb<span class="ver">0.5.13</span></span>
+            <span class="stack-pill">rank-bm25<span class="ver">0.2.2</span></span>
+            <span class="stack-pill">sentence-transformers<span class="ver">3.2.1</span></span>
+          </div>
+        </div>
+        <div class="stack-group">
+          <div class="stack-group-title">Storage</div>
+          <div class="stack-pills">
+            <span class="stack-pill">pgvector/pgvector<span class="ver">pg16</span></span>
+            <span class="stack-pill">qdrant/qdrant<span class="ver">v1.12.0</span></span>
+            <span class="stack-pill">redis<span class="ver">7-alpine</span></span>
+            <span class="stack-pill">psycopg<span class="ver">3.2.3</span></span>
+          </div>
+        </div>
+        <div class="stack-group">
+          <div class="stack-group-title">Eval &amp; quality</div>
+          <div class="stack-pills">
+            <span class="stack-pill">RAGAS<span class="ver">0.2.6</span></span>
+            <span class="stack-pill">pytest<span class="ver">8.3.3</span></span>
+            <span class="stack-pill">mypy<span class="ver">--strict</span></span>
+            <span class="stack-pill">ruff<span class="ver">0.6.9</span></span>
+            <span class="stack-pill">black<span class="ver">24.10.0</span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-card green reveal">
+        <h4>Decisions log</h4>
+        <div class="decisions-row">
+          <div class="choice"><span class="yes">LangGraph</span><span class="vs">/</span><span class="no">CrewAI</span></div>
+          <div class="why">Explicit state, Postgres checkpoints, time-travel debugging. CrewAI hides the state machine — bad fit for audit-grade workflows.</div>
+        </div>
+        <div class="decisions-row">
+          <div class="choice"><span class="yes">RRF</span><span class="vs">/</span><span class="no">linear fusion</span></div>
+          <div class="why">RRF (k=60) is rank-agnostic and needs no score calibration between BM25 and cosine. Linear fusion requires query-by-query tuning.</div>
+        </div>
+        <div class="decisions-row">
+          <div class="choice"><span class="yes">Cohere v3</span><span class="vs">/</span><span class="no">ms-marco local</span></div>
+          <div class="why">Cohere is expected to win +4 nDCG on the eval set; ms-marco-MiniLM is the fallback if API cost becomes a constraint. Both wired and toggleable.</div>
+        </div>
+        <div class="decisions-row">
+          <div class="choice"><span class="yes">Streamlit</span><span class="vs">/</span><span class="no">Next.js</span></div>
+          <div class="why">For a portfolio demo, Streamlit ships in a day with built-in state. Next.js becomes worth it once the product needs auth, payments, real users.</div>
+        </div>
+        <div class="decisions-row">
+          <div class="choice"><span class="yes">policy = code</span><span class="vs">/</span><span class="no">LLM judge</span></div>
+          <div class="why">Refund policy encoded as Python (value &gt; $100 OR sensitive_category → escalate). Deterministic, auditable, testable. LLM-as-judge is for evaluation, not policy.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="08 Roadmap">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">07 · Roadmap to v1.0.0</div>
+      <h2>Eleven checkpoints between scaffold and a metric-backed release.</h2>
+      <p class="section-sub">Taken directly from <span class="mono">01-ecommerce-assistant/README.md</span> on <span class="mono">main</span>. Status reflects what's committed to the repo.</p>
+    </div>
+
+    <div class="detail-card reveal" style="padding: 30px 32px;">
+      <ol class="roadmap-list">
+        <li class="done"><span class="num">01</span><span class="check">✓</span><span class="label"><strong>Data pipeline</strong> — <span class="mono">scripts/download_instacart.py</span> pulls Kaggle dataset, builds processed parquet</span></li>
+        <li class="done"><span class="num">02</span><span class="check">✓</span><span class="label"><strong>Vector ingestion</strong> — embed name + aisle + dept with voyage-3, index into Qdrant + pgvector + Chroma in parallel</span></li>
+        <li class="done"><span class="num">03</span><span class="check">✓</span><span class="label"><strong>Hybrid retrieval module</strong> — <span class="mono">rank-bm25</span> sparse + dense + RRF fusion</span></li>
+        <li class="partial"><span class="num">04</span><span class="check">~</span><span class="label"><strong>Reranking</strong> — Cohere v3 wrapper with local <span class="mono">ms-marco-MiniLM-L-6-v2</span> fallback</span></li>
+        <li class="partial"><span class="num">05</span><span class="check">~</span><span class="label"><strong>LangGraph agent</strong> — Intent Router → Retriever → Cart / Refund handlers → Synthesizer</span></li>
+        <li class="todo"><span class="num">06</span><span class="check">○</span><span class="label"><strong>Eval set</strong> — 100 hand-labeled queries (30 lookup, 30 semantic, 20 compare, 20 multi-turn)</span></li>
+        <li class="todo"><span class="num">07</span><span class="check">○</span><span class="label"><strong>RAGAS evaluation</strong> — Faithfulness, Answer Relevance, Context Precision, Context Recall</span></li>
+        <li class="todo"><span class="num">08</span><span class="check">○</span><span class="label"><strong>Vector DB benchmark</strong> — Qdrant vs pgvector vs Chroma on P@5, Recall@10, nDCG, p95, $/1K</span></li>
+        <li class="todo"><span class="num">09</span><span class="check">○</span><span class="label"><strong>Streamlit demo</strong> — multi-turn chat with 5 pre-baked queries, deployed to community cloud</span></li>
+        <li class="todo"><span class="num">10</span><span class="check">○</span><span class="label"><strong>Observability</strong> — LangSmith public traces, ≥30 example links in README</span></li>
+        <li class="todo"><span class="num">11</span><span class="check">○</span><span class="label"><strong>Definition of Done</strong> — all 12 universal blocks + 7 project-specific items pass</span></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="09 Next">
+  <div class="container">
+    <a class="next-card" href="02-support-triage.html">
+      <div>
+        <div class="label">Next project →</div>
+        <h3>P02 · Customer Support Triage Agent</h3>
+        <p style="color: var(--text-dim); margin-top: 6px;">DistilBERT + LoRA fine-tune · Claude reasoning · published to HF Hub</p>
+      </div>
+      <span class="arrow">→</span>
+    </a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div>// Juan David Suárez Sánchez · AI Engineer · 2026</div>
+    <div>juadsuarezsan@unal.edu.co · github.com/Juadsuarezsan</div>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="animations.jsx"></script>
+<script type="text/babel" src="_shared.jsx"></script>
+<script type="text/babel" src="p01-terminal.jsx"></script>
+<script type="text/babel" src="p01-system.jsx"></script>
+
+<script type="text/babel">
+  function mountWhenReady() {
+    if (typeof P01TerminalDemo === 'undefined' || typeof P01SystemDemo === 'undefined') {
+      setTimeout(mountWhenReady, 50);
+      return;
+    }
+    ReactDOM.createRoot(document.getElementById('demo-terminal')).render(<P01TerminalDemo/>);
+    ReactDOM.createRoot(document.getElementById('demo-system')).render(<P01SystemDemo/>);
+  }
+  mountWhenReady();
+</script>
+
+<script>
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+</script>
+
+</body>
+</html>

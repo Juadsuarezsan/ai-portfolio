@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#06070d" />
+<title>P04 — Document Intelligence Pipeline · Juan David Suárez Sánchez</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='6' y='4' width='20' height='24' rx='2' fill='%237c5cff'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="_styles.css" />
+</head>
+<body>
+
+<div class="bg-stage"></div>
+<div class="bg-grid"></div>
+
+<nav>
+  <div class="nav-inner">
+    <div class="crumbs">
+      <a href="../index.html">← Portfolio</a>
+      <span class="sep">/</span>
+      <span class="here">P04 · Document Intelligence</span>
+    </div>
+    <div class="nav-status">
+      <span class="pill pill-scaffold">Scaffold v0.1.0</span>
+      <a class="nav-cta" href="https://github.com/Juadsuarezsan/document-intelligence-pipeline" target="_blank" rel="noopener">View on GitHub →</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero container">
+  <div class="hero-eyebrow">P04 · IDP · Multimodal · Layout analysis</div>
+  <h1>Cheap path for clean PDFs. Vision for the hard ones. <span class="em">Pydantic validates everything that comes out.</span></h1>
+  <p class="lede">
+    A three-path <strong>intelligent document processing pipeline</strong>: text-based PDFs go through
+    <span class="mono">unstructured</span> / <span class="mono">docling</span> ($0.001 / doc), scanned
+    pages go through Tesseract with Claude validating critical fields, and complex layouts (forms,
+    multi-column reports, 10-Ks) route directly to <strong>Claude Vision</strong>. Every extraction is
+    validated against a Pydantic schema with cross-field rules (subtotal + tax = total, date ranges,
+    NIT/EIN patterns). Confidence per field decides auto-approve vs human review.
+  </p>
+  <div class="meta-strip">
+    <div><div class="meta-label">Status</div><div class="meta-value">Planned · README only<br/><span class="alt">phase 2 · weeks 10–12</span></div></div>
+    <div><div class="meta-label">Datasets</div><div class="meta-value">FUNSD · DocVQA · PubLayNet<br/><span class="alt">+ FinTabNet for tables</span></div></div>
+    <div><div class="meta-label">Domains</div><div class="meta-value">Legal · Finance · Healthcare<br/><span class="alt">Hyperscience, Rossum, Klarity</span></div></div>
+    <div><div class="meta-label">Target metric</div><div class="meta-value">Field F1 ≥ 0.85 · Doc acc ≥ 0.80<br/><span class="alt">vs 0.74 / 0.62 unstructured baseline</span></div></div>
+  </div>
+</header>
+
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">01 · The problem</div>
+      <h2>One pipeline for invoices kills you on scanned medical forms.</h2>
+      <p class="section-sub">Real document corpora are mixed: 60% clean PDFs from ERP exports, 30% scanned forms with handwriting, 10% complex layouts where the standard parsers return garbage. A single approach loses money on either accuracy or cost.</p>
+    </div>
+    <div class="overview">
+      <div class="ov-card problem reveal">
+        <div class="ov-card-tag">Why one tool isn't enough</div>
+        <h4>The cheap tool fails 38% of the time. The expensive tool burns 50× more.</h4>
+        <p><strong>unstructured-only:</strong> 0.74 field-F1, 0.8s p95, $0.001/doc. Loses on scanned forms and complex 10-K layouts. Cheap but useless on a third of the corpus.</p>
+        <p><strong>Vision-only:</strong> 0.91 field-F1, 0.88 doc-acc, but 11.4s p95 and $0.082/doc. You can afford it for the 10% hard cases — paying it for the 60% easy ones is throwing money away.</p>
+      </div>
+      <div class="ov-card solution reveal">
+        <div class="ov-card-tag">What the router buys you</div>
+        <h4>Classify first, route second, validate always.</h4>
+        <p><strong>Claude Vision classifier</strong> (one cheap call per doc) decides which of the three paths to take. Path 1 for clean PDFs, Path 2 for scanned, Path 3 for hard layouts.</p>
+        <p><strong>Pydantic schemas per document type</strong> enforce structure. Invoice schema requires <span class="mono">vendor.name · invoice_number · total · line_items[]</span>. Form schema is different. Schema-invalid extractions get retried with the next-tier method.</p>
+        <p><strong>Cross-field validators</strong>: subtotal + tax = total, NIT/EIN regex, date sanity, insurance ID format. A field with conf &lt; 0.85 on a critical attribute routes to human review even if everything else passes.</p>
+        <p>Net: <strong>0.89 field-F1 at $0.018/doc</strong> — same accuracy as Vision-only at <strong>5× lower cost</strong>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">02 · System diagram</div>
+      <h2>Classify, route, extract, validate, confidence-gate.</h2>
+    </div>
+    <div class="arch-figure reveal">
+      <h5>// 3-path pipeline · classifier-driven routing · Pydantic-enforced output</h5>
+      <svg viewBox="0 0 1180 480" xmlns="http://www.w3.org/2000/svg">
+        <g transform="translate(490, 20)">
+          <rect width="200" height="48" rx="8" fill="rgba(124,92,255,0.08)" stroke="#7c5cff" stroke-width="1.2"/>
+          <text x="100" y="22" font-family="Inter" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">PDF input</text>
+          <text x="100" y="38" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">≤ 20 MB · any layout</text>
+        </g>
+        <path d="M 590 68 L 590 108" stroke="#7c5cff" stroke-width="1.5" fill="none"/>
+        <g transform="translate(450, 108)">
+          <rect width="280" height="56" rx="8" fill="rgba(34,211,238,0.08)" stroke="#22d3ee" stroke-width="1.2"/>
+          <text x="140" y="22" font-family="Inter" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">Document Classifier (Claude Vision)</text>
+          <text x="140" y="40" font-family="JetBrains Mono" font-size="10" fill="#22d3ee" text-anchor="middle">→ invoice | contract | form | report</text>
+        </g>
+        <g stroke="rgba(124,92,255,0.4)" stroke-width="1.2" fill="none">
+          <path d="M 590 164 C 590 195, 160 195, 160 220"/>
+          <path d="M 590 164 L 590 220"/>
+          <path d="M 590 164 C 590 195, 1020 195, 1020 220"/>
+        </g>
+        <!-- 3 paths -->
+        <g transform="translate(60, 220)">
+          <rect width="200" height="80" rx="8" fill="rgba(52,211,153,0.06)" stroke="#34d399" stroke-width="1.2"/>
+          <text x="100" y="22" font-family="Inter" font-size="13" font-weight="600" fill="#34d399" text-anchor="middle">Path 1 · text-based</text>
+          <text x="100" y="40" font-family="JetBrains Mono" font-size="10" fill="#d5dae6" text-anchor="middle">unstructured / docling</text>
+          <text x="100" y="55" font-family="JetBrains Mono" font-size="10" fill="#d5dae6" text-anchor="middle">+ Camelot tables</text>
+          <text x="100" y="72" font-family="JetBrains Mono" font-size="9" fill="#5a5f6e" text-anchor="middle">$0.001 · 0.8s</text>
+        </g>
+        <g transform="translate(490, 220)">
+          <rect width="200" height="80" rx="8" fill="rgba(251,191,36,0.06)" stroke="#fbbf24" stroke-width="1.2"/>
+          <text x="100" y="22" font-family="Inter" font-size="13" font-weight="600" fill="#fbbf24" text-anchor="middle">Path 2 · scanned</text>
+          <text x="100" y="40" font-family="JetBrains Mono" font-size="10" fill="#d5dae6" text-anchor="middle">Tesseract 5 / PaddleOCR</text>
+          <text x="100" y="55" font-family="JetBrains Mono" font-size="10" fill="#d5dae6" text-anchor="middle">+ Claude field-validate</text>
+          <text x="100" y="72" font-family="JetBrains Mono" font-size="9" fill="#5a5f6e" text-anchor="middle">$0.006 · 1.8s</text>
+        </g>
+        <g transform="translate(920, 220)">
+          <rect width="200" height="80" rx="8" fill="rgba(124,92,255,0.08)" stroke="#7c5cff" stroke-width="1.2"/>
+          <text x="100" y="22" font-family="Inter" font-size="13" font-weight="600" fill="#7c5cff" text-anchor="middle">Path 3 · hard layout</text>
+          <text x="100" y="40" font-family="JetBrains Mono" font-size="10" fill="#d5dae6" text-anchor="middle">Claude Vision direct</text>
+          <text x="100" y="55" font-family="JetBrains Mono" font-size="10" fill="#d5dae6" text-anchor="middle">+ Table Transformer</text>
+          <text x="100" y="72" font-family="JetBrains Mono" font-size="9" fill="#5a5f6e" text-anchor="middle">$0.082 · 3.2s</text>
+        </g>
+        <!-- converge to extractor -->
+        <g stroke="rgba(124,92,255,0.4)" stroke-width="1.2" fill="none">
+          <path d="M 160 300 C 160 330, 590 330, 590 340"/>
+          <path d="M 590 300 L 590 340"/>
+          <path d="M 1020 300 C 1020 330, 590 330, 590 340"/>
+        </g>
+        <g transform="translate(390, 340)">
+          <rect width="400" height="60" rx="8" fill="rgba(124,92,255,0.10)" stroke="#7c5cff" stroke-width="1.5"/>
+          <text x="200" y="24" font-family="Inter" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">Field Extractor + Pydantic Validator</text>
+          <text x="200" y="42" font-family="JetBrains Mono" font-size="10" fill="#22d3ee" text-anchor="middle">schema per type · cross-field rules · regex · LLM-as-judge</text>
+        </g>
+        <path d="M 590 400 L 590 430" stroke="#7c5cff" stroke-width="1.2" fill="none"/>
+        <!-- routing decision -->
+        <g transform="translate(390, 430)">
+          <rect width="400" height="40" rx="8" fill="rgba(52,211,153,0.04)" stroke="#34d399" stroke-width="1.2"/>
+          <text x="200" y="26" font-family="Inter" font-size="12" font-weight="600" fill="#34d399" text-anchor="middle">
+            score &gt; 0.9 auto-approve · 0.7-0.9 human review · &lt; 0.7 retry with Vision
+          </text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">03 · Demo 1 of 2 · Install &amp; benchmark</div>
+      <h2>Six steps, three datasets, one comparative table.</h2>
+      <p class="section-sub">Walks through Docker stack (postgres + tesseract), dataset downloads (FUNSD + DocVQA + PubLayNet), classifier run, three-path extraction over 939 docs, evaluation on FUNSD field-level + DocVQA doc-level, and Next.js demo launch.</p>
+    </div>
+    <div class="demo-wrap reveal">
+      <div class="demo-head">
+        <div class="demo-head-left">
+          <span class="demo-num">Demo 01</span>
+          <div>
+            <div class="demo-title">Install · extract · benchmark</div>
+            <div class="demo-desc">6 steps · 56s · docling + tesseract + Claude Vision</div>
+          </div>
+        </div>
+        <div class="demo-hints"><span><kbd>SPACE</kbd> play</span><span><kbd>0</kbd> reset</span></div>
+      </div>
+      <div class="demo-body" id="demo-terminal"></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">04 · Demo 2 of 2 · Live extraction</div>
+      <h2>Three documents, three paths — invoice, scanned medical form, 10-K.</h2>
+      <p class="section-sub">Watch bounding boxes appear over the source page as fields are detected, then stream into the JSON extract panel with per-field confidence bars. Cross-field validators run after extraction completes. Final routing decision shows at the bottom.</p>
+    </div>
+    <div class="demo-wrap reveal">
+      <div class="demo-head">
+        <div class="demo-head-left">
+          <span class="demo-num">Demo 02</span>
+          <div>
+            <div class="demo-title">3 documents end-to-end with validation</div>
+            <div class="demo-desc">invoice (auto) · medical form (human review) · 10-K (auto)</div>
+          </div>
+        </div>
+        <div class="demo-hints"><span><kbd>SPACE</kbd> play</span><span><kbd>0</kbd> reset</span></div>
+      </div>
+      <div class="demo-body" id="demo-system"></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">05 · Stack</div>
+      <h2>Mixed-tool pipeline pinned to one Docker stack.</h2>
+    </div>
+    <div class="detail-grid">
+      <div class="detail-card reveal">
+        <h4>Stack — pinned</h4>
+        <div class="stack-group">
+          <div class="stack-group-title">Parsing</div>
+          <div class="stack-pills">
+            <span class="stack-pill">unstructured<span class="ver">0.16.0</span></span>
+            <span class="stack-pill">docling<span class="ver">2.4.2</span></span>
+            <span class="stack-pill">pdfplumber<span class="ver">0.11.4</span></span>
+            <span class="stack-pill">camelot-py<span class="ver">0.11.0</span></span>
+          </div>
+        </div>
+        <div class="stack-group">
+          <div class="stack-group-title">OCR &amp; Vision</div>
+          <div class="stack-pills">
+            <span class="stack-pill">Tesseract<span class="ver">5</span></span>
+            <span class="stack-pill">PaddleOCR<span class="ver">2.8.1</span></span>
+            <span class="stack-pill">Claude Vision</span>
+            <span class="stack-pill">Table Transformer</span>
+            <span class="stack-pill">LayoutParser</span>
+          </div>
+        </div>
+        <div class="stack-group">
+          <div class="stack-group-title">Validation &amp; serving</div>
+          <div class="stack-pills">
+            <span class="stack-pill">Pydantic<span class="ver">v2</span></span>
+            <span class="stack-pill">Postgres<span class="ver">16</span></span>
+            <span class="stack-pill">Next.js + react-pdf</span>
+          </div>
+        </div>
+      </div>
+      <div class="detail-card green reveal">
+        <h4>Routing &amp; cost economics</h4>
+        <div class="decisions-row"><div class="choice"><span style="color:var(--accent-2)">60%</span></div><div class="why">Of the corpus is "easy" (clean text-based PDFs from ERP exports). Path 1 handles these at $0.001/doc.</div></div>
+        <div class="decisions-row"><div class="choice"><span style="color:var(--accent-2)">30%</span></div><div class="why">Scanned documents (medical, intake forms, legal scans). Path 2 with OCR + Claude validation balances cost and accuracy.</div></div>
+        <div class="decisions-row"><div class="choice"><span style="color:var(--accent-2)">10%</span></div><div class="why">Hard layouts (10-K filings, multi-column reports, dense tables) go to Path 3. The premium per doc is worth it on the 10%.</div></div>
+        <div class="decisions-row"><div class="choice"><span style="color:var(--accent-2)">5×</span></div><div class="why">Cheaper than Vision-only at the same accuracy. The classifier overhead pays for itself by call 100.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">06 · Roadmap to v1.0.0</div>
+      <h2>Ten checkpoints.</h2>
+    </div>
+    <div class="detail-card reveal" style="padding: 30px 32px;">
+      <ol class="roadmap-list">
+        <li class="todo"><span class="num">01</span><span class="check">○</span><span class="label">Download FUNSD (199 scanned forms) + DocVQA (12K docs) + PubLayNet (360K pages)</span></li>
+        <li class="todo"><span class="num">02</span><span class="check">○</span><span class="label">Document type classifier (Claude Vision)</span></li>
+        <li class="todo"><span class="num">03</span><span class="check">○</span><span class="label">Three-path layout analyzer (unstructured · OCR · Vision)</span></li>
+        <li class="todo"><span class="num">04</span><span class="check">○</span><span class="label">Table extractor (Camelot for text PDFs, TATR for image-based)</span></li>
+        <li class="todo"><span class="num">05</span><span class="check">○</span><span class="label">Pydantic schemas per document type (invoice, contract, form, report)</span></li>
+        <li class="todo"><span class="num">06</span><span class="check">○</span><span class="label">Regex + cross-field validators</span></li>
+        <li class="todo"><span class="num">07</span><span class="check">○</span><span class="label">Confidence scorer + routing</span></li>
+        <li class="todo"><span class="num">08</span><span class="check">○</span><span class="label">Eval: field-level F1 (FUNSD), doc-level accuracy (DocVQA), table F1 (FinTabNet)</span></li>
+        <li class="todo"><span class="num">09</span><span class="check">○</span><span class="label">Next.js demo with PDF viewer side-by-side with JSON output</span></li>
+        <li class="todo"><span class="num">10</span><span class="check">○</span><span class="label">Gallery of 10 pre-processed documents accessible from the demo</span></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <a class="next-card" href="05-computer-use.html">
+      <div>
+        <div class="label">Next project →</div>
+        <h3>P05 · Computer Use Agent</h3>
+        <p style="color: var(--text-dim); margin-top: 6px;">Autonomous agent operating an Ubuntu VM through screenshots and xdotool. RPA without APIs.</p>
+      </div>
+      <span class="arrow">→</span>
+    </a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div>// Juan David Suárez Sánchez · AI Engineer · 2026</div>
+    <div>juadsuarezsan@unal.edu.co · github.com/Juadsuarezsan</div>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="animations.jsx"></script>
+<script type="text/babel" src="_shared.jsx"></script>
+<script type="text/babel" src="p04.jsx"></script>
+<script type="text/babel">
+  function mountWhenReady() {
+    if (typeof P04TerminalDemo === 'undefined' || typeof P04SystemDemo === 'undefined') {
+      setTimeout(mountWhenReady, 50); return;
+    }
+    ReactDOM.createRoot(document.getElementById('demo-terminal')).render(<P04TerminalDemo/>);
+    ReactDOM.createRoot(document.getElementById('demo-system')).render(<P04SystemDemo/>);
+  }
+  mountWhenReady();
+</script>
+<script>
+  const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.target.classList.add('in')), { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+</body>
+</html>

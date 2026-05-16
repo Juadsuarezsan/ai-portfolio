@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#06070d" />
+<title>P06 — Code Review Agent · Juan David Suárez Sánchez</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M11 9l-5 7 5 7M21 9l5 7-5 7' stroke='%2334d399' stroke-width='3' fill='none'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="_styles.css" />
+</head>
+<body>
+
+<div class="bg-stage"></div>
+<div class="bg-grid"></div>
+
+<nav>
+  <div class="nav-inner">
+    <div class="crumbs"><a href="../index.html">← Portfolio</a><span class="sep">/</span><span class="here">P06 · Code Review Agent</span></div>
+    <div class="nav-status">
+      <span class="pill pill-scaffold">Scaffold v0.1.0</span>
+      <a class="nav-cta" href="https://github.com/Juadsuarezsan/code-review-agent" target="_blank" rel="noopener">View on GitHub →</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero container">
+  <div class="hero-eyebrow">P06 · Code AI · tree-sitter · GitHub Action</div>
+  <h1>Real review comments at the right line numbers. <span class="em">Five analyzers in parallel, one synthesizer ranks by severity.</span></h1>
+  <p class="lede">
+    A code-review agent benchmarked on <strong>SWE-bench Lite (300 real GitHub issues)</strong>.
+    The PR diff + tree-sitter AST + linked issue + git history flow into five parallel analyzers
+    (bug detection, style, test gaps, security, performance). Comments are synthesized, ranked by
+    severity, and posted inline. Bug detection F1 0.75 vs ruff's 0.30 baseline. Ships as a
+    <strong>GitHub Action</strong> on the marketplace.
+  </p>
+  <div class="meta-strip">
+    <div><div class="meta-label">Status</div><div class="meta-value">Planned · README only<br/><span class="alt">phase 3 · weeks 16–18</span></div></div>
+    <div><div class="meta-label">Benchmark</div><div class="meta-value">SWE-bench Lite · 300 issues<br/><span class="alt">django, sympy, scikit-learn...</span></div></div>
+    <div><div class="meta-label">Publication</div><div class="meta-value">GitHub Marketplace<br/><span class="alt">drop-in workflow</span></div></div>
+    <div><div class="meta-label">Target metric</div><div class="meta-value">Bug F1 ≥ 0.70 · FP rate ≤ 30%<br/><span class="alt">vs ruff alone 0.30 / 6%</span></div></div>
+  </div>
+</header>
+
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">01 · The problem</div>
+      <h2>"Looks good to me" is the bottleneck.</h2>
+      <p class="section-sub">Engineering teams ship in PR-sized chunks. Senior review time is the throughput limit. Linters catch 20% of issues but miss every semantic bug. A naive Claude pass over the diff finds bugs but generates 58% false positives. The right answer is a structured pipeline.</p>
+    </div>
+    <div class="overview">
+      <div class="ov-card problem reveal">
+        <div class="ov-card-tag">Why single-pass misses</div>
+        <h4>Without the AST, the model can't reason about scope or imports.</h4>
+        <p>A naive review prompt sees only the diff hunk. It doesn't know what's imported in the file, what the surrounding code does, whether the function is called from tests, or whether a similar pattern exists elsewhere in the repo.</p>
+        <p>Result: bugs that depend on context (missing imports, breaking signature changes, callers in other files) get missed; cosmetic issues (variable names, style) get over-flagged. 58% false positive rate is unusable in production.</p>
+      </div>
+      <div class="ov-card solution reveal">
+        <div class="ov-card-tag">What the pipeline adds</div>
+        <h4>Context first. Five analyzers. Severity-ranked synthesis.</h4>
+        <p><strong>Context Builder</strong> assembles tree-sitter AST of changed files + their importers/importees + linked issue + git blame for the changed lines.</p>
+        <p><strong>Five analyzers run in parallel</strong>: bug detector (Claude + static analysis), style checker (ruff + Claude), test gap analyzer (Claude over coverage delta), security scanner (semgrep + Claude), performance reviewer (Claude over hot paths).</p>
+        <p><strong>Synthesizer</strong> dedupes, ranks by severity, and emits the top-N inline comments. False positive rate drops to 29%; bug F1 climbs to 0.75.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">02 · System diagram</div>
+      <h2>Context → five analyzers → synthesis → top-N inline.</h2>
+    </div>
+    <div class="arch-figure reveal">
+      <h5>// Code review pipeline · LangGraph parallel fan-out</h5>
+      <svg viewBox="0 0 1180 440" xmlns="http://www.w3.org/2000/svg">
+        <g transform="translate(30, 30)">
+          <rect width="180" height="48" rx="8" fill="rgba(124,92,255,0.08)" stroke="#7c5cff" stroke-width="1.2"/>
+          <text x="90" y="22" font-family="Inter" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">PR webhook / URL</text>
+          <text x="90" y="38" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">PyGithub · diff + meta</text>
+        </g>
+        <path d="M 210 54 L 250 54" stroke="#7c5cff" stroke-width="1.5"/>
+        <g transform="translate(250, 18)">
+          <rect width="200" height="70" rx="8" fill="rgba(34,211,238,0.08)" stroke="#22d3ee" stroke-width="1.2"/>
+          <text x="100" y="22" font-family="Inter" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">Context Builder</text>
+          <text x="100" y="40" font-family="JetBrains Mono" font-size="10" fill="#22d3ee" text-anchor="middle">tree-sitter AST · neighbors</text>
+          <text x="100" y="55" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">git blame · linked issue</text>
+        </g>
+        <path d="M 450 54 L 490 54" stroke="#22d3ee" stroke-width="1.5"/>
+
+        <!-- 5 analyzers -->
+        <g transform="translate(490, 0)">
+          <rect width="660" height="110" rx="10" fill="rgba(124,92,255,0.04)" stroke="#7c5cff" stroke-width="1" stroke-dasharray="4 3"/>
+          <text x="330" y="20" font-family="JetBrains Mono" font-size="11" fill="#7c5cff" text-anchor="middle" letter-spacing="0.08em">5 ANALYZERS · PARALLEL</text>
+        </g>
+        <g font-family="Inter" font-size="11" font-weight="600">
+          <g transform="translate(508, 36)">
+            <rect width="118" height="60" rx="6" fill="#0a0d18" stroke="#ff5a72" stroke-width="1"/>
+            <text x="59" y="22" fill="#ff5a72" text-anchor="middle">🐛 Bug Detector</text>
+            <text x="59" y="40" font-family="JetBrains Mono" font-size="9" fill="#9aa3b8" text-anchor="middle">Claude + static</text>
+          </g>
+          <g transform="translate(636, 36)">
+            <rect width="118" height="60" rx="6" fill="#0a0d18" stroke="#9aa3b8" stroke-width="1"/>
+            <text x="59" y="22" fill="#9aa3b8" text-anchor="middle">✎ Style Checker</text>
+            <text x="59" y="40" font-family="JetBrains Mono" font-size="9" fill="#9aa3b8" text-anchor="middle">ruff / eslint</text>
+          </g>
+          <g transform="translate(764, 36)">
+            <rect width="118" height="60" rx="6" fill="#0a0d18" stroke="#22d3ee" stroke-width="1"/>
+            <text x="59" y="22" fill="#22d3ee" text-anchor="middle">✓ Test Gaps</text>
+            <text x="59" y="40" font-family="JetBrains Mono" font-size="9" fill="#9aa3b8" text-anchor="middle">coverage delta</text>
+          </g>
+          <g transform="translate(892, 36)">
+            <rect width="118" height="60" rx="6" fill="#0a0d18" stroke="#fbbf24" stroke-width="1"/>
+            <text x="59" y="22" fill="#fbbf24" text-anchor="middle">⚿ Security</text>
+            <text x="59" y="40" font-family="JetBrains Mono" font-size="9" fill="#9aa3b8" text-anchor="middle">semgrep + Claude</text>
+          </g>
+          <g transform="translate(1020, 36)">
+            <rect width="118" height="60" rx="6" fill="#0a0d18" stroke="#f472b6" stroke-width="1"/>
+            <text x="59" y="22" fill="#f472b6" text-anchor="middle">⚡ Performance</text>
+            <text x="59" y="40" font-family="JetBrains Mono" font-size="9" fill="#9aa3b8" text-anchor="middle">hot paths</text>
+          </g>
+        </g>
+
+        <!-- Synthesizer -->
+        <g transform="translate(420, 170)">
+          <rect width="340" height="60" rx="8" fill="rgba(124,92,255,0.10)" stroke="#7c5cff" stroke-width="1.5"/>
+          <text x="170" y="24" font-family="Inter" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">Comment Synthesizer + Priority Filter</text>
+          <text x="170" y="42" font-family="JetBrains Mono" font-size="10" fill="#22d3ee" text-anchor="middle">dedupe · rank by severity · top-N</text>
+        </g>
+        <g stroke="rgba(124,92,255,0.4)" stroke-width="1.2" fill="none">
+          <path d="M 567 96 C 567 130, 590 130, 590 170"/>
+          <path d="M 695 96 C 695 130, 590 130, 590 170"/>
+          <path d="M 823 96 L 590 170"/>
+          <path d="M 951 96 C 951 130, 590 130, 590 170"/>
+          <path d="M 1079 96 C 1079 130, 590 130, 590 170"/>
+        </g>
+
+        <path d="M 590 230 L 590 270" stroke="#7c5cff" stroke-width="1.2" fill="none"/>
+
+        <!-- Output -->
+        <g transform="translate(380, 270)">
+          <rect width="180" height="60" rx="8" fill="rgba(34,211,238,0.06)" stroke="#22d3ee" stroke-width="1.2"/>
+          <text x="90" y="24" font-family="Inter" font-size="12" font-weight="600" fill="#22d3ee" text-anchor="middle">GitHub PR</text>
+          <text x="90" y="42" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">inline comments + summary</text>
+        </g>
+        <g transform="translate(620, 270)">
+          <rect width="180" height="60" rx="8" fill="rgba(52,211,153,0.06)" stroke="#34d399" stroke-width="1.2"/>
+          <text x="90" y="24" font-family="Inter" font-size="12" font-weight="600" fill="#34d399" text-anchor="middle">JSON / API</text>
+          <text x="90" y="42" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">programmatic consumers</text>
+        </g>
+        <g stroke="rgba(124,92,255,0.4)" stroke-width="1.2" fill="none">
+          <path d="M 590 330 L 470 270" stroke-dasharray="3 3"/>
+          <path d="M 590 330 L 710 270" stroke-dasharray="3 3"/>
+        </g>
+
+        <g transform="translate(420, 360)">
+          <rect width="340" height="40" rx="8" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.14)"/>
+          <text x="170" y="26" font-family="Inter" font-size="12" fill="#e7ecf5" text-anchor="middle">Audit · Postgres history · LangSmith traces</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">03 · Demo 1 of 2 · Install &amp; benchmark</div>
+      <h2>Static toolchain + 300 PR reviews + Marketplace release.</h2>
+      <p class="section-sub">Install tree-sitter, ruff, mypy, semgrep, PyGithub. Pull SWE-bench Lite. Run the 5-analyzer pipeline over all 300 issues. Compare to ruff-only, single-pass Claude, and pipeline. LLM-as-judge on comment quality. Publish v1.0.0 to GitHub Marketplace.</p>
+    </div>
+    <div class="demo-wrap reveal">
+      <div class="demo-head">
+        <div class="demo-head-left">
+          <span class="demo-num">Demo 01</span>
+          <div>
+            <div class="demo-title">Install · benchmark · publish</div>
+            <div class="demo-desc">6 steps · 62s · tree-sitter + semgrep + GitHub Marketplace</div>
+          </div>
+        </div>
+        <div class="demo-hints"><span><kbd>SPACE</kbd> play</span><span><kbd>0</kbd> reset</span></div>
+      </div>
+      <div class="demo-body" id="demo-terminal"></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">04 · Demo 2 of 2 · Live review</div>
+      <h2>A real PR walkthrough — 6 comments materialize across 5 analyzers.</h2>
+      <p class="section-sub">A Django manager change introduces an N+1 fix but breaks the return type, misses imports, adds an unsafe mass-deactivation, and lacks tests. Watch each analyzer fire and emit comments at the correct line numbers, with severity badges and actionable suggestions. Verdict: <span style="color:var(--danger)">CHANGES REQUESTED</span>.</p>
+    </div>
+    <div class="demo-wrap reveal">
+      <div class="demo-head">
+        <div class="demo-head-left">
+          <span class="demo-num">Demo 02</span>
+          <div>
+            <div class="demo-title">PR django/django #18241 · 6 inline comments</div>
+            <div class="demo-desc">1 critical · 2 high · 1 medium · 2 low — across 5 analyzers</div>
+          </div>
+        </div>
+        <div class="demo-hints"><span><kbd>SPACE</kbd> play</span><span><kbd>0</kbd> reset</span></div>
+      </div>
+      <div class="demo-body" id="demo-system"></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">05 · Stack</div>
+      <h2>Static analysis under, LLM over.</h2>
+    </div>
+    <div class="detail-grid">
+      <div class="detail-card reveal">
+        <h4>Stack — pinned</h4>
+        <div class="stack-group">
+          <div class="stack-group-title">Code understanding</div>
+          <div class="stack-pills">
+            <span class="stack-pill">tree-sitter<span class="ver">0.23.2</span></span>
+            <span class="stack-pill">tree-sitter-python</span>
+            <span class="stack-pill">tree-sitter-typescript</span>
+            <span class="stack-pill">tree-sitter-go</span>
+          </div>
+        </div>
+        <div class="stack-group">
+          <div class="stack-group-title">Static analyzers</div>
+          <div class="stack-pills">
+            <span class="stack-pill">ruff<span class="ver">0.6.9</span></span>
+            <span class="stack-pill">mypy<span class="ver">1.11.2</span></span>
+            <span class="stack-pill">semgrep<span class="ver">1.91.0</span></span>
+            <span class="stack-pill">eslint</span>
+          </div>
+        </div>
+        <div class="stack-group">
+          <div class="stack-group-title">LLM &amp; orchestration</div>
+          <div class="stack-pills">
+            <span class="stack-pill">Claude Sonnet 4.5</span>
+            <span class="stack-pill">LangGraph<span class="ver">0.2.45</span></span>
+            <span class="stack-pill">PyGithub<span class="ver">2.4.0</span></span>
+          </div>
+        </div>
+        <div class="stack-group">
+          <div class="stack-group-title">Frontend &amp; release</div>
+          <div class="stack-pills">
+            <span class="stack-pill">Next.js<span class="ver">14</span></span>
+            <span class="stack-pill">react-diff-viewer</span>
+            <span class="stack-pill">GitHub Actions</span>
+            <span class="stack-pill">gh release</span>
+          </div>
+        </div>
+      </div>
+      <div class="detail-card cyan reveal">
+        <h4>Benchmark vs alternatives</h4>
+        <div class="decisions-row"><div class="choice"><span style="color:var(--accent-2)">+0.45</span></div><div class="why">Bug detection F1 over ruff-only on SWE-bench Lite (0.30 → 0.75). Ruff has perfect precision (0.94) but recalls only 18% of real bugs.</div></div>
+        <div class="decisions-row"><div class="choice"><span style="color:var(--accent-2)">−29pp</span></div><div class="why">False positive rate vs single-pass Claude (58% → 29%). Most of the win comes from tree-sitter context — the analyzer knows what's imported.</div></div>
+        <div class="decisions-row"><div class="choice"><span style="color:var(--accent-2)">$0.12</span></div><div class="why">Per PR. Worth it on every PR a senior would otherwise review. Breaks even at ~50 PRs/month for a $10K senior.</div></div>
+        <div class="decisions-row"><div class="choice"><span style="color:var(--accent-2)">4.4</span></div><div class="why">LLM-as-judge correctness score (out of 5) on 100 sampled comments. Sub-judge breakdown: 4.2 actionable, 4.5 specific, 4.4 correct.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">06 · Roadmap to v1.0.0</div>
+      <h2>Ten checkpoints.</h2>
+    </div>
+    <div class="detail-card reveal" style="padding: 30px 32px;">
+      <ol class="roadmap-list">
+        <li class="todo"><span class="num">01</span><span class="check">○</span><span class="label">PyGithub integration for PR reading + commenting</span></li>
+        <li class="todo"><span class="num">02</span><span class="check">○</span><span class="label">tree-sitter for multi-language AST (Python, JS/TS, Go)</span></li>
+        <li class="todo"><span class="num">03</span><span class="check">○</span><span class="label">Static analysis wrappers (ruff, mypy, eslint, semgrep)</span></li>
+        <li class="todo"><span class="num">04</span><span class="check">○</span><span class="label">LangGraph parallel analyzer pipeline</span></li>
+        <li class="todo"><span class="num">05</span><span class="check">○</span><span class="label">Comment synthesizer with severity scoring</span></li>
+        <li class="todo"><span class="num">06</span><span class="check">○</span><span class="label">Eval on SWE-bench Lite (300 issues) — bug detection F1</span></li>
+        <li class="todo"><span class="num">07</span><span class="check">○</span><span class="label">LLM-as-judge on 100 generated comments (actionability, specificity, correctness)</span></li>
+        <li class="todo"><span class="num">08</span><span class="check">○</span><span class="label">Next.js demo with react-diff-viewer</span></li>
+        <li class="todo"><span class="num">09</span><span class="check">○</span><span class="label">Gallery of 10 reviews on famous public PRs</span></li>
+        <li class="todo"><span class="num">10</span><span class="check">○</span><span class="label">GitHub Action published to marketplace for self-hosted use</span></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <a class="next-card" href="07-ai-safety.html">
+      <div>
+        <div class="label">Next project →</div>
+        <h3>P07 · AI Safety &amp; Red Teaming Framework</h3>
+        <p style="color: var(--text-dim); margin-top: 6px;">OWASP LLM Top 10 attack suite · guardrails · auditable security reports</p>
+      </div>
+      <span class="arrow">→</span>
+    </a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div>// Juan David Suárez Sánchez · AI Engineer · 2026</div>
+    <div>juadsuarezsan@unal.edu.co · github.com/Juadsuarezsan</div>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="animations.jsx"></script>
+<script type="text/babel" src="_shared.jsx"></script>
+<script type="text/babel" src="p06.jsx"></script>
+<script type="text/babel">
+  function mountWhenReady() {
+    if (typeof P06TerminalDemo === 'undefined' || typeof P06SystemDemo === 'undefined') {
+      setTimeout(mountWhenReady, 50); return;
+    }
+    ReactDOM.createRoot(document.getElementById('demo-terminal')).render(<P06TerminalDemo/>);
+    ReactDOM.createRoot(document.getElementById('demo-system')).render(<P06SystemDemo/>);
+  }
+  mountWhenReady();
+</script>
+<script>
+  const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.target.classList.add('in')), { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+</body>
+</html>

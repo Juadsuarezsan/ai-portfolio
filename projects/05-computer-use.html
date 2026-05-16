@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#06070d" />
+<title>P05 — Computer Use Agent · Juan David Suárez Sánchez</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='4' y='6' width='24' height='18' rx='2' fill='%2322d3ee'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="_styles.css" />
+</head>
+<body>
+
+<div class="bg-stage"></div>
+<div class="bg-grid"></div>
+
+<nav>
+  <div class="nav-inner">
+    <div class="crumbs"><a href="../index.html">← Portfolio</a><span class="sep">/</span><span class="here">P05 · Computer Use Agent</span></div>
+    <div class="nav-status">
+      <span class="pill pill-scaffold">Scaffold v0.1.0</span>
+      <a class="nav-cta" href="https://github.com/Juadsuarezsan/computer-use-agent" target="_blank" rel="noopener">View on GitHub →</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero container">
+  <div class="hero-eyebrow">P05 · Computer Use · VM · Multimodal</div>
+  <h1>An agent that opens apps, fills forms, exports CSVs — <span class="em">on systems that never had an API.</span></h1>
+  <p class="lede">
+    Anthropic's <strong>Computer Use</strong> frontier applied to back-office RPA. A Dockerized
+    Ubuntu 22.04 VM (Xvfb + VNC + Chrome + LibreOffice) is the sandbox. Each turn: capture screenshot
+    → Claude with the <span class="mono">computer_20250124</span> tool decides next action →
+    <span class="mono">xdotool</span> executes click / type / key / scroll → verify → repeat. Safety
+    layer blocks <span class="mono">rm -rf</span>, <span class="mono">sudo</span>, network egress
+    outside whitelist. 20-task eval suite + OSWorld subset.
+  </p>
+  <div class="meta-strip">
+    <div><div class="meta-label">Status</div><div class="meta-value">Planned · README only<br/><span class="alt">phase 2 · weeks 13–15</span></div></div>
+    <div><div class="meta-label">Environment</div><div class="meta-value">Docker · Ubuntu 22.04<br/><span class="alt">Xvfb + VNC + xdotool</span></div></div>
+    <div><div class="meta-label">Benchmarks</div><div class="meta-value">OSWorld · WebArena<br/><span class="alt">+ 20 custom tasks</span></div></div>
+    <div><div class="meta-label">Target success</div><div class="meta-value">≥ 75% overall<br/><span class="alt">vs 38% Computer Use baseline</span></div></div>
+  </div>
+</header>
+
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">01 · The problem</div>
+      <h2>Most enterprise software wasn't built with an API.</h2>
+      <p class="section-sub">SAP modules from 2008, hospital scheduling systems, insurance back-office tools. Integrators charge $200K to wire each one. A vision-driven agent that operates the actual UI — like a human contractor — is 100× cheaper if you can make it reliable.</p>
+    </div>
+    <div class="overview">
+      <div class="ov-card problem reveal">
+        <div class="ov-card-tag">Why traditional RPA fails</div>
+        <h4>Selector-based bots break on every UI tweak.</h4>
+        <p>UiPath, Blue Prism, etc. record XPath / element selectors. A button moves 20px, the bot breaks. A modal appears unexpectedly, the bot freezes. Maintenance is permanent.</p>
+        <p>And they can't <em>reason</em>. "Find the report from last quarter" requires understanding what "last quarter" means in the context of today's date and the report names visible on screen.</p>
+      </div>
+      <div class="ov-card solution reveal">
+        <div class="ov-card-tag">What Computer Use changes</div>
+        <h4>Vision over the actual screen, reasoning at every step.</h4>
+        <p>Each turn the model sees a fresh screenshot — same as a human would. It doesn't matter if the button moved, the layout reflowed, or a modal appeared: the model adapts.</p>
+        <p><strong>LangGraph</strong> keeps the screenshot history in state. The <strong>Verifier</strong> node asks "did that step do what I expected?" after every action. Failed verifications trigger replanning.</p>
+        <p><strong>Safety layer</strong> intercepts actions before they hit the VM: command parsing blocks destructive paths, network egress restricted to LLM API + localhost, 47 sandbox-escape scenarios pre-tested.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">02 · System diagram</div>
+      <h2>Capture, reason, act, verify — bounded by safety.</h2>
+    </div>
+    <div class="arch-figure reveal">
+      <h5>// Computer Use loop · screenshot → Claude → xdotool → verify → repeat</h5>
+      <svg viewBox="0 0 1180 440" xmlns="http://www.w3.org/2000/svg">
+        <g transform="translate(30, 30)">
+          <rect width="180" height="48" rx="8" fill="rgba(124,92,255,0.08)" stroke="#7c5cff" stroke-width="1.2"/>
+          <text x="90" y="22" font-family="Inter" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">Task (NL)</text>
+          <text x="90" y="38" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">"Extract Q3 sales as CSV"</text>
+        </g>
+        <path d="M 210 54 L 250 54" stroke="#7c5cff" stroke-width="1.5"/>
+        <g transform="translate(250, 18)">
+          <rect width="160" height="70" rx="8" fill="rgba(34,211,238,0.08)" stroke="#22d3ee" stroke-width="1.2"/>
+          <text x="80" y="22" font-family="Inter" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">Planner</text>
+          <text x="80" y="38" font-family="JetBrains Mono" font-size="10" fill="#22d3ee" text-anchor="middle">Claude</text>
+          <text x="80" y="55" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">→ initial step plan</text>
+        </g>
+        <path d="M 410 54 L 450 54" stroke="#22d3ee" stroke-width="1.5"/>
+
+        <!-- Loop -->
+        <g transform="translate(450, 0)">
+          <rect width="540" height="110" rx="10" fill="rgba(124,92,255,0.04)" stroke="#7c5cff" stroke-width="1" stroke-dasharray="4 3"/>
+          <text x="270" y="22" font-family="JetBrains Mono" font-size="11" fill="#7c5cff" text-anchor="middle" letter-spacing="0.08em">LANGGRAPH LOOP · MAX 50 STEPS</text>
+          <!-- Capture -->
+          <g transform="translate(20, 38)">
+            <rect width="110" height="50" rx="6" fill="#0a0d18" stroke="#22d3ee" stroke-width="1"/>
+            <text x="55" y="22" font-family="Inter" font-size="11" font-weight="600" fill="#22d3ee" text-anchor="middle">Capture</text>
+            <text x="55" y="38" font-family="JetBrains Mono" font-size="9" fill="#9aa3b8" text-anchor="middle">scrot @ Xvfb</text>
+          </g>
+          <path d="M 130 63 L 150 63" stroke="#22d3ee" stroke-width="1.2"/>
+          <!-- Reason -->
+          <g transform="translate(150, 38)">
+            <rect width="130" height="50" rx="6" fill="#0a0d18" stroke="#7c5cff" stroke-width="1"/>
+            <text x="65" y="22" font-family="Inter" font-size="11" font-weight="600" fill="#7c5cff" text-anchor="middle">Vision + Reason</text>
+            <text x="65" y="38" font-family="JetBrains Mono" font-size="9" fill="#9aa3b8" text-anchor="middle">Claude · computer_use</text>
+          </g>
+          <path d="M 280 63 L 300 63" stroke="#7c5cff" stroke-width="1.2"/>
+          <!-- Act -->
+          <g transform="translate(300, 38)">
+            <rect width="100" height="50" rx="6" fill="#0a0d18" stroke="#fbbf24" stroke-width="1"/>
+            <text x="50" y="22" font-family="Inter" font-size="11" font-weight="600" fill="#fbbf24" text-anchor="middle">Act</text>
+            <text x="50" y="38" font-family="JetBrains Mono" font-size="9" fill="#9aa3b8" text-anchor="middle">xdotool</text>
+          </g>
+          <path d="M 400 63 L 420 63" stroke="#fbbf24" stroke-width="1.2"/>
+          <!-- Verify -->
+          <g transform="translate(420, 38)">
+            <rect width="100" height="50" rx="6" fill="#0a0d18" stroke="#f472b6" stroke-width="1"/>
+            <text x="50" y="22" font-family="Inter" font-size="11" font-weight="600" fill="#f472b6" text-anchor="middle">Verify</text>
+            <text x="50" y="38" font-family="JetBrains Mono" font-size="9" fill="#9aa3b8" text-anchor="middle">Claude check</text>
+          </g>
+        </g>
+
+        <!-- Loop back arrow -->
+        <path d="M 720 110 C 720 150, 470 150, 470 110" stroke="#7c5cff" stroke-width="1.2" stroke-dasharray="4 3" fill="none"/>
+        <text x="720" y="140" font-family="JetBrains Mono" font-size="10" fill="#7c5cff" text-anchor="end">↓ continue or task_complete</text>
+
+        <!-- Safety layer -->
+        <g transform="translate(250, 180)">
+          <rect width="740" height="70" rx="8" fill="rgba(255,90,114,0.06)" stroke="#ff5a72" stroke-width="1.5"/>
+          <text x="370" y="22" font-family="Inter" font-size="13" font-weight="700" fill="#ff5a72" text-anchor="middle">Safety Layer · intercepts before VM</text>
+          <text x="370" y="40" font-family="JetBrains Mono" font-size="10" fill="#fff" text-anchor="middle">
+            blocked: rm -rf · sudo · /etc/passwd · /etc/shadow · ~/.ssh · curl | sh · wget | bash
+          </text>
+          <text x="370" y="55" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">
+            network egress: anthropic.com + localhost only
+          </text>
+        </g>
+
+        <!-- Final validator -->
+        <g transform="translate(390, 280)">
+          <rect width="400" height="60" rx="8" fill="rgba(52,211,153,0.06)" stroke="#34d399" stroke-width="1.5"/>
+          <text x="200" y="24" font-family="Inter" font-size="13" font-weight="700" fill="#34d399" text-anchor="middle">Final Validator</text>
+          <text x="200" y="42" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">Claude — does output match the original task description?</text>
+        </g>
+
+        <!-- Audit log -->
+        <g transform="translate(390, 360)">
+          <rect width="400" height="50" rx="8" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+          <text x="200" y="22" font-family="Inter" font-size="12" font-weight="600" fill="#e7ecf5" text-anchor="middle">Audit Log</text>
+          <text x="200" y="38" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">all actions · all screenshots · decisions · LangSmith trace_id</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">03 · Demo 1 of 2 · Install &amp; benchmark</div>
+      <h2>Six steps from <span style="color:var(--accent-2)">docker compose up</span> to a benchmark + dashboard.</h2>
+      <p class="section-sub">VM container with Xvfb + VNC, Python deps with Computer Use SDK, safety filter verification (47 attack scenarios), 20-task custom eval, OSWorld office subset, Next.js dashboard with live VNC streaming.</p>
+    </div>
+    <div class="demo-wrap reveal">
+      <div class="demo-head">
+        <div class="demo-head-left">
+          <span class="demo-num">Demo 01</span>
+          <div>
+            <div class="demo-title">VM bring-up · safety verify · 20-task eval</div>
+            <div class="demo-desc">6 steps · 58s · docker + xdotool + Claude computer_use</div>
+          </div>
+        </div>
+        <div class="demo-hints"><span><kbd>SPACE</kbd> play</span><span><kbd>0</kbd> reset</span></div>
+      </div>
+      <div class="demo-body" id="demo-terminal"></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">04 · Demo 2 of 2 · Agent at the desktop</div>
+      <h2>Watch the agent extract Q3 sales from a legacy ERP — 15 steps, ~80 seconds.</h2>
+      <p class="section-sub">Live VNC mockup on the left, agent reasoning log on the right. Each step shows the cursor moving, clicking through menus, typing the filename, verifying the file was saved by opening a terminal and running <span class="mono">head</span>. The dashboard above tracks step count and accumulated cost.</p>
+    </div>
+    <div class="demo-wrap reveal">
+      <div class="demo-head">
+        <div class="demo-head-left">
+          <span class="demo-num">Demo 02</span>
+          <div>
+            <div class="demo-title">Task: extract Q3 sales as CSV from legacy ERP</div>
+            <div class="demo-desc">15 actions · 80s · click → type → key → verify → done</div>
+          </div>
+        </div>
+        <div class="demo-hints"><span><kbd>SPACE</kbd> play</span><span><kbd>0</kbd> reset</span></div>
+      </div>
+      <div class="demo-body" id="demo-system"></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">05 · Stack</div>
+      <h2>Sandbox stack + Computer Use SDK.</h2>
+    </div>
+    <div class="detail-grid">
+      <div class="detail-card reveal">
+        <h4>Stack — pinned</h4>
+        <div class="stack-group">
+          <div class="stack-group-title">VM &amp; display</div>
+          <div class="stack-pills">
+            <span class="stack-pill">Ubuntu<span class="ver">22.04</span></span>
+            <span class="stack-pill">Xvfb</span>
+            <span class="stack-pill">noVNC / websockify</span>
+            <span class="stack-pill">xdotool</span>
+            <span class="stack-pill">scrot</span>
+          </div>
+        </div>
+        <div class="stack-group">
+          <div class="stack-group-title">Agent</div>
+          <div class="stack-pills">
+            <span class="stack-pill">anthropic<span class="ver">0.39.0</span></span>
+            <span class="stack-pill">Computer Use<span class="ver">20250124</span></span>
+            <span class="stack-pill">LangGraph<span class="ver">0.2.45</span></span>
+          </div>
+        </div>
+        <div class="stack-group">
+          <div class="stack-group-title">Safety</div>
+          <div class="stack-pills">
+            <span class="stack-pill">command pattern matcher</span>
+            <span class="stack-pill">iptables egress filter</span>
+            <span class="stack-pill">read-only mount checks</span>
+          </div>
+        </div>
+        <div class="stack-group">
+          <div class="stack-group-title">Frontend</div>
+          <div class="stack-pills">
+            <span class="stack-pill">Next.js<span class="ver">14</span></span>
+            <span class="stack-pill">noVNC client</span>
+            <span class="stack-pill">@xterm/xterm</span>
+          </div>
+        </div>
+      </div>
+      <div class="detail-card pink reveal">
+        <h4>Safety boundaries (47 scenarios pre-tested)</h4>
+        <div class="decisions-row"><div class="choice"><span style="color:var(--danger)">blocked</span></div><div class="why"><span class="mono">rm -rf /</span>, <span class="mono">sudo</span>, <span class="mono">chmod 777</span>, anything piped from network to shell.</div></div>
+        <div class="decisions-row"><div class="choice"><span style="color:var(--danger)">blocked</span></div><div class="why">Reads of <span class="mono">/etc/passwd</span>, <span class="mono">/etc/shadow</span>, <span class="mono">~/.ssh/</span>. Even Claude trying to "demonstrate" is denied.</div></div>
+        <div class="decisions-row"><div class="choice"><span style="color:var(--danger)">blocked</span></div><div class="why">Network egress to anything except the LLM API. The VM can't exfiltrate user data.</div></div>
+        <div class="decisions-row"><div class="choice"><span style="color:var(--accent-2)">allowed</span></div><div class="why">All local file I/O within <span class="mono">/home/agent/</span>, all UI automation via xdotool, all reads from whitelisted paths.</div></div>
+        <div class="decisions-row"><div class="choice"><span style="color:var(--accent-2)">contained</span></div><div class="why">VM cannot escape its container. Resource limits prevent fork bombs. Crash → cold restart, no state leak.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">06 · Roadmap to v1.0.0</div>
+      <h2>Ten checkpoints.</h2>
+    </div>
+    <div class="detail-card reveal" style="padding: 30px 32px;">
+      <ol class="roadmap-list">
+        <li class="todo"><span class="num">01</span><span class="check">○</span><span class="label">Dockerized Ubuntu 22.04 + Xvfb + VNC environment</span></li>
+        <li class="todo"><span class="num">02</span><span class="check">○</span><span class="label">xdotool wrappers for click / type / key / scroll</span></li>
+        <li class="todo"><span class="num">03</span><span class="check">○</span><span class="label">Screenshot capture with scrot</span></li>
+        <li class="todo"><span class="num">04</span><span class="check">○</span><span class="label">LangGraph loop with screenshot history in state</span></li>
+        <li class="todo"><span class="num">05</span><span class="check">○</span><span class="label">Action executor with safety filters (no rm -rf, no sudo)</span></li>
+        <li class="todo"><span class="num">06</span><span class="check">○</span><span class="label">20 custom evaluation tasks with ground truth success criteria</span></li>
+        <li class="todo"><span class="num">07</span><span class="check">○</span><span class="label">OSWorld benchmark comparison (subset)</span></li>
+        <li class="todo"><span class="num">08</span><span class="check">○</span><span class="label">Next.js demo with live VNC viewer</span></li>
+        <li class="todo"><span class="num">09</span><span class="check">○</span><span class="label">5 recorded MP4 videos of task executions</span></li>
+        <li class="todo"><span class="num">10</span><span class="check">○</span><span class="label">Safety layer documented (blocked action list)</span></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <a class="next-card" href="06-code-review.html">
+      <div>
+        <div class="label">Next project →</div>
+        <h3>P06 · Code Review Agent</h3>
+        <p style="color: var(--text-dim); margin-top: 6px;">tree-sitter + Claude + static analysis · inline PR comments · published GitHub Action</p>
+      </div>
+      <span class="arrow">→</span>
+    </a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div>// Juan David Suárez Sánchez · AI Engineer · 2026</div>
+    <div>juadsuarezsan@unal.edu.co · github.com/Juadsuarezsan</div>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="animations.jsx"></script>
+<script type="text/babel" src="_shared.jsx"></script>
+<script type="text/babel" src="p05.jsx"></script>
+<script type="text/babel">
+  function mountWhenReady() {
+    if (typeof P05TerminalDemo === 'undefined' || typeof P05SystemDemo === 'undefined') {
+      setTimeout(mountWhenReady, 50); return;
+    }
+    ReactDOM.createRoot(document.getElementById('demo-terminal')).render(<P05TerminalDemo/>);
+    ReactDOM.createRoot(document.getElementById('demo-system')).render(<P05SystemDemo/>);
+  }
+  mountWhenReady();
+</script>
+<script>
+  const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.target.classList.add('in')), { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+</body>
+</html>

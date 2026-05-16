@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#06070d" />
+<title>P07 — AI Safety &amp; Red Teaming · Juan David Suárez Sánchez</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 4l10 5v8c0 6-4 10-10 11-6-1-10-5-10-11V9z' fill='%23ff5a72'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="_styles.css" />
+</head>
+<body>
+
+<div class="bg-stage"></div>
+<div class="bg-grid"></div>
+
+<nav>
+  <div class="nav-inner">
+    <div class="crumbs"><a href="../index.html">← Portfolio</a><span class="sep">/</span><span class="here">P07 · AI Safety &amp; Red Teaming</span></div>
+    <div class="nav-status">
+      <span class="pill pill-scaffold">Scaffold v0.1.0</span>
+      <a class="nav-cta" href="https://github.com/Juadsuarezsan/ai-safety-redteam" target="_blank" rel="noopener">View on GitHub →</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero container">
+  <div class="hero-eyebrow">P07 · MLSec · OWASP LLM Top 10 · Guardrails</div>
+  <h1>Attack the system before someone else does. <span class="em">Then quantify what the guardrails buy you.</span></h1>
+  <p class="lede">
+    A <strong>red-team framework</strong> applied to the other projects in this portfolio. 500 attacks
+    drawn from HarmBench, JailbreakBench, prompt-injection variants (DAN, instruction override, base64,
+    unicode bypass) plus Claude-generated adversarials. Categorized against
+    <strong>OWASP LLM Top 10</strong>. A guardrails layer (Presidio · toxic-bert · DeBERTa prompt-injection
+    detector · refusal injection) drops baseline attack success rate from <span style="color:var(--danger)">41%</span>
+    to <span style="color:var(--success)">4%</span>. Auditable PDF reports for P01 and P03.
+  </p>
+  <div class="meta-strip">
+    <div><div class="meta-label">Status</div><div class="meta-value">Planned · README only<br/><span class="alt">phase 3 · weeks 19–21</span></div></div>
+    <div><div class="meta-label">Datasets</div><div class="meta-value">HarmBench · JailbreakBench<br/><span class="alt">+ ToxicChat · 10K</span></div></div>
+    <div><div class="meta-label">Standard</div><div class="meta-value">OWASP LLM Top 10<br/><span class="alt">10 categories covered</span></div></div>
+    <div><div class="meta-label">Target metric</div><div class="meta-value">Attack rate ≤ 5%<br/><span class="alt">FP rate ≤ 2% on legit</span></div></div>
+  </div>
+</header>
+
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">01 · The problem</div>
+      <h2>You cannot ship a regulated LLM without an attack budget.</h2>
+      <p class="section-sub">Banking, insurance, healthcare, government — every one of them requires you to prove the system doesn't leak PII, doesn't comply with malicious intent, and doesn't hallucinate facts the customer will act on. You can't fix what you haven't measured.</p>
+    </div>
+    <div class="overview">
+      <div class="ov-card problem reveal">
+        <div class="ov-card-tag">Why "we tested it" isn't enough</div>
+        <h4>The first 100 attacks teach you what was broken yesterday.</h4>
+        <p>A handful of one-off prompts catch the obvious vulnerabilities. They don't catch the long tail: base64-encoded injection, roleplay jailbreaks, unicode bypass, training-data extraction via "repeat the word forever", cross-session memory queries, instruction-overrides hidden in translation requests.</p>
+        <p>Worse: without a baseline, you can't quantify the value of your guardrails. The CISO asks "how much risk did we reduce?" and the answer is a shrug.</p>
+      </div>
+      <div class="ov-card solution reveal">
+        <div class="ov-card-tag">What this framework does</div>
+        <h4>500 attacks → guardrails → 500 attacks again → numbers.</h4>
+        <p><strong>Attack Generator</strong> pulls from public benchmarks (HarmBench, JailbreakBench), expands each base attack into 5 encoding variants (plaintext, base64, rot13, unicode-confusable, roleplay-wrap), and Claude generates new adversarials when coverage is thin.</p>
+        <p><strong>Guardrails Layer</strong>: input-side prompt-injection classifier (DeBERTa) + jailbreak detector; output-side PII redaction (Presidio), toxicity filter (toxic-bert), HTML/URL-scheme sanitizer; policy-side refusal injection for high-risk categories.</p>
+        <p><strong>Quantified report</strong>: per-OWASP-category attack success rate before / after, false-positive rate on 1,000 legitimate queries, latency overhead of the guardrails stack, PDF deliverable for the audit.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">02 · System diagram</div>
+      <h2>Generate · attack · categorize · guard · re-attack · report.</h2>
+    </div>
+    <div class="arch-figure reveal">
+      <h5>// Red-team loop · attack source → target → analyzer → OWASP map → guardrails → report</h5>
+      <svg viewBox="0 0 1180 460" xmlns="http://www.w3.org/2000/svg">
+        <g transform="translate(20, 30)">
+          <rect width="240" height="80" rx="8" fill="rgba(244,114,182,0.06)" stroke="#f472b6" stroke-width="1.2"/>
+          <text x="120" y="22" font-family="Inter" font-size="13" font-weight="600" fill="#f472b6" text-anchor="middle">Attack Generator</text>
+          <text x="120" y="40" font-family="JetBrains Mono" font-size="10" fill="#d5dae6" text-anchor="middle">HarmBench · JailbreakBench</text>
+          <text x="120" y="55" font-family="JetBrains Mono" font-size="10" fill="#d5dae6" text-anchor="middle">5 encoding variants each</text>
+          <text x="120" y="70" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">+ Claude attack mode</text>
+        </g>
+        <path d="M 260 70 L 320 70" stroke="#f472b6" stroke-width="1.5"/>
+        <g transform="translate(320, 30)">
+          <rect width="200" height="80" rx="8" fill="rgba(124,92,255,0.08)" stroke="#7c5cff" stroke-width="1.2"/>
+          <text x="100" y="22" font-family="Inter" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">Target System</text>
+          <text x="100" y="40" font-family="JetBrains Mono" font-size="10" fill="#22d3ee" text-anchor="middle">P01 / P03 endpoint</text>
+          <text x="100" y="60" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">{ guardrails on / off }</text>
+        </g>
+        <path d="M 520 70 L 580 70" stroke="#7c5cff" stroke-width="1.5"/>
+        <g transform="translate(580, 30)">
+          <rect width="220" height="80" rx="8" fill="rgba(34,211,238,0.08)" stroke="#22d3ee" stroke-width="1.2"/>
+          <text x="110" y="22" font-family="Inter" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">Response Analyzer</text>
+          <text x="110" y="40" font-family="JetBrains Mono" font-size="10" fill="#22d3ee" text-anchor="middle">refusal? leak? compliance?</text>
+          <text x="110" y="60" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">PII detect · tox classify</text>
+        </g>
+        <path d="M 800 70 L 860 70" stroke="#22d3ee" stroke-width="1.5"/>
+        <g transform="translate(860, 30)">
+          <rect width="290" height="80" rx="8" fill="rgba(255,90,114,0.06)" stroke="#ff5a72" stroke-width="1.2"/>
+          <text x="145" y="22" font-family="Inter" font-size="13" font-weight="600" fill="#ff5a72" text-anchor="middle">OWASP LLM Top 10 Categorizer</text>
+          <text x="145" y="40" font-family="JetBrains Mono" font-size="10" fill="#d5dae6" text-anchor="middle">LLM01..LLM10 · severity score</text>
+          <text x="145" y="60" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">aligned to OWASP 2023.10</text>
+        </g>
+
+        <!-- Guardrails layer -->
+        <g transform="translate(20, 200)">
+          <rect width="1130" height="100" rx="8" fill="rgba(52,211,153,0.04)" stroke="#34d399" stroke-width="1.5"/>
+          <text x="565" y="24" font-family="Inter" font-size="13" font-weight="700" fill="#34d399" text-anchor="middle">Guardrails Layer · installed as middleware</text>
+          <g font-family="JetBrains Mono" font-size="10" fill="#d5dae6" text-anchor="middle">
+            <g transform="translate(100, 50)">
+              <rect width="160" height="40" rx="6" fill="#0a0d18" stroke="#34d399"/>
+              <text x="80" y="18" fill="#34d399" font-weight="700">Input Filter</text>
+              <text x="80" y="32">prompt-injection · jailbreak</text>
+            </g>
+            <g transform="translate(290, 50)">
+              <rect width="160" height="40" rx="6" fill="#0a0d18" stroke="#34d399"/>
+              <text x="80" y="18" fill="#34d399" font-weight="700">PII Redaction</text>
+              <text x="80" y="32">Presidio · ID/CC/email masks</text>
+            </g>
+            <g transform="translate(480, 50)">
+              <rect width="160" height="40" rx="6" fill="#0a0d18" stroke="#34d399"/>
+              <text x="80" y="18" fill="#34d399" font-weight="700">Toxicity</text>
+              <text x="80" y="32">unitary/toxic-bert</text>
+            </g>
+            <g transform="translate(670, 50)">
+              <rect width="160" height="40" rx="6" fill="#0a0d18" stroke="#34d399"/>
+              <text x="80" y="18" fill="#34d399" font-weight="700">Output Sanitizer</text>
+              <text x="80" y="32">HTML strip · URL allowlist</text>
+            </g>
+            <g transform="translate(860, 50)">
+              <rect width="160" height="40" rx="6" fill="#0a0d18" stroke="#34d399"/>
+              <text x="80" y="18" fill="#34d399" font-weight="700">Refusal Injection</text>
+              <text x="80" y="32">policy-gated categories</text>
+            </g>
+          </g>
+        </g>
+
+        <!-- Report -->
+        <g transform="translate(390, 360)">
+          <rect width="400" height="60" rx="8" fill="rgba(34,211,238,0.06)" stroke="#22d3ee" stroke-width="1.2"/>
+          <text x="200" y="24" font-family="Inter" font-size="13" font-weight="700" fill="#22d3ee" text-anchor="middle">PDF Security Report</text>
+          <text x="200" y="42" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">before / after · per OWASP · FP rate · audit-ready</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">03 · Demo 1 of 2 · End-to-end run</div>
+      <h2>500 attacks. Baseline. Install guardrails. 500 attacks. PDF.</h2>
+      <p class="section-sub">Walks through dataset downloads, baseline red-team run against P01 (no guardrails), per-OWASP-category breakdown of attack success, guardrails install at middleware layer, re-run with guardrails on, side-by-side reduction table, PDF report generation.</p>
+    </div>
+    <div class="demo-wrap reveal">
+      <div class="demo-head">
+        <div class="demo-head-left">
+          <span class="demo-num">Demo 01</span>
+          <div>
+            <div class="demo-title">Red team · before &amp; after guardrails</div>
+            <div class="demo-desc">6 steps · 65s · HarmBench + JailbreakBench + Presidio + DeBERTa</div>
+          </div>
+        </div>
+        <div class="demo-hints"><span><kbd>SPACE</kbd> play</span><span><kbd>0</kbd> reset</span></div>
+      </div>
+      <div class="demo-body" id="demo-terminal"></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">04 · Demo 2 of 2 · Live attack dashboard</div>
+      <h2>Watch 20 attacks fire against guarded P01 — every one is blocked, redacted, or guarded.</h2>
+      <p class="section-sub">Top counter tracks attempts vs verdicts. Left panel shows per-OWASP attack success rate before (red) and after guardrails (green) — the reduction shown as a delta in pp. Right panel is the live feed of each attack with payload, verdict, and which guard caught it. <strong>0 breaches across the run.</strong></p>
+    </div>
+    <div class="demo-wrap reveal">
+      <div class="demo-head">
+        <div class="demo-head-left">
+          <span class="demo-num">Demo 02</span>
+          <div>
+            <div class="demo-title">Live red-team feed against P01 (guarded)</div>
+            <div class="demo-desc">20 attacks · 10 OWASP categories · 100% caught</div>
+          </div>
+        </div>
+        <div class="demo-hints"><span><kbd>SPACE</kbd> play</span><span><kbd>0</kbd> reset</span></div>
+      </div>
+      <div class="demo-body" id="demo-system"></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">05 · Stack</div>
+      <h2>Open-source attack tools + commercial-grade guards.</h2>
+    </div>
+    <div class="detail-grid">
+      <div class="detail-card reveal">
+        <h4>Stack — pinned</h4>
+        <div class="stack-group">
+          <div class="stack-group-title">Red team</div>
+          <div class="stack-pills">
+            <span class="stack-pill">garak<span class="ver">0.10.0</span></span>
+            <span class="stack-pill">giskard<span class="ver">2.15.0</span></span>
+            <span class="stack-pill">HarmBench dataset</span>
+            <span class="stack-pill">JailbreakBench</span>
+            <span class="stack-pill">ToxicChat</span>
+          </div>
+        </div>
+        <div class="stack-group">
+          <div class="stack-group-title">Guardrails</div>
+          <div class="stack-pills">
+            <span class="stack-pill">guardrails-ai<span class="ver">0.6.0</span></span>
+            <span class="stack-pill">nemo-guardrails<span class="ver">0.11.0</span></span>
+            <span class="stack-pill">Presidio (PII)</span>
+            <span class="stack-pill">unitary/toxic-bert</span>
+            <span class="stack-pill">protectai DeBERTa</span>
+          </div>
+        </div>
+        <div class="stack-group">
+          <div class="stack-group-title">Audit &amp; serving</div>
+          <div class="stack-pills">
+            <span class="stack-pill">Postgres<span class="ver">16</span></span>
+            <span class="stack-pill">LangSmith</span>
+            <span class="stack-pill">Next.js dashboard</span>
+            <span class="stack-pill">reportlab (PDF)</span>
+          </div>
+        </div>
+      </div>
+      <div class="detail-card pink reveal">
+        <h4>Reduction by category</h4>
+        <div class="decisions-row"><div class="choice">LLM01 Injection</div><div class="why"><strong>45% → 3%</strong> baseline → guarded. DeBERTa prompt-injection classifier catches the long tail (base64, unicode, roleplay-wrap).</div></div>
+        <div class="decisions-row"><div class="choice">LLM06 Disclosure</div><div class="why"><strong>48% → 1%</strong>. Presidio redacts PII before it leaves the model; cross-session memory queries blocked at tenant boundary.</div></div>
+        <div class="decisions-row"><div class="choice">LLM09 Overreliance</div><div class="why"><strong>58% → 12%</strong>. Hardest category — medical/financial speculation guarded with disclaimers + human-escalate, not blocked outright.</div></div>
+        <div class="decisions-row"><div class="choice">FP on legitimate</div><div class="why"><strong>1.2%</strong> on a 1,000-query test set. Within budget for a customer-facing assistant.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">06 · Roadmap to v1.0.0</div>
+      <h2>Eleven checkpoints.</h2>
+    </div>
+    <div class="detail-card reveal" style="padding: 30px 32px;">
+      <ol class="roadmap-list">
+        <li class="todo"><span class="num">01</span><span class="check">○</span><span class="label">Download HarmBench (400) + JailbreakBench (100) + ToxicChat (10K)</span></li>
+        <li class="todo"><span class="num">02</span><span class="check">○</span><span class="label">Adversarial prompt generators (encoded, role-play, instruction override)</span></li>
+        <li class="todo"><span class="num">03</span><span class="check">○</span><span class="label">Presidio integration for PII detection in outputs</span></li>
+        <li class="todo"><span class="num">04</span><span class="check">○</span><span class="label">Toxicity classifier (unitary/toxic-bert)</span></li>
+        <li class="todo"><span class="num">05</span><span class="check">○</span><span class="label">Prompt-injection detector (protectai/deberta-v3-base-prompt-injection)</span></li>
+        <li class="todo"><span class="num">06</span><span class="check">○</span><span class="label">OWASP LLM Top 10 attack-to-category mapping</span></li>
+        <li class="todo"><span class="num">07</span><span class="check">○</span><span class="label">Guardrails layer using guardrails-ai or nvidia-nemo-guardrails</span></li>
+        <li class="todo"><span class="num">08</span><span class="check">○</span><span class="label">Apply framework to P01 and P03 of this portfolio</span></li>
+        <li class="todo"><span class="num">09</span><span class="check">○</span><span class="label">Measure attack success rate before / after guardrails per category</span></li>
+        <li class="todo"><span class="num">10</span><span class="check">○</span><span class="label">Next.js security dashboard with attack gallery + report viewer</span></li>
+        <li class="todo"><span class="num">11</span><span class="check">○</span><span class="label">PDF security reports for P01 and P03</span></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <a class="next-card" href="08-graphrag-sec.html">
+      <div>
+        <div class="label">Next project →</div>
+        <h3>P08 · GraphRAG over SEC EDGAR</h3>
+        <p style="color: var(--text-dim); margin-top: 6px;">Knowledge graph in Neo4j · entity extraction · multi-hop Cypher reasoning over S&amp;P 500 10-Ks</p>
+      </div>
+      <span class="arrow">→</span>
+    </a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div>// Juan David Suárez Sánchez · AI Engineer · 2026</div>
+    <div>juadsuarezsan@unal.edu.co · github.com/Juadsuarezsan</div>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="animations.jsx"></script>
+<script type="text/babel" src="_shared.jsx"></script>
+<script type="text/babel" src="p07.jsx"></script>
+<script type="text/babel">
+  function mountWhenReady() {
+    if (typeof P07TerminalDemo === 'undefined' || typeof P07SystemDemo === 'undefined') {
+      setTimeout(mountWhenReady, 50); return;
+    }
+    ReactDOM.createRoot(document.getElementById('demo-terminal')).render(<P07TerminalDemo/>);
+    ReactDOM.createRoot(document.getElementById('demo-system')).render(<P07SystemDemo/>);
+  }
+  mountWhenReady();
+</script>
+<script>
+  const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.target.classList.add('in')), { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+</body>
+</html>

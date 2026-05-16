@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#06070d" />
+<title>P02 — Customer Support Triage · Juan David Suárez Sánchez</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='12' fill='%2322d3ee'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="_styles.css" />
+</head>
+<body>
+
+<div class="bg-stage"></div>
+<div class="bg-grid"></div>
+
+<nav>
+  <div class="nav-inner">
+    <div class="crumbs">
+      <a href="../index.html">← Portfolio</a>
+      <span class="sep">/</span>
+      <span class="here">P02 · Customer Support Triage</span>
+    </div>
+    <div class="nav-status">
+      <span class="pill pill-scaffold">Scaffold v0.1.0</span>
+      <a class="nav-cta" href="https://github.com/Juadsuarezsan/support-triage-agent" target="_blank" rel="noopener">View on GitHub →</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero container" data-screen-label="01 Hero">
+  <div class="hero-eyebrow">P02 · Fine-tuning · LoRA · DistilBERT · Claude</div>
+  <h1>Cheap classifier where it suffices. <span class="em">Claude reasoning where it matters. One pipeline, three routings.</span></h1>
+  <p class="lede">
+    Production triage for customer support: a <strong>LoRA-fine-tuned DistilBERT</strong> classifies
+    intent in 85ms for $0.0004 per ticket. Claude handles the reasoning the small model can't — drafting
+    responses grounded in similar resolved tickets retrieved from Qdrant. A confidence estimator decides
+    auto-resolve vs human-suggest vs supervisor escalation. The fine-tuned adapter ships to
+    <strong>HuggingFace Hub</strong> with a full model card.
+  </p>
+
+  <div class="meta-strip">
+    <div>
+      <div class="meta-label">Status</div>
+      <div class="meta-value">Planned · README only<br/><span class="alt">queued after P01 wraps</span></div>
+    </div>
+    <div>
+      <div class="meta-label">Datasets</div>
+      <div class="meta-value">Bitext · 26,872 queries<br/><span class="alt">+ Twitter CS · 3M tweets</span></div>
+    </div>
+    <div>
+      <div class="meta-label">Publication</div>
+      <div class="meta-value">HuggingFace Hub adapter<br/><span class="alt">benchmarks + model card</span></div>
+    </div>
+    <div>
+      <div class="meta-label">Target metric</div>
+      <div class="meta-value">Macro-F1 ≥ 0.93 · 27 intents<br/><span class="alt">auto-resolve ≥ 70%</span></div>
+    </div>
+  </div>
+</header>
+
+<section data-screen-label="02 Overview">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">01 · The problem</div>
+      <h2>One model is either too dumb or too expensive.</h2>
+      <p class="section-sub">
+        Zero-shot Claude over every ticket costs $0.012 each and tops out at 0.78 macro-F1.
+        A classifier alone is fast and cheap but can't draft a response. The right answer is both,
+        wired together with a confidence-gated router.
+      </p>
+    </div>
+
+    <div class="overview">
+      <div class="ov-card problem reveal">
+        <div class="ov-card-tag">Why single-model fails</div>
+        <h4>You either pay too much or you can't escalate well.</h4>
+        <p><strong>Zero-shot Claude</strong> gets the intent right ~78% of the time, generates fine
+          responses, costs $0.012/ticket, and has 1.8s p95 — that's a $12K/month bill for a 1k/hour queue.</p>
+        <p><strong>Classifier-only</strong> hits 0.94 macro-F1 in 85ms for $0.0004/ticket, but it can't
+          actually answer the customer. It just labels.</p>
+        <p>And neither has a sense of <em>when to stop</em> and let a human in. The 6% of tickets where
+          the model is wrong cause the worst incidents.</p>
+      </div>
+      <div class="ov-card solution reveal">
+        <div class="ov-card-tag">The hybrid wins on every axis</div>
+        <h4>Classifier scopes the problem. Claude solves it. Confidence routes it.</h4>
+        <p><strong>DistilBERT + LoRA</strong> classifies intent in 85ms. <strong>Claude</strong> reads
+          the top-5 similar resolved tickets from Qdrant and drafts a response grounded in those past
+          resolutions.</p>
+        <p><strong>Confidence Estimator</strong> combines intent confidence, sentiment, similarity to past
+          resolutions, and priority into a single score: <span class="mono">&gt; 0.85 auto · 0.6–0.85
+          suggest · &lt; 0.6 escalate</span>.</p>
+        <p>Net: same accuracy as Claude (0.94), 50% lower cost, 33% faster, and 19 extra auto-resolutions
+          per hundred tickets.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="03 Architecture">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">02 · System diagram</div>
+      <h2>Five stages, one confidence gate, three routings.</h2>
+      <p class="section-sub">Each stage logs to LangSmith. Postgres stores the audit trail. Qdrant holds embedded resolutions for semantic retrieval.</p>
+    </div>
+
+    <div class="arch-figure reveal">
+      <h5>// Triage pipeline · classifier → reasoner → confidence-gated routing</h5>
+      <svg viewBox="0 0 1180 460" xmlns="http://www.w3.org/2000/svg">
+        <!-- Input -->
+        <g transform="translate(40, 30)">
+          <rect width="180" height="50" rx="8" fill="rgba(124,92,255,0.08)" stroke="#7c5cff" stroke-width="1.2"/>
+          <text x="90" y="22" font-family="Inter" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">Ticket in</text>
+          <text x="90" y="40" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">email · slack · chat</text>
+        </g>
+        <path d="M 220 55 L 270 55" stroke="#7c5cff" stroke-width="1.5" fill="none" marker-end="url(#arrow1)"/>
+        <defs>
+          <marker id="arrow1" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+            <path d="M0,0 L9,3 L0,6" fill="none" stroke="#7c5cff" stroke-width="1.5"/>
+          </marker>
+        </defs>
+
+        <!-- Classifier -->
+        <g transform="translate(280, 20)">
+          <rect width="220" height="70" rx="8" fill="rgba(34,211,238,0.08)" stroke="#22d3ee" stroke-width="1.2"/>
+          <text x="110" y="22" font-family="Inter" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">Intent Classifier</text>
+          <text x="110" y="40" font-family="JetBrains Mono" font-size="10" fill="#22d3ee" text-anchor="middle">DistilBERT + LoRA (r=16)</text>
+          <text x="110" y="55" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">→ 27 intents · 85ms · F1 0.94</text>
+        </g>
+
+        <path d="M 500 55 L 560 55" stroke="#22d3ee" stroke-width="1.5" fill="none"/>
+
+        <!-- Sentiment + Priority -->
+        <g transform="translate(560, 20)">
+          <rect width="220" height="70" rx="8" fill="rgba(255,255,255,0.02)" stroke="#7c5cff" stroke-width="1"/>
+          <text x="110" y="22" font-family="Inter" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">Sentiment + Priority</text>
+          <text x="110" y="40" font-family="JetBrains Mono" font-size="10" fill="#22d3ee" text-anchor="middle">Claude · structured</text>
+          <text x="110" y="55" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">sentiment · P0–P3 · urgency</text>
+        </g>
+
+        <path d="M 780 55 L 840 55" stroke="#7c5cff" stroke-width="1.5" fill="none"/>
+
+        <!-- Similar tickets retrieval -->
+        <g transform="translate(840, 20)">
+          <rect width="300" height="70" rx="8" fill="rgba(255,255,255,0.02)" stroke="#22d3ee" stroke-width="1"/>
+          <text x="150" y="22" font-family="Inter" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">Similar Resolved Tickets</text>
+          <text x="150" y="40" font-family="JetBrains Mono" font-size="10" fill="#22d3ee" text-anchor="middle">Qdrant · mpnet-base-v2</text>
+          <text x="150" y="55" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">→ top-5 past resolutions</text>
+        </g>
+
+        <!-- arrows down -->
+        <path d="M 990 90 L 990 160" stroke="#22d3ee" stroke-width="1.5" fill="none"/>
+
+        <!-- Drafter -->
+        <g transform="translate(840, 160)">
+          <rect width="300" height="70" rx="8" fill="rgba(124,92,255,0.10)" stroke="#7c5cff" stroke-width="1.5"/>
+          <text x="150" y="22" font-family="Inter" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">Solution Drafter</text>
+          <text x="150" y="40" font-family="JetBrains Mono" font-size="10" fill="#22d3ee" text-anchor="middle">Claude Sonnet 4.5</text>
+          <text x="150" y="55" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">response grounded in past wins</text>
+        </g>
+
+        <path d="M 840 195 L 740 195" stroke="#7c5cff" stroke-width="1.5" fill="none"/>
+
+        <!-- Confidence -->
+        <g transform="translate(420, 160)">
+          <rect width="320" height="70" rx="8" fill="rgba(251,191,36,0.06)" stroke="#fbbf24" stroke-width="1.5"/>
+          <text x="160" y="22" font-family="Inter" font-size="13" font-weight="700" fill="#fbbf24" text-anchor="middle">Confidence Estimator</text>
+          <text x="160" y="40" font-family="JetBrains Mono" font-size="10" fill="#fbbf24" text-anchor="middle">f(intent_conf, sentiment, sim, priority)</text>
+          <text x="160" y="55" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">→ score ∈ [0, 1]</text>
+        </g>
+
+        <!-- Branches down -->
+        <g stroke="rgba(124,92,255,0.4)" stroke-width="1.2" fill="none">
+          <path d="M 580 230 L 580 280"/>
+          <path d="M 580 230 C 580 260, 240 260, 240 280"/>
+          <path d="M 580 230 C 580 260, 920 260, 920 280"/>
+        </g>
+
+        <!-- Three routings -->
+        <g transform="translate(140, 280)">
+          <rect width="200" height="64" rx="8" fill="rgba(52,211,153,0.06)" stroke="#34d399" stroke-width="1.2"/>
+          <text x="100" y="22" font-family="Inter" font-size="13" font-weight="600" fill="#34d399" text-anchor="middle">AUTO-RESOLVE</text>
+          <text x="100" y="40" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">score &gt; 0.85</text>
+          <text x="100" y="54" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">→ send draft as-is</text>
+        </g>
+        <g transform="translate(480, 280)">
+          <rect width="200" height="64" rx="8" fill="rgba(251,191,36,0.06)" stroke="#fbbf24" stroke-width="1.2"/>
+          <text x="100" y="22" font-family="Inter" font-size="13" font-weight="600" fill="#fbbf24" text-anchor="middle">SUGGEST</text>
+          <text x="100" y="40" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">0.6 ≤ score ≤ 0.85</text>
+          <text x="100" y="54" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">→ human reviews draft</text>
+        </g>
+        <g transform="translate(820, 280)">
+          <rect width="200" height="64" rx="8" fill="rgba(255,90,114,0.06)" stroke="#ff5a72" stroke-width="1.2"/>
+          <text x="100" y="22" font-family="Inter" font-size="13" font-weight="600" fill="#ff5a72" text-anchor="middle">ESCALATE</text>
+          <text x="100" y="40" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">score &lt; 0.6 or sensitive</text>
+          <text x="100" y="54" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">→ supervisor inbox</text>
+        </g>
+
+        <!-- Audit log -->
+        <g transform="translate(420, 380)">
+          <rect width="320" height="48" rx="8" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+          <text x="160" y="22" font-family="Inter" font-size="12" font-weight="600" fill="#e7ecf5" text-anchor="middle">Audit Logger</text>
+          <text x="160" y="38" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">Postgres · all decisions · LangSmith trace_id</text>
+        </g>
+        <g stroke="rgba(255,255,255,0.14)" stroke-width="1" fill="none" stroke-dasharray="3 3">
+          <path d="M 240 344 C 240 370, 420 380, 420 400"/>
+          <path d="M 580 344 L 580 380"/>
+          <path d="M 920 344 C 920 370, 740 380, 740 400"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="04 Demo 1 Install">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">03 · Demo 1 of 2 · Train &amp; deploy</div>
+      <h2>From <span style="color:var(--accent-2)">git clone</span> to a published HF Hub model.</h2>
+      <p class="section-sub">
+        Press play. Walks through env setup, Docker stack, LoRA fine-tune of DistilBERT
+        (3 epochs · r=16 · 0.66% trainable params), eval on 27 intents with confusion matrix,
+        push adapter + model card to HuggingFace Hub, ingest historical resolutions, run the
+        head-to-head benchmark (zero-shot vs classifier-only vs hybrid), and launch the Kanban UI.
+      </p>
+    </div>
+
+    <div class="demo-wrap reveal">
+      <div class="demo-head">
+        <div class="demo-head-left">
+          <span class="demo-num">Demo 01</span>
+          <div>
+            <div class="demo-title">Train · publish · benchmark</div>
+            <div class="demo-desc">9 steps · 75s · uv + PEFT + HF Hub + LangSmith</div>
+          </div>
+        </div>
+        <div class="demo-hints">
+          <span><kbd>SPACE</kbd> play / pause</span>
+          <span><kbd>←</kbd><kbd>→</kbd> seek</span>
+          <span><kbd>0</kbd> reset</span>
+        </div>
+      </div>
+      <div class="demo-body" id="demo-terminal"></div>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="05 Demo 2 System">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">04 · Demo 2 of 2 · System in motion</div>
+      <h2>Five tickets, three routings, one supervisor escalation.</h2>
+      <p class="section-sub">
+        Watch tickets flow through the Kanban: a delivery question and a refund auto-resolve, a website
+        bug gets suggested to a human, a health-related lawsuit threat escalates, a positive discount
+        request auto-resolves with a code. The detail panel below shows the classifier output, similar
+        tickets retrieved, drafted response, and routing decision for the currently active ticket.
+      </p>
+    </div>
+
+    <div class="demo-wrap reveal">
+      <div class="demo-head">
+        <div class="demo-head-left">
+          <span class="demo-num">Demo 02</span>
+          <div>
+            <div class="demo-title">Kanban — 5 tickets through the full pipeline</div>
+            <div class="demo-desc">auto-resolve × 3 · suggest × 1 · escalate × 1</div>
+          </div>
+        </div>
+        <div class="demo-hints">
+          <span><kbd>SPACE</kbd> play / pause</span>
+          <span><kbd>←</kbd><kbd>→</kbd> seek</span>
+          <span><kbd>0</kbd> reset</span>
+        </div>
+      </div>
+      <div class="demo-body" id="demo-system"></div>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="07 Stack">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">05 · Stack</div>
+      <h2>Pinned dependencies, public weights.</h2>
+      <p class="section-sub">Same stack philosophy as P01 — versions are explicit, alternatives are wired and toggleable.</p>
+    </div>
+
+    <div class="detail-grid">
+      <div class="detail-card reveal">
+        <h4>Stack — pinned</h4>
+        <div class="stack-group">
+          <div class="stack-group-title">Training</div>
+          <div class="stack-pills">
+            <span class="stack-pill">transformers<span class="ver">4.46.0</span></span>
+            <span class="stack-pill">peft<span class="ver">0.13.0</span></span>
+            <span class="stack-pill">accelerate<span class="ver">1.0.1</span></span>
+            <span class="stack-pill">torch<span class="ver">2.5.0</span></span>
+            <span class="stack-pill">bitsandbytes<span class="ver">0.44.1</span></span>
+          </div>
+        </div>
+        <div class="stack-group">
+          <div class="stack-group-title">Base models</div>
+          <div class="stack-pills">
+            <span class="stack-pill">distilbert-base-uncased</span>
+            <span class="stack-pill">roberta-base (fallback)</span>
+            <span class="stack-pill">all-mpnet-base-v2</span>
+          </div>
+        </div>
+        <div class="stack-group">
+          <div class="stack-group-title">Reasoning</div>
+          <div class="stack-pills">
+            <span class="stack-pill">Claude Sonnet 4.5</span>
+            <span class="stack-pill">LangGraph<span class="ver">0.2.45</span></span>
+            <span class="stack-pill">Pydantic<span class="ver">v2</span></span>
+          </div>
+        </div>
+        <div class="stack-group">
+          <div class="stack-group-title">Storage &amp; serving</div>
+          <div class="stack-pills">
+            <span class="stack-pill">Qdrant<span class="ver">1.12</span></span>
+            <span class="stack-pill">Postgres<span class="ver">16</span></span>
+            <span class="stack-pill">HuggingFace Hub</span>
+            <span class="stack-pill">Next.js<span class="ver">14</span></span>
+            <span class="stack-pill">shadcn/ui</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-card cyan reveal">
+        <h4>Publication checklist</h4>
+        <div class="decisions-row">
+          <div class="choice">HF model card</div>
+          <div class="why"><strong>Required:</strong> intended use, training details (LoRA r/alpha/lr/epochs), data card with bias notes, eval table with macro-F1 by intent, license, citation BibTeX.</div>
+        </div>
+        <div class="decisions-row">
+          <div class="choice">Reproducibility</div>
+          <div class="why">Training script committed with seed=42, exact dependency lockfile, expected loss curve documented. A stranger can pull the dataset and re-run.</div>
+        </div>
+        <div class="decisions-row">
+          <div class="choice">Limitations</div>
+          <div class="why">Bitext is English-only and skewed to e-commerce. Spanish customers degrade to zero-shot Claude until v2 covers Spanish CS data.</div>
+        </div>
+        <div class="decisions-row">
+          <div class="choice">License</div>
+          <div class="why">MIT for code; CC-BY-4.0 for the adapter; Bitext upstream license preserved in attribution.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="08 Roadmap">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">06 · Roadmap to v1.0.0</div>
+      <h2>Ten checkpoints. Each one is a separate PR.</h2>
+      <p class="section-sub">From <span class="mono">02-support-triage/README.md</span> on <span class="mono">main</span>.</p>
+    </div>
+
+    <div class="detail-card reveal" style="padding: 30px 32px;">
+      <ol class="roadmap-list">
+        <li class="todo"><span class="num">01</span><span class="check">○</span><span class="label">Load Bitext (27K queries × 27 intents), 80/10/10 stratified split</span></li>
+        <li class="todo"><span class="num">02</span><span class="check">○</span><span class="label">LoRA fine-tune DistilBERT, evaluate macro-F1 on test split</span></li>
+        <li class="todo"><span class="num">03</span><span class="check">○</span><span class="label">Publish fine-tuned model to <strong>HuggingFace Hub</strong> with full model card</span></li>
+        <li class="todo"><span class="num">04</span><span class="check">○</span><span class="label">Ingest 200 resolved tickets into Qdrant (Twitter CS dataset for eval)</span></li>
+        <li class="todo"><span class="num">05</span><span class="check">○</span><span class="label">LangGraph agent: classifier → sentiment → similar tickets → drafter → confidence scorer</span></li>
+        <li class="todo"><span class="num">06</span><span class="check">○</span><span class="label">Eval set on Twitter dataset (200 end-to-end conversations)</span></li>
+        <li class="todo"><span class="num">07</span><span class="check">○</span><span class="label">Compare zero-shot Claude vs classifier-only vs hybrid pipeline</span></li>
+        <li class="todo"><span class="num">08</span><span class="check">○</span><span class="label">Next.js Kanban UI with tickets through states (pending / drafted / suggested / resolved / escalated)</span></li>
+        <li class="todo"><span class="num">09</span><span class="check">○</span><span class="label">LangSmith public trace gallery (≥30 examples)</span></li>
+        <li class="todo"><span class="num">10</span><span class="check">○</span><span class="label">Confusion matrix visualized in README</span></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="09 Next">
+  <div class="container">
+    <a class="next-card" href="03-sales-intelligence.html">
+      <div>
+        <div class="label">Next project →</div>
+        <h3>P03 · B2B Sales Intelligence Agent</h3>
+        <p style="color: var(--text-dim); margin-top: 6px;">Planner-Executor-Reflector loop · Tavily + HN · personalized outreach with measurable personalization score</p>
+      </div>
+      <span class="arrow">→</span>
+    </a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div>// Juan David Suárez Sánchez · AI Engineer · 2026</div>
+    <div>juadsuarezsan@unal.edu.co · github.com/Juadsuarezsan</div>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="animations.jsx"></script>
+<script type="text/babel" src="_shared.jsx"></script>
+<script type="text/babel" src="p02.jsx"></script>
+
+<script type="text/babel">
+  function mountWhenReady() {
+    if (typeof P02TerminalDemo === 'undefined' || typeof P02SystemDemo === 'undefined') {
+      setTimeout(mountWhenReady, 50); return;
+    }
+    ReactDOM.createRoot(document.getElementById('demo-terminal')).render(<P02TerminalDemo/>);
+    ReactDOM.createRoot(document.getElementById('demo-system')).render(<P02SystemDemo/>);
+  }
+  mountWhenReady();
+</script>
+<script>
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+</script>
+</body>
+</html>

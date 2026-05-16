@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#06070d" />
+<title>P03 — B2B Sales Intelligence · Juan David Suárez Sánchez</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='12' fill='%23f472b6'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="_styles.css" />
+</head>
+<body>
+
+<div class="bg-stage"></div>
+<div class="bg-grid"></div>
+
+<nav>
+  <div class="nav-inner">
+    <div class="crumbs">
+      <a href="../index.html">← Portfolio</a>
+      <span class="sep">/</span>
+      <span class="here">P03 · B2B Sales Intelligence</span>
+    </div>
+    <div class="nav-status">
+      <span class="pill pill-scaffold">Scaffold v0.1.0</span>
+      <a class="nav-cta" href="https://github.com/Juadsuarezsan/sales-intelligence-agent" target="_blank" rel="noopener">View on GitHub →</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero container" data-screen-label="01 Hero">
+  <div class="hero-eyebrow">P03 · Agent loop · Plan-Execute-Reflect</div>
+  <h1>For each target company, the agent <span class="em">plans research, runs it, reflects on gaps, and writes outreach that doesn't read like a template.</span></h1>
+  <p class="lede">
+    A <strong>plan-execute-reflect</strong> loop over the public web. Researches a company across
+    Tavily, HackerNews, and the live site; merges findings into a Pydantic-validated
+    <span class="mono">CompanyProfile</span>; extracts the pain point + hiring signal + recent news
+    hook; writes a personalized outreach email that's scored by Claude Opus on personalization,
+    accuracy, and CTA clarity. Batched at 8 workers, 100 YC companies in 10 minutes.
+  </p>
+
+  <div class="meta-strip">
+    <div>
+      <div class="meta-label">Status</div>
+      <div class="meta-value">Planned · README only<br/><span class="alt">phase 1 · weeks 7–9</span></div>
+    </div>
+    <div>
+      <div class="meta-label">Targets</div>
+      <div class="meta-value">YC companies · 5,124<br/><span class="alt">batch 100 with seed=42</span></div>
+    </div>
+    <div>
+      <div class="meta-label">Tools</div>
+      <div class="meta-value">Tavily · HN · live web<br/><span class="alt">selectolax + httpx</span></div>
+    </div>
+    <div>
+      <div class="meta-label">Target metric</div>
+      <div class="meta-value">Personalization ≥ 4.5/5<br/><span class="alt">vs 1.4 template · 2.7 single-search</span></div>
+    </div>
+  </div>
+</header>
+
+<section data-screen-label="02 Overview">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">01 · The problem</div>
+      <h2>Single-pass research writes outreach that gets ignored.</h2>
+      <p class="section-sub">
+        Sales tools that send one query to an LLM with "Write me an email to Acme Corp" produce
+        templates with the name swapped. The difference between 1.4 and 4.5 on a 5-point
+        personalization scale is whether the recipient replies.
+      </p>
+    </div>
+
+    <div class="overview">
+      <div class="ov-card problem reveal">
+        <div class="ov-card-tag">Why one-shot fails</div>
+        <h4>The LLM doesn't know what it doesn't know.</h4>
+        <p>Without a reflection step, a single Tavily search returns 8 generic hits. The model
+          synthesizes whatever's at the top — usually a press release from two years ago. The
+          email reads "I saw your Series B" when the company just closed Series D.</p>
+        <p>Worse: the model never asks itself <em>"is this enough?"</em> So it never goes back
+          for the hiring page, the recent HN thread, the careers post.</p>
+      </div>
+      <div class="ov-card solution reveal">
+        <div class="ov-card-tag">What the loop adds</div>
+        <h4>Plan, execute, reflect, refine — capped at 3 iterations.</h4>
+        <p><strong>Planner</strong> writes a research plan listing what to look for (funding, hiring,
+          recent product, technical posture).</p>
+        <p><strong>Executor</strong> runs tool calls in parallel: Tavily for news, HN for technical
+          signal, website fetch for primary sources.</p>
+        <p><strong>Reflector</strong> reads the harvest and asks: "Do I know enough? Are there
+          contradictions? Is the recent news from this quarter or 2023?" If gaps remain, it sends
+          refined queries back to the Executor. Max 3 loops keeps cost bounded.</p>
+        <p>Net result: 4.4 accuracy + 4.6 personalization for $0.04 per email — beats the
+          single-search baseline by +1.9 points of personalization.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="03 Architecture">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">02 · System diagram</div>
+      <h2>One loop, three tools, structured output.</h2>
+      <p class="section-sub">Loop body is a LangGraph cycle. The Reflector decides whether to refine or proceed. Profile + Email are Pydantic models — invalid outputs are retried, not silently coerced.</p>
+    </div>
+
+    <div class="arch-figure reveal">
+      <h5>// LangGraph cycle · planner → executor → reflector → (loop) → profile → email</h5>
+      <svg viewBox="0 0 1180 460" xmlns="http://www.w3.org/2000/svg">
+        <!-- Input -->
+        <g transform="translate(30, 30)">
+          <rect width="160" height="50" rx="8" fill="rgba(124,92,255,0.08)" stroke="#7c5cff" stroke-width="1.2"/>
+          <text x="80" y="22" font-family="Inter" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">Target company</text>
+          <text x="80" y="40" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">name · website · industry</text>
+        </g>
+        <path d="M 190 55 L 250 55" stroke="#7c5cff" stroke-width="1.5" fill="none"/>
+
+        <!-- Planner -->
+        <g transform="translate(250, 20)">
+          <rect width="170" height="70" rx="8" fill="rgba(34,211,238,0.08)" stroke="#22d3ee" stroke-width="1.2"/>
+          <text x="85" y="22" font-family="Inter" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">Planner</text>
+          <text x="85" y="40" font-family="JetBrains Mono" font-size="10" fill="#22d3ee" text-anchor="middle">Claude</text>
+          <text x="85" y="55" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">→ research plan</text>
+        </g>
+        <path d="M 420 55 L 480 55" stroke="#22d3ee" stroke-width="1.5" fill="none"/>
+
+        <!-- Executor -->
+        <g transform="translate(480, 20)">
+          <rect width="220" height="70" rx="8" fill="rgba(124,92,255,0.10)" stroke="#7c5cff" stroke-width="1.5"/>
+          <text x="110" y="22" font-family="Inter" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">Executor (parallel)</text>
+          <text x="110" y="40" font-family="JetBrains Mono" font-size="10" fill="#22d3ee" text-anchor="middle">Tavily · HN · website fetch</text>
+          <text x="110" y="55" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">httpx + selectolax</text>
+        </g>
+        <path d="M 700 55 L 760 55" stroke="#7c5cff" stroke-width="1.5" fill="none"/>
+
+        <!-- Reflector -->
+        <g transform="translate(760, 20)">
+          <rect width="200" height="70" rx="8" fill="rgba(244,114,182,0.08)" stroke="#f472b6" stroke-width="1.5"/>
+          <text x="100" y="22" font-family="Inter" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">Reflector</text>
+          <text x="100" y="40" font-family="JetBrains Mono" font-size="10" fill="#f472b6" text-anchor="middle">enough? gaps? contradictions?</text>
+          <text x="100" y="55" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">max 3 loops</text>
+        </g>
+
+        <!-- Loop arrow -->
+        <g stroke="#f472b6" stroke-width="1.5" fill="none">
+          <path d="M 860 90 C 860 130, 590 130, 590 90" stroke-dasharray="5 4"/>
+          <text x="860" y="120" font-family="JetBrains Mono" font-size="10" fill="#f472b6" text-anchor="end">refine query →</text>
+        </g>
+
+        <!-- Down arrow proceed -->
+        <path d="M 860 90 L 860 170" stroke="#22d3ee" stroke-width="1.5" fill="none"/>
+        <text x="870" y="135" font-family="JetBrains Mono" font-size="10" fill="#22d3ee">↓ proceed</text>
+
+        <!-- ProfileBuilder -->
+        <g transform="translate(720, 170)">
+          <rect width="280" height="70" rx="8" fill="rgba(255,255,255,0.02)" stroke="#22d3ee" stroke-width="1"/>
+          <text x="140" y="22" font-family="Inter" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">CompanyProfile (Pydantic)</text>
+          <text x="140" y="40" font-family="JetBrains Mono" font-size="10" fill="#22d3ee" text-anchor="middle">funding · team · pain · hiring · news</text>
+          <text x="140" y="55" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">→ validated or retried</text>
+        </g>
+
+        <!-- Personalization extractor -->
+        <g transform="translate(420, 280)">
+          <rect width="280" height="58" rx="8" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+          <text x="140" y="22" font-family="Inter" font-size="12" font-weight="600" fill="#e7ecf5" text-anchor="middle">Personalization Extractor</text>
+          <text x="140" y="40" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">pick 1 hook + 1 pain + 1 signal</text>
+        </g>
+
+        <path d="M 860 240 C 860 270, 560 270, 560 280" stroke="#22d3ee" stroke-width="1.2" fill="none"/>
+
+        <!-- Email writer -->
+        <g transform="translate(120, 280)">
+          <rect width="260" height="58" rx="8" fill="rgba(124,92,255,0.10)" stroke="#7c5cff" stroke-width="1.5"/>
+          <text x="130" y="22" font-family="Inter" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">Email Writer</text>
+          <text x="130" y="40" font-family="JetBrains Mono" font-size="10" fill="#22d3ee" text-anchor="middle">subject · hook · value · CTA</text>
+        </g>
+        <path d="M 420 309 L 380 309" stroke="#7c5cff" stroke-width="1.2" fill="none"/>
+
+        <!-- Quality scorer -->
+        <g transform="translate(120, 380)">
+          <rect width="260" height="48" rx="8" fill="rgba(52,211,153,0.06)" stroke="#34d399" stroke-width="1.2"/>
+          <text x="130" y="22" font-family="Inter" font-size="12" font-weight="600" fill="#34d399" text-anchor="middle">LLM-as-judge (Claude Opus)</text>
+          <text x="130" y="38" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">personalization · accuracy · CTA</text>
+        </g>
+        <path d="M 250 338 L 250 380" stroke="#7c5cff" stroke-width="1.2" fill="none"/>
+
+        <!-- Audit / DB -->
+        <g transform="translate(420, 380)">
+          <rect width="580" height="48" rx="8" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+          <text x="290" y="22" font-family="Inter" font-size="12" font-weight="600" fill="#e7ecf5" text-anchor="middle">Persistence + Audit</text>
+          <text x="290" y="38" font-family="JetBrains Mono" font-size="10" fill="#9aa3b8" text-anchor="middle">Postgres: company_profile · outreach_email · research_log · LangSmith trace_id</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="04 Demo 1 Install">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">03 · Demo 1 of 2 · Batch run</div>
+      <h2>Setup, sample 100 YC companies, run them, score the outputs.</h2>
+      <p class="section-sub">
+        End-to-end: env config, dependency install, YC dataset load, 8-worker parallel batch
+        through plan-execute-reflect with up to 3 loops per company, LLM-as-judge scoring with
+        Claude Opus, persistence to Postgres, traces pushed to LangSmith, Next.js gallery launch.
+      </p>
+    </div>
+
+    <div class="demo-wrap reveal">
+      <div class="demo-head">
+        <div class="demo-head-left">
+          <span class="demo-num">Demo 01</span>
+          <div>
+            <div class="demo-title">Batch · 100 companies · 10.7 minutes</div>
+            <div class="demo-desc">7 steps · 58s · uv + Tavily + LangGraph + Claude Opus judge</div>
+          </div>
+        </div>
+        <div class="demo-hints">
+          <span><kbd>SPACE</kbd> play / pause</span>
+          <span><kbd>←</kbd><kbd>→</kbd> seek</span>
+          <span><kbd>0</kbd> reset</span>
+        </div>
+      </div>
+      <div class="demo-body" id="demo-terminal"></div>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="05 Demo 2 System">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">04 · Demo 2 of 2 · Agent loop in motion</div>
+      <h2>Two companies, end-to-end — research log, profile, email.</h2>
+      <p class="section-sub">
+        Watch Tavily / HN / website queries fire on the left, the <span class="mono">CompanyProfile</span>
+        fill field-by-field in the middle, and the personalized outreach stream into the right pane.
+        Then the LLM judge scores it. Anthropic processed first, Linear second.
+      </p>
+    </div>
+
+    <div class="demo-wrap reveal">
+      <div class="demo-head">
+        <div class="demo-head-left">
+          <span class="demo-num">Demo 02</span>
+          <div>
+            <div class="demo-title">Plan → Execute → Reflect → Profile → Email → Score</div>
+            <div class="demo-desc">2 companies · 4–6 reflection loops · LLM-as-judge stamps</div>
+          </div>
+        </div>
+        <div class="demo-hints">
+          <span><kbd>SPACE</kbd> play / pause</span>
+          <span><kbd>←</kbd><kbd>→</kbd> seek</span>
+          <span><kbd>0</kbd> reset</span>
+        </div>
+      </div>
+      <div class="demo-body" id="demo-system"></div>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="07 Stack">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">05 · Stack</div>
+      <h2>Public web in, structured outputs out.</h2>
+    </div>
+
+    <div class="detail-grid">
+      <div class="detail-card reveal">
+        <h4>Stack — pinned</h4>
+        <div class="stack-group">
+          <div class="stack-group-title">Agent loop</div>
+          <div class="stack-pills">
+            <span class="stack-pill">LangGraph<span class="ver">0.2.45</span></span>
+            <span class="stack-pill">Claude Sonnet 4.5</span>
+            <span class="stack-pill">Claude Opus<span class="ver">judge</span></span>
+            <span class="stack-pill">Pydantic<span class="ver">2.9.2</span></span>
+          </div>
+        </div>
+        <div class="stack-group">
+          <div class="stack-group-title">Tools</div>
+          <div class="stack-pills">
+            <span class="stack-pill">tavily-python<span class="ver">0.5.0</span></span>
+            <span class="stack-pill">HN Algolia API</span>
+            <span class="stack-pill">httpx<span class="ver">0.27.2</span></span>
+            <span class="stack-pill">selectolax<span class="ver">0.3.27</span></span>
+          </div>
+        </div>
+        <div class="stack-group">
+          <div class="stack-group-title">Storage</div>
+          <div class="stack-pills">
+            <span class="stack-pill">Postgres<span class="ver">16</span></span>
+            <span class="stack-pill">LangSmith traces</span>
+            <span class="stack-pill">Next.js<span class="ver">14</span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-card pink reveal">
+        <h4>Why this loop, not a one-shot</h4>
+        <div class="decisions-row">
+          <div class="choice"><span style="color:var(--accent-2)">+1.9</span></div>
+          <div class="why">Personalization score over single-search baseline on the 100-company eval set, judged by Claude Opus with explicit 5-point rubric.</div>
+        </div>
+        <div class="decisions-row">
+          <div class="choice"><span style="color:var(--accent-2)">2.13</span></div>
+          <div class="why">Avg reflection loops per company (cap = 3). Past loop 2, marginal accuracy gain is &lt; 0.1 — diminishing returns documented.</div>
+        </div>
+        <div class="decisions-row">
+          <div class="choice"><span style="color:var(--accent-2)">$0.041</span></div>
+          <div class="why">Per company. Tavily ($0.001 × 12 calls) + Claude tokens ($0.029). Still &lt; $5 per 100 leads.</div>
+        </div>
+        <div class="decisions-row">
+          <div class="choice"><span style="color:var(--accent-2)">18.4s</span></div>
+          <div class="why">p95 wall time per company. Parallelizable to 8 workers without rate-limit hit on Tavily free tier.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="08 Roadmap">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">06 · Roadmap to v1.0.0</div>
+      <h2>Ten checkpoints.</h2>
+    </div>
+    <div class="detail-card reveal" style="padding: 30px 32px;">
+      <ol class="roadmap-list">
+        <li class="todo"><span class="num">01</span><span class="check">○</span><span class="label">Load YC companies dataset (~5K with metadata)</span></li>
+        <li class="todo"><span class="num">02</span><span class="check">○</span><span class="label">Tavily integration with retries + rate limiting</span></li>
+        <li class="todo"><span class="num">03</span><span class="check">○</span><span class="label">selectolax-based website fetcher (faster than BeautifulSoup)</span></li>
+        <li class="todo"><span class="num">04</span><span class="check">○</span><span class="label">LangGraph plan-execute-reflect loop with configurable max iterations</span></li>
+        <li class="todo"><span class="num">05</span><span class="check">○</span><span class="label">Pydantic schemas for <span class="mono">CompanyProfile</span>, <span class="mono">OutreachEmail</span></span></li>
+        <li class="todo"><span class="num">06</span><span class="check">○</span><span class="label">Quality scorer with Claude Opus as judge + explicit rubric</span></li>
+        <li class="todo"><span class="num">07</span><span class="check">○</span><span class="label">Eval set: 200 YC companies with ground truth metadata</span></li>
+        <li class="todo"><span class="num">08</span><span class="check">○</span><span class="label">Batch processing of 100 companies, results persisted to Postgres</span></li>
+        <li class="todo"><span class="num">09</span><span class="check">○</span><span class="label">Next.js gallery view of the 100 pre-processed companies</span></li>
+        <li class="todo"><span class="num">10</span><span class="check">○</span><span class="label">LangSmith trace gallery with ≥30 agent loops</span></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="09 Next">
+  <div class="container">
+    <a class="next-card" href="04-document-intelligence.html">
+      <div>
+        <div class="label">Next project →</div>
+        <h3>P04 · Document Intelligence Pipeline</h3>
+        <p style="color: var(--text-dim); margin-top: 6px;">Layout analysis · OCR · Claude Vision fallback · confidence-gated routing for IDP</p>
+      </div>
+      <span class="arrow">→</span>
+    </a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div>// Juan David Suárez Sánchez · AI Engineer · 2026</div>
+    <div>juadsuarezsan@unal.edu.co · github.com/Juadsuarezsan</div>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="animations.jsx"></script>
+<script type="text/babel" src="_shared.jsx"></script>
+<script type="text/babel" src="p03.jsx"></script>
+<script type="text/babel">
+  function mountWhenReady() {
+    if (typeof P03TerminalDemo === 'undefined' || typeof P03SystemDemo === 'undefined') {
+      setTimeout(mountWhenReady, 50); return;
+    }
+    ReactDOM.createRoot(document.getElementById('demo-terminal')).render(<P03TerminalDemo/>);
+    ReactDOM.createRoot(document.getElementById('demo-system')).render(<P03SystemDemo/>);
+  }
+  mountWhenReady();
+</script>
+<script>
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+</script>
+</body>
+</html>
