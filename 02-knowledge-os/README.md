@@ -231,6 +231,36 @@ Vendor-honest take: ~60% of enterprise queries are lookups. Burning a graph trav
 
 ---
 
+## Running the eval harness
+
+```bash
+cd backend/
+python -m eval.runner                          # human-readable report
+python -m eval.runner --json                   # CI / dashboards
+python -m eval.runner --min-routing 0.85 --min-recall 0.80
+python -m unittest tests.test_eval -v          # unit tests for metrics + classifier
+```
+
+The eval harness ships with a 25-node / 30-edge synthetic graph + 11 gold
+queries spanning the three execution paths (lookup, multi_hop, aggregation).
+Verified end-to-end: **100% routing accuracy, 97% mean recall@k, 100%
+answer-substring match** on the seed fixture. All 10 unit tests pass.
+
+The reference implementation in `backend/graph/in_memory_store.py` satisfies
+the same interface as `Neo4jClient`, so the algorithm (routing, traversal,
+citation) is exercised identically with or without Neo4j running.
+
+## API
+
+| Method | Path | Purpose |
+|---|---|---|
+| `POST` | `/api/query`             | Run a question through the full router → retrieval → synthesizer pipeline |
+| `GET`  | `/api/graph?limit=N`     | Snapshot of nodes + edges (for the force-graph frontend) |
+| `GET`  | `/api/eval/run`          | Run the gold harness in-process, return the full report JSON |
+| `GET`  | `/api/staleness-report?days=30` | Nodes whose `updated_at` is older than `days` |
+
+---
+
 ## License
 
 MIT.

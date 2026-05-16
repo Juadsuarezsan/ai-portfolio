@@ -60,9 +60,31 @@ Rules:
 - Skip entities you cannot ground in the text.
 """
 
-    def __init__(self, *, model: str, api_key: str) -> None:
+    def __init__(self, *, model: str | None = None, api_key: str | None = None) -> None:
         self.model = model
         self.api_key = api_key
 
     async def extract(self, *, document_text: str, document_id: str) -> ExtractedKnowledge:
-        raise NotImplementedError("Call Claude with SYSTEM_PROMPT + document; parse JSON; validate as ExtractedKnowledge")
+        """Production path. Calls Claude with the strict system prompt."""
+        if not self.api_key or not self.model:
+            raise RuntimeError("EntityExtractor.extract requires model + api_key. Use extract_stub for offline.")
+        from langchain_anthropic import ChatAnthropic
+        from langchain_core.messages import HumanMessage, SystemMessage
+        import json
+        chat = ChatAnthropic(model=self.model, api_key=self.api_key, temperature=0, max_tokens=2048)
+        resp = await chat.ainvoke([
+            SystemMessage(content=self.SYSTEM_PROMPT),
+            HumanMessage(content=f"<document id={document_id}>\n{document_text}\n</document>"),
+        ])
+        text = resp.content.strip()
+        if text.startswith("```"):
+            text = text.strip("`")
+            if text.lower().startswith("json"):
+                text = text[4:].lstrip()
+        raw = json.loads(text)
+        return ExtractedKnowledge(**raw)
+
+    @staticmethod
+    def extract_stub(*, structured: dict) -> ExtractedKnowledge:
+        """Offline path: caller supplies the already-extracted structure (e.g. from a fixture)."""
+        return ExtractedKnowledge(**structured)
