@@ -1187,6 +1187,71 @@
   }
   .stack-row .level span.on { background: var(--accent); box-shadow: 0 0 4px var(--accent); }
 
+  /* Convictions (replaces thesis-grid + capabilities cards) */
+  .convictions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-top: 48px;
+  }
+  @media (max-width: 980px) { .convictions { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 640px) { .convictions { grid-template-columns: 1fr; } }
+  .conviction {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 26px;
+    transition: all 0.25s;
+  }
+  .conviction:hover {
+    border-color: var(--border-strong);
+    transform: translateY(-2px);
+  }
+  .conviction h4 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 10px;
+    letter-spacing: -0.01em;
+  }
+  .conviction p {
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.65;
+  }
+
+  /* Stack v2 — chip-style tags per category */
+  .stack-matrix-v2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+  @media (max-width: 880px) { .stack-matrix-v2 { grid-template-columns: 1fr; } }
+  .stack-matrix-v2 .stack-layer-head {
+    margin-bottom: 14px;
+  }
+  .stack-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .stack-tags span {
+    display: inline-block;
+    padding: 5px 11px;
+    background: rgba(124,92,255,0.08);
+    border: 1px solid rgba(124,92,255,0.22);
+    border-radius: 999px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--text-dim);
+    transition: all 0.15s;
+  }
+  .stack-tags span:hover {
+    color: var(--text);
+    border-color: var(--accent);
+    background: rgba(124,92,255,0.14);
+  }
+
   /* Roadmap */
   .roadmap {
     position: relative;
@@ -1427,13 +1492,12 @@
       <span class="logo-text">// JDS.AI</span>
     </div>
     <div class="nav-links" id="navLinks">
-      <a href="#thesis">Thesis</a>
-      <a href="#capabilities">Capabilities</a>
-      <a href="#projects">Projects</a>
+      <a href="#aprendido">Lo que aprendí</a>
+      <a href="#projects">Proyectos</a>
       <a href="#stack">Stack</a>
-      <a href="#about">About</a>
+      <a href="#about">Sobre mí</a>
     </div>
-    <a class="nav-cta" href="#contact">Get in touch →</a>
+    <a class="nav-cta" href="#contact">Contacto →</a>
   </div>
 </nav>
 
@@ -1492,23 +1556,20 @@
   </svg>
 
   <div class="hero-inner">
-    <div class="hero-badge">Open to AI Engineer roles · EU / USA · remote-first</div>
-    <h1>I build AI systems that <span class="accent">survive Monday morning</span> in production.</h1>
+    <div class="hero-badge">Abierto a roles de AI Engineer · EU / USA · remoto</div>
+    <h1>Juan David Suárez Sandoval — <span class="accent">AI Engineer</span>.</h1>
     <p class="lede">
-      <strong>Juan David Suárez Sandoval</strong> — AI Engineer.
-      Nine production-grade projects covering 99% of AI Engineering in 2026: hybrid RAG, fine-tuning with LoRA, agents with tool use, Document AI, Computer Use, Code AI, AI Safety, GraphRAG, and Voice AI.
-      Each one ships with real datasets, ≥100-case eval sets, baselines, Docker, observability and public demo — built against a 12-block Definition of Done.
+      La diferencia entre un sistema de IA que funciona y uno que falla rara vez está en el modelo. Está en el retrieval, en la evaluación, en los guardrails y en la observabilidad.
     </p>
     <div class="hero-cta">
-      <a class="btn btn-primary" href="#projects">View the work
+      <a class="btn btn-primary" href="#projects">Proyectos
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
       </a>
-      <a class="btn" href="#demo">▶ Run live demo</a>
-      <a class="btn" href="https://github.com/" target="_blank" rel="noopener">
+      <a class="btn" href="https://github.com/Juadsuarezsan" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.7-1.3-1.7-1-.8.1-.7.1-.7 1.2 0 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.4 11.4 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 0z"/></svg>
         GitHub
       </a>
-      <a class="btn" href="mailto:juadsuarezsan@unal.edu.co">Email</a>
+      <a class="btn" href="#contact">Contacto</a>
     </div>
     <div class="hero-stats">
       <div>
@@ -1531,52 +1592,16 @@
   </div>
 </header>
 
-<!-- ============ THESIS ============ -->
-<section id="thesis">
+<!-- ============ APRENDIDO (merge Thesis + Capabilities) ============ -->
+<section id="aprendido">
   <div class="container">
-    <div class="section-eyebrow">01 · The thesis</div>
-    <h2>What separates production AI from a demo</h2>
-    <p class="section-sub">Four convictions that drive every architectural decision in this portfolio. Each one maps to a project that proves it.</p>
-
-    <div class="thesis-grid">
-      <div class="thesis-card reveal">
-        <span class="quote-mark">"</span>
-        <div class="thesis-num">01 / 04</div>
-        <h4>Reliability under failure beats flashy demos.</h4>
-        <p>The most expensive AI failures are silent. A confident wrong answer ships to a downstream system and pays the wrong vendor. Confidence-gated routing, safety pre-checks, and human-in-the-loop escalation are non-negotiable. <strong>(P02 Support Triage · P05 Computer Use)</strong></p>
-      </div>
-      <div class="thesis-card reveal">
-        <span class="quote-mark">"</span>
-        <div class="thesis-num">02 / 04</div>
-        <h4>The right small model beats the big one every time.</h4>
-        <p>Zero-shot Claude on every ticket is $0.012 each and 0.78 F1. A LoRA-tuned DistilBERT does the same in 85 ms for $0.0004 with 0.98 F1. Pick the smallest model that meets the bar; reserve frontier reasoning for the hard 6%. <strong>(P02 Support Triage)</strong></p>
-      </div>
-      <div class="thesis-card reveal">
-        <span class="quote-mark">"</span>
-        <div class="thesis-num">03 / 04</div>
-        <h4>Retrieval quality beats vector similarity.</h4>
-        <p><code>vector.search()</code> is table stakes. Production needs hybrid BM25 + vector + reranking with RRF fusion, knowledge graphs for multi-hop reasoning, and continuous RAGAS evaluation against a held-out set. <strong>(P01 Conversational E-Commerce · P08 GraphRAG SEC)</strong></p>
-      </div>
-      <div class="thesis-card reveal">
-        <span class="quote-mark">"</span>
-        <div class="thesis-num">04 / 04</div>
-        <h4>Eval loops beat vibes.</h4>
-        <p>"It works on my machine" is the death of agentic systems. Every project ships with LangSmith trace hooks, Pydantic boundaries, deterministic regression suites, and metrics tables that the README treats as first-class. No metric, no merge. <strong>(All nine)</strong></p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ CAPABILITIES ============ -->
-<section id="capabilities">
-  <div class="container">
-    <div class="section-eyebrow">02 · Capabilities</div>
-    <h2>Six axes of production AI</h2>
-    <p class="section-sub">A radar of the production concerns AI teams hire for. Each axis is grounded in at least one of the nine projects.</p>
+    <div class="section-eyebrow">01 · Lo que aprendí</div>
+    <h2>Lo que aprendí construyendo sistemas de IA</h2>
+    <p class="section-sub">Seis ejes de IA en producción auto-evaluados, con la convicción que cada uno respalda.</p>
 
     <div class="cap-layout">
       <div class="radar-wrap reveal">
-        <h5>Capability map · self-assessed</h5>
+        <h5>Mapa de capacidades · auto-evaluado</h5>
         <svg viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <radialGradient id="radarFill" cx="50%" cy="50%" r="50%">
@@ -1601,71 +1626,64 @@
               <line x1="0" y1="0" x2="-103.9" y2="60"/>
               <line x1="0" y1="0" x2="-103.9" y2="-60"/>
             </g>
-            <!-- data polygon: reliability=0.88, fine-tuning=0.84, retrieval=0.85, agent-loops=0.80, safety=0.78, observability=0.9 -->
-            <polygon points="0,-105.6 88.3,-51 88.3,51 0,93.6 -86.5,49.9 -91.5,-52.8"
+            <!-- data polygon: retrieval=0.85, agent-loops=0.84, fine-tuning=0.86, evaluacion=0.80, observabilidad=0.88, deploy=0.82 -->
+            <polygon points="0,-102 87.3,-50.4 89.4,51.6 0,96 -91.5,52.8 -85.3,-49.2"
               fill="url(#radarFill)" stroke="#8b6dff" stroke-width="1.8" stroke-linejoin="round">
               <animate attributeName="opacity" values="0;1" dur="1.2s" fill="freeze"/>
             </polygon>
             <!-- vertex dots -->
             <g fill="#8b6dff">
-              <circle cx="0" cy="-105.6" r="3.5"/>
-              <circle cx="88.3" cy="-51" r="3.5"/>
-              <circle cx="88.3" cy="51" r="3.5"/>
-              <circle cx="0" cy="93.6" r="3.5"/>
-              <circle cx="-86.5" cy="49.9" r="3.5"/>
-              <circle cx="-91.5" cy="-52.8" r="3.5"/>
+              <circle cx="0" cy="-102" r="3.5"/>
+              <circle cx="87.3" cy="-50.4" r="3.5"/>
+              <circle cx="89.4" cy="51.6" r="3.5"/>
+              <circle cx="0" cy="96" r="3.5"/>
+              <circle cx="-91.5" cy="52.8" r="3.5"/>
+              <circle cx="-85.3" cy="-49.2" r="3.5"/>
             </g>
             <!-- labels -->
             <g font-family="JetBrains Mono, monospace" font-size="10" fill="#8b91a3" text-anchor="middle">
-              <text x="0" y="-135">Reliability</text>
-              <text x="120" y="-66">Fine-tuning</text>
-              <text x="120" y="74">Retrieval</text>
-              <text x="0" y="142">Agent loops</text>
-              <text x="-120" y="74">Safety / RT</text>
-              <text x="-120" y="-66">Observability</text>
+              <text x="0" y="-135">Retrieval</text>
+              <text x="120" y="-66">Agent loops</text>
+              <text x="120" y="74">Fine-tuning</text>
+              <text x="0" y="142">Evaluación</text>
+              <text x="-120" y="74">Observabilidad</text>
+              <text x="-120" y="-66">Deploy y producción</text>
             </g>
           </g>
         </svg>
       </div>
 
       <div class="cap-text">
-        <h3>Engineered for the boring parts of AI.</h3>
-        <p>Most "AI portfolios" are a chatbot in a Streamlit. The nine projects in this repository each answer one production question that hiring managers will ask in the loop: <strong>"how does it fail, and how does it know it failed?"</strong></p>
-        <p>The radar is self-assessed against a rubric: each axis scores higher when the relevant project has a working orchestrator, a real eval suite, and a written rationale for the architectural choice over the obvious alternative. There are no "10/10" axes — every project still has a TODO list.</p>
-        <p>The capabilities below map across the nine projects in the next section.</p>
+        <h3>Lo aburrido es donde se decide la producción.</h3>
+        <p>La mayoría de "portafolios de IA" son un chatbot en Streamlit. Los nueve proyectos aquí responden una pregunta que un hiring manager va a hacer en la entrevista: <strong>"¿cómo falla, y cómo se da cuenta de que falló?"</strong></p>
+        <p>El radar es auto-evaluado contra una rúbrica: cada eje sube cuando el proyecto correspondiente tiene un orquestador funcionando, un eval real, y una justificación escrita de por qué se escogió esa arquitectura sobre la alternativa obvia. Ningún eje está en 10/10 — todos los proyectos tienen TODO list.</p>
       </div>
     </div>
 
-    <div class="capabilities">
-      <div class="cap reveal">
-        <div class="cap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-        <h4>Reliability under failure</h4>
-        <p>Confidence-gated routing, safety pre-checks before irreversible actions, and explicit policies for "block / suggest / auto-resolve" tiers.</p>
+    <div class="convictions">
+      <div class="conviction reveal">
+        <h4>Confiabilidad</h4>
+        <p>Un sistema de IA en producción no se evalúa por su mejor respuesta sino por su peor falla. Las decisiones irreversibles (pagar, enviar, escalar) necesitan chequeos de confidence explícitos antes de ejecutarse, no después.</p>
       </div>
-      <div class="cap reveal">
-        <div class="cap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-2.04Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-2.04Z"/></svg></div>
-        <h4>Fine-tuning when it pays</h4>
-        <p>LoRA adapters on DistilBERT for 27-class intent classification: 0.98 macro-F1, 85 ms on CPU, $0.0004 per ticket — published with a full HuggingFace model card.</p>
+      <div class="conviction reveal">
+        <h4>Elección de modelo</h4>
+        <p>Usar el modelo más caro para cada tarea es un error de ingeniería, no de presupuesto. Un clasificador pequeño fine-tuneado resuelve el 80% de las tareas a un costo y latencia varios órdenes de magnitud menores. El modelo frontera se reserva para el 20% que realmente lo necesita.</p>
       </div>
-      <div class="cap reveal">
-        <div class="cap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></div>
-        <h4>Advanced retrieval</h4>
-        <p>GraphRAG, contextual retrieval (Anthropic), hybrid BM25 + vector + Cohere rerank with RRF, Ragas evaluation harness.</p>
+      <div class="conviction reveal">
+        <h4>Retrieval</h4>
+        <p>La búsqueda vectorial pura no escala a producción. Los sistemas que funcionan combinan BM25, embeddings densos y reranking, evaluados continuamente contra un set de queries con ground truth manual.</p>
       </div>
-      <div class="cap reveal">
-        <div class="cap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-        <h4>Agent loops & planning</h4>
-        <p>LangGraph plan-execute-reflect loops, intent routing into specialist nodes, bounded retries, deterministic tool dispatch.</p>
+      <div class="conviction reveal">
+        <h4>Evaluación</h4>
+        <p>Un sistema de IA sin eval suite es un sistema que no sabés si está mejorando o empeorando. Las métricas no son un entregable separado del código, son parte del código.</p>
       </div>
-      <div class="cap reveal">
-        <div class="cap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
-        <h4>LLM safety &amp; red-teaming</h4>
-        <p>OWASP LLM Top-10 attack catalog, prompt-injection detection, PII redaction, guardrails as middleware, attack-success-rate reports.</p>
+      <div class="conviction reveal">
+        <h4>Agent loops</h4>
+        <p>Un agente que decide solo sin chequeos es un agente que falla solo. Los loops plan-execute-reflect funcionan cuando cada paso es observable, cada tool call tiene retries acotados, y cada decisión irreversible pasa por un nodo de validación explícito.</p>
       </div>
-      <div class="cap reveal">
-        <div class="cap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 4-4 4 4 5-5"/></svg></div>
-        <h4>Production observability</h4>
-        <p>Docker Compose everywhere, Langfuse traces on every LLM call, Pydantic boundaries, cost tracking per pipeline run.</p>
+      <div class="conviction reveal">
+        <h4>Deploy y producción</h4>
+        <p>El código que funciona en local pero no se puede desplegar es código incompleto. La distancia entre prototipo y producción se cierra con Docker desde el día uno, validación de schemas en cada endpoint, configuración externalizada, y observabilidad implementada desde el primer request del sistema.</p>
       </div>
     </div>
   </div>
@@ -1674,9 +1692,9 @@
 <!-- ============ PROJECTS ============ -->
 <section id="projects">
   <div class="container">
-    <div class="section-eyebrow">03 · The work</div>
-    <h2>Nine projects covering AI Engineering 2026</h2>
-    <p class="section-sub">Each one targets a real industrial use case, ships with a public dataset, ≥100-case eval set with manual ground truth, baselines and ablations, observability traces, and a public live demo. All built against the 12-block Definition of Done.</p>
+    <div class="section-eyebrow">02 · Proyectos</div>
+    <h2>Nueve proyectos cubriendo AI Engineering 2026</h2>
+    <p class="section-sub">Cada proyecto está construido sobre un dataset público, evaluado contra ground truth manual con métricas estándar de la industria (RAGAS, F1, WER), comparado contra al menos dos baselines, y desplegado con observability completa.</p>
 
     <div class="projects-grid-v2">
 
@@ -1869,72 +1887,89 @@
 <!-- ============ STACK ============ -->
 <section id="stack">
   <div class="container">
-    <div class="section-eyebrow">04 · The toolbox</div>
-    <h2>What I actually reach for</h2>
-    <p class="section-sub">Categorized by layer. Dots indicate self-assessed proficiency — three dots means I've shipped it under load, two means I've built a non-trivial project with it, one means I've used it enough to have an opinion.</p>
+    <div class="section-eyebrow">03 · Stack</div>
+    <h2>Las herramientas con las que construyo</h2>
+    <p class="section-sub">Ocho capas, desde los modelos hasta las metodologías. Los nombres son lo que uso realmente en los nueve proyectos; los detalles de cómo se combinan están en cada repo.</p>
 
-    <div class="stack-matrix">
+    <div class="stack-matrix stack-matrix-v2">
       <div class="stack-layer reveal">
         <div class="stack-layer-head">
-          <div class="stack-layer-icon">λ</div>
-          <h5>AI · Agents · Orchestration</h5>
-          <span class="stack-layer-sub">core</span>
+          <div class="stack-layer-icon">Σ</div>
+          <h5>Modelos y proveedores</h5>
         </div>
-        <div class="stack-row"><span class="name">LangGraph</span><span class="level"><span class="on"></span><span class="on"></span><span class="on"></span></span></div>
-        <div class="stack-row"><span class="name">LangChain core</span><span class="level"><span class="on"></span><span class="on"></span><span class="on"></span></span></div>
-        <div class="stack-row"><span class="name">LlamaIndex</span><span class="level"><span class="on"></span><span class="on"></span><span></span></span></div>
-        <div class="stack-row"><span class="name">Anthropic Computer Use</span><span class="level"><span class="on"></span><span class="on"></span><span></span></span></div>
-        <div class="stack-row"><span class="name">PEFT / LoRA fine-tuning</span><span class="level"><span class="on"></span><span class="on"></span><span class="on"></span></span></div>
-        <div class="stack-row"><span class="name">tree-sitter (diff + AST)</span><span class="level"><span class="on"></span><span class="on"></span><span></span></span></div>
-        <div class="stack-row"><span class="name">RAGAS evaluation</span><span class="level"><span class="on"></span><span class="on"></span><span></span></span></div>
-        <div class="stack-row"><span class="name">LangSmith</span><span class="level"><span class="on"></span><span class="on"></span><span></span></span></div>
+        <div class="stack-tags">
+          <span>Claude (Anthropic SDK)</span><span>OpenAI API</span><span>Voyage AI</span><span>text-embedding-3</span><span>Cohere Rerank v3</span><span>Whisper</span><span>ElevenLabs</span>
+        </div>
       </div>
 
       <div class="stack-layer reveal">
         <div class="stack-layer-head">
-          <div class="stack-layer-icon">Σ</div>
-          <h5>LLMs · Embeddings · Reranking</h5>
-          <span class="stack-layer-sub">models</span>
+          <div class="stack-layer-icon">λ</div>
+          <h5>Orquestación de agentes</h5>
         </div>
-        <div class="stack-row"><span class="name">Claude (Anthropic SDK)</span><span class="level"><span class="on"></span><span class="on"></span><span class="on"></span></span></div>
-        <div class="stack-row"><span class="name">OpenAI API</span><span class="level"><span class="on"></span><span class="on"></span><span class="on"></span></span></div>
-        <div class="stack-row"><span class="name">Voyage AI embeddings</span><span class="level"><span class="on"></span><span class="on"></span><span></span></span></div>
-        <div class="stack-row"><span class="name">OpenAI text-embedding-3</span><span class="level"><span class="on"></span><span class="on"></span><span class="on"></span></span></div>
-        <div class="stack-row"><span class="name">Cohere Rerank v3</span><span class="level"><span class="on"></span><span class="on"></span><span></span></span></div>
-        <div class="stack-row"><span class="name">Tool use / structured output</span><span class="level"><span class="on"></span><span class="on"></span><span class="on"></span></span></div>
+        <div class="stack-tags">
+          <span>LangGraph</span><span>LangChain</span><span>LlamaIndex</span><span>MCP</span><span>Anthropic Computer Use</span><span>Claude Code</span><span>tool use</span><span>function calling</span><span>structured outputs</span>
+        </div>
       </div>
 
       <div class="stack-layer reveal">
         <div class="stack-layer-head">
           <div class="stack-layer-icon">⌘</div>
-          <h5>Backend · Data</h5>
-          <span class="stack-layer-sub">async-first</span>
+          <h5>Retrieval y bases de datos</h5>
         </div>
-        <div class="stack-row"><span class="name">Python 3.12</span><span class="level"><span class="on"></span><span class="on"></span><span class="on"></span></span></div>
-        <div class="stack-row"><span class="name">FastAPI · async + SSE</span><span class="level"><span class="on"></span><span class="on"></span><span class="on"></span></span></div>
-        <div class="stack-row"><span class="name">Pydantic v2</span><span class="level"><span class="on"></span><span class="on"></span><span class="on"></span></span></div>
-        <div class="stack-row"><span class="name">PostgreSQL 16</span><span class="level"><span class="on"></span><span class="on"></span><span class="on"></span></span></div>
-        <div class="stack-row"><span class="name">pgvector</span><span class="level"><span class="on"></span><span class="on"></span><span class="on"></span></span></div>
-        <div class="stack-row"><span class="name">Neo4j 5 + APOC</span><span class="level"><span class="on"></span><span class="on"></span><span></span></span></div>
-        <div class="stack-row"><span class="name">Qdrant</span><span class="level"><span class="on"></span><span class="on"></span><span></span></span></div>
-        <div class="stack-row"><span class="name">Chroma</span><span class="level"><span class="on"></span><span class="on"></span><span></span></span></div>
-        <div class="stack-row"><span class="name">Redis</span><span class="level"><span class="on"></span><span class="on"></span><span></span></span></div>
+        <div class="stack-tags">
+          <span>Qdrant</span><span>pgvector</span><span>Chroma</span><span>Pinecone</span><span>Neo4j 5 + APOC</span><span>GraphRAG (Microsoft)</span><span>neo4j-graphrag</span><span>PostgreSQL 16</span><span>Redis</span><span>BM25</span><span>RRF fusion</span>
+        </div>
+      </div>
+
+      <div class="stack-layer reveal">
+        <div class="stack-layer-head">
+          <div class="stack-layer-icon">∇</div>
+          <h5>Training, evaluación y observabilidad</h5>
+        </div>
+        <div class="stack-tags">
+          <span>HuggingFace Transformers</span><span>PEFT</span><span>LoRA</span><span>Unsloth</span><span>Weights &amp; Biases</span><span>RAGAS</span><span>Promptfoo</span><span>DeepEval</span><span>Inspect AI</span><span>LangSmith</span><span>Langfuse</span>
+        </div>
+      </div>
+
+      <div class="stack-layer reveal">
+        <div class="stack-layer-head">
+          <div class="stack-layer-icon">◆</div>
+          <h5>Especialidades</h5>
+        </div>
+        <div class="stack-tags">
+          <span>Document AI · unstructured</span><span>Tesseract</span><span>PaddleOCR</span><span>Camelot</span><span>Table Transformer</span><span>Claude Vision</span><span>Voice · LiveKit</span><span>silero-vad</span><span>XTTS-v2</span><span>Code AI · tree-sitter</span><span>ruff</span><span>mypy</span><span>semgrep</span><span>PyGithub</span><span>Safety · guardrails-ai</span><span>NeMo</span><span>Presidio</span><span>garak</span><span>giskard</span>
+        </div>
       </div>
 
       <div class="stack-layer reveal">
         <div class="stack-layer-head">
           <div class="stack-layer-icon">⟨/⟩</div>
-          <h5>Frontend · Infra</h5>
-          <span class="stack-layer-sub">ship it</span>
+          <h5>Backend, infraestructura y cloud</h5>
         </div>
-        <div class="stack-row"><span class="name">Next.js 14 · App Router</span><span class="level"><span class="on"></span><span class="on"></span><span></span></span></div>
-        <div class="stack-row"><span class="name">React 18</span><span class="level"><span class="on"></span><span class="on"></span><span></span></span></div>
-        <div class="stack-row"><span class="name">TypeScript</span><span class="level"><span class="on"></span><span class="on"></span><span></span></span></div>
-        <div class="stack-row"><span class="name">Tailwind · shadcn/ui</span><span class="level"><span class="on"></span><span class="on"></span><span></span></span></div>
-        <div class="stack-row"><span class="name">react-flow · react-force-graph</span><span class="level"><span class="on"></span><span class="on"></span><span></span></span></div>
-        <div class="stack-row"><span class="name">recharts · D3</span><span class="level"><span class="on"></span><span class="on"></span><span></span></span></div>
-        <div class="stack-row"><span class="name">Docker · docker-compose</span><span class="level"><span class="on"></span><span class="on"></span><span class="on"></span></span></div>
-        <div class="stack-row"><span class="name">Railway · Vercel · Fly.io</span><span class="level"><span class="on"></span><span class="on"></span><span></span></span></div>
+        <div class="stack-tags">
+          <span>Python 3.12</span><span>FastAPI (async + SSE)</span><span>Pydantic v2</span><span>Docker</span><span>docker-compose</span><span>GitHub Actions</span><span>Next.js 14</span><span>React 18</span><span>TypeScript</span><span>Tailwind</span><span>shadcn/ui</span><span>react-flow</span><span>react-force-graph</span><span>recharts</span><span>D3</span><span>GCP</span><span>AWS</span><span>Azure</span><span>Vercel</span><span>Railway</span><span>Fly.io</span>
+        </div>
+      </div>
+
+      <div class="stack-layer reveal">
+        <div class="stack-layer-head">
+          <div class="stack-layer-icon">∫</div>
+          <h5>Fundamentos matemáticos</h5>
+        </div>
+        <div class="stack-tags">
+          <span>Lógica formal</span><span>Cálculo</span><span>Álgebra lineal</span><span>Probabilidad</span><span>Estadística</span>
+        </div>
+      </div>
+
+      <div class="stack-layer reveal">
+        <div class="stack-layer-head">
+          <div class="stack-layer-icon">⇄</div>
+          <h5>Metodologías y prácticas</h5>
+        </div>
+        <div class="stack-tags">
+          <span>Agile</span><span>Scrum</span><span>Kanban</span><span>Git workflows</span><span>code review</span><span>CI/CD</span>
+        </div>
       </div>
     </div>
   </div>
@@ -1943,7 +1978,7 @@
 <!-- ============ ABOUT ============ -->
 <section id="about">
   <div class="container">
-    <div class="section-eyebrow">05 · About</div>
+    <div class="section-eyebrow">04 · Sobre mí</div>
     <h2>The person behind the repos</h2>
     <p class="section-sub">Short version below. The rest lives in the code.</p>
 
