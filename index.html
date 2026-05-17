@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="description" content="Juan David Suárez Sandoval — Full-Stack AI Engineer. Six production-grade projects: self-healing agents, GraphRAG, MemGPT memory, multi-agent debate, MCP workflows, agentic RAG with benchmarks." />
+<meta name="description" content="Juan David Suárez Sandoval — Full-Stack AI Engineer. Nine industry-aligned AI projects: agentic e-commerce, LoRA fine-tuned support triage, sales intelligence, document AI, computer use, code review, LLM safety, GraphRAG over SEC 10-Ks, and voice AI." />
 <meta name="theme-color" content="#0a0a0f" />
 <meta property="og:title" content="Juan David Suárez Sandoval — AI Engineer Portfolio" />
-<meta property="og:description" content="Six production-grade AI engineering projects. Self-correcting agents, persistent memory, hybrid retrieval, multi-agent reasoning, MCP, vector DB benchmarks." />
+<meta property="og:description" content="Nine production-grade AI engineering projects covering RAG, fine-tuning, agents, document AI, computer use, code AI, LLM safety, GraphRAG, and voice AI — each with a static demo and animated walkthrough." />
 <meta property="og:type" content="website" />
 <title>Juan David Suárez Sandoval — AI Engineer Portfolio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -1545,25 +1545,25 @@
         <span class="quote-mark">"</span>
         <div class="thesis-num">01 / 04</div>
         <h4>Reliability under failure beats flashy demos.</h4>
-        <p>The most expensive AI failures are silent. A confident wrong answer ships to a downstream system and pays the wrong vendor. Critics, reflection loops, and episodic memory of past errors are non-negotiable. <strong>(Project 01)</strong></p>
+        <p>The most expensive AI failures are silent. A confident wrong answer ships to a downstream system and pays the wrong vendor. Confidence-gated routing, safety pre-checks, and human-in-the-loop escalation are non-negotiable. <strong>(P02 Support Triage · P05 Computer Use)</strong></p>
       </div>
       <div class="thesis-card reveal">
         <span class="quote-mark">"</span>
         <div class="thesis-num">02 / 04</div>
-        <h4>Memory architecture beats bigger context.</h4>
-        <p>200k tokens isn't a memory system. Three-tier MemGPT — working / episodic / semantic — with explicit promotion and eviction policies is. Context windows scale with money; architectures scale with discipline. <strong>(Project 03)</strong></p>
+        <h4>The right small model beats the big one every time.</h4>
+        <p>Zero-shot Claude on every ticket is $0.012 each and 0.78 F1. A LoRA-tuned DistilBERT does the same in 85 ms for $0.0004 with 0.98 F1. Pick the smallest model that meets the bar; reserve frontier reasoning for the hard 6%. <strong>(P02 Support Triage)</strong></p>
       </div>
       <div class="thesis-card reveal">
         <span class="quote-mark">"</span>
         <div class="thesis-num">03 / 04</div>
         <h4>Retrieval quality beats vector similarity.</h4>
-        <p><code>vector.search()</code> is table stakes. Production needs contextual chunk enrichment, hybrid BM25 + vector + reranking with RRF fusion, knowledge graphs for multi-hop reasoning, and continuous Ragas evaluation against a held-out set. <strong>(Projects 02, 06)</strong></p>
+        <p><code>vector.search()</code> is table stakes. Production needs hybrid BM25 + vector + reranking with RRF fusion, knowledge graphs for multi-hop reasoning, and continuous RAGAS evaluation against a held-out set. <strong>(P01 Conversational E-Commerce · P08 GraphRAG SEC)</strong></p>
       </div>
       <div class="thesis-card reveal">
         <span class="quote-mark">"</span>
         <div class="thesis-num">04 / 04</div>
         <h4>Eval loops beat vibes.</h4>
-        <p>"It works on my machine" is the death of agentic systems. Every project ships with Langfuse traces, Pydantic boundaries, deterministic regression suites, and metrics tables that the README treats as first-class. No metric, no merge. <strong>(All six)</strong></p>
+        <p>"It works on my machine" is the death of agentic systems. Every project ships with LangSmith trace hooks, Pydantic boundaries, deterministic regression suites, and metrics tables that the README treats as first-class. No metric, no merge. <strong>(All nine)</strong></p>
       </div>
     </div>
   </div>
@@ -1574,7 +1574,7 @@
   <div class="container">
     <div class="section-eyebrow">02 · Capabilities</div>
     <h2>Six axes of production AI</h2>
-    <p class="section-sub">A radar of the production concerns AI teams hire for. Each axis is grounded in at least one of the six projects.</p>
+    <p class="section-sub">A radar of the production concerns AI teams hire for. Each axis is grounded in at least one of the nine projects.</p>
 
     <div class="cap-layout">
       <div class="radar-wrap reveal">
@@ -1603,7 +1603,7 @@
               <line x1="0" y1="0" x2="-103.9" y2="60"/>
               <line x1="0" y1="0" x2="-103.9" y2="-60"/>
             </g>
-            <!-- data polygon: reliability=0.88, memory=0.82, retrieval=0.85, multi-agent=0.78, mcp=0.72, observability=0.9 -->
+            <!-- data polygon: reliability=0.88, fine-tuning=0.84, retrieval=0.85, agent-loops=0.80, safety=0.78, observability=0.9 -->
             <polygon points="0,-105.6 88.3,-51 88.3,51 0,93.6 -86.5,49.9 -91.5,-52.8"
               fill="url(#radarFill)" stroke="#8b6dff" stroke-width="1.8" stroke-linejoin="round">
               <animate attributeName="opacity" values="0;1" dur="1.2s" fill="freeze"/>
@@ -1620,10 +1620,10 @@
             <!-- labels -->
             <g font-family="JetBrains Mono, monospace" font-size="10" fill="#8b91a3" text-anchor="middle">
               <text x="0" y="-135">Reliability</text>
-              <text x="120" y="-66">Memory</text>
+              <text x="120" y="-66">Fine-tuning</text>
               <text x="120" y="74">Retrieval</text>
-              <text x="0" y="142">Multi-agent</text>
-              <text x="-120" y="74">MCP / DAGs</text>
+              <text x="0" y="142">Agent loops</text>
+              <text x="-120" y="74">Safety / RT</text>
               <text x="-120" y="-66">Observability</text>
             </g>
           </g>
@@ -1632,9 +1632,9 @@
 
       <div class="cap-text">
         <h3>Engineered for the boring parts of AI.</h3>
-        <p>Most "AI portfolios" are a chatbot in a Streamlit. The six projects in this repository each answer one production question that hiring managers will ask in the loop: <strong>"how does it fail, and how does it know it failed?"</strong></p>
+        <p>Most "AI portfolios" are a chatbot in a Streamlit. The nine projects in this repository each answer one production question that hiring managers will ask in the loop: <strong>"how does it fail, and how does it know it failed?"</strong></p>
         <p>The radar is self-assessed against a rubric: each axis scores higher when the relevant project has a working orchestrator, a real eval suite, and a written rationale for the architectural choice over the obvious alternative. There are no "10/10" axes — every project still has a TODO list.</p>
-        <p>The capabilities below map 1:1 to the six projects in the next section.</p>
+        <p>The capabilities below map across the nine projects in the next section.</p>
       </div>
     </div>
 
@@ -1642,12 +1642,12 @@
       <div class="cap reveal">
         <div class="cap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
         <h4>Reliability under failure</h4>
-        <p>Self-healing pipelines with critic agents, bounded reflection loops, episodic error memory queried before every evaluation.</p>
+        <p>Confidence-gated routing, safety pre-checks before irreversible actions, and explicit policies for "block / suggest / auto-resolve" tiers.</p>
       </div>
       <div class="cap reveal">
         <div class="cap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-2.04Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-2.04Z"/></svg></div>
-        <h4>Memory architecture</h4>
-        <p>Three-tier MemGPT patterns, episodic stores on pgvector, semantic consolidation jobs. State that survives sessions.</p>
+        <h4>Fine-tuning when it pays</h4>
+        <p>LoRA adapters on DistilBERT for 27-class intent classification: 0.98 macro-F1, 85 ms on CPU, $0.0004 per ticket — published with a full HuggingFace model card.</p>
       </div>
       <div class="cap reveal">
         <div class="cap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></div>
@@ -1656,13 +1656,13 @@
       </div>
       <div class="cap reveal">
         <div class="cap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-        <h4>Multi-agent collaboration</h4>
-        <p>Society-of-Mind debate, parallel orchestration, consensus measurement. Distinct roles produce emergent insight.</p>
+        <h4>Agent loops & planning</h4>
+        <p>LangGraph plan-execute-reflect loops, intent routing into specialist nodes, bounded retries, deterministic tool dispatch.</p>
       </div>
       <div class="cap reveal">
         <div class="cap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
-        <h4>MCP &amp; dynamic workflows</h4>
-        <p>Meta-agents generating DAGs at runtime, executing via MCP servers connected to GitHub, Jira, Slack, and Drive.</p>
+        <h4>LLM safety &amp; red-teaming</h4>
+        <p>OWASP LLM Top-10 attack catalog, prompt-injection detection, PII redaction, guardrails as middleware, attack-success-rate reports.</p>
       </div>
       <div class="cap reveal">
         <div class="cap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 4-4 4 4 5-5"/></svg></div>
@@ -1949,9 +1949,9 @@
 <!-- ============ BENCHMARKS ============ -->
 <section id="benchmarks">
   <div class="container">
-    <div class="section-eyebrow">05 · Benchmarks · Project 06</div>
+    <div class="section-eyebrow">05 · Benchmarks · Project 01</div>
     <h2>Three vector stores. Same corpus. Same queries.</h2>
-    <p class="section-sub">Target benchmarks for the agentic RAG benchmark suite, with and without the reranker stage. Numbers are the project's success targets — real measurements land in the README when the benchmark runs against the production corpus.</p>
+    <p class="section-sub">Target benchmarks for the e-commerce RAG suite (P01), with and without the reranker stage. Numbers are the project's success targets — real measurements land in the README when the benchmark runs against the production corpus.</p>
 
     <div class="bench-wrap reveal">
       <div class="bench-controls">
@@ -1974,8 +1974,8 @@
             <div class="bench-bar-track"><div class="bench-bar-fill qd" data-bench-bar="qd-recall" style="width:91%"></div></div>
           </div>
           <div class="bench-bar-row">
-            <div class="bench-bar-label"><span class="name">Pinecone</span><span class="val" data-bench="pn-recall">0.89</span></div>
-            <div class="bench-bar-track"><div class="bench-bar-fill pn" data-bench-bar="pn-recall" style="width:89%"></div></div>
+            <div class="bench-bar-label"><span class="name">Chroma</span><span class="val" data-bench="pn-recall">0.86</span></div>
+            <div class="bench-bar-track"><div class="bench-bar-fill pn" data-bench-bar="pn-recall" style="width:86%"></div></div>
           </div>
         </div>
 
@@ -1990,8 +1990,8 @@
             <div class="bench-bar-track"><div class="bench-bar-fill qd" data-bench-bar="qd-lat" style="width:22%"></div></div>
           </div>
           <div class="bench-bar-row">
-            <div class="bench-bar-label"><span class="name">Pinecone</span><span class="val" data-bench="pn-lat">95 ms</span></div>
-            <div class="bench-bar-track"><div class="bench-bar-fill pn" data-bench-bar="pn-lat" style="width:12%"></div></div>
+            <div class="bench-bar-label"><span class="name">Chroma</span><span class="val" data-bench="pn-lat">240 ms</span></div>
+            <div class="bench-bar-track"><div class="bench-bar-fill pn" data-bench-bar="pn-lat" style="width:30%"></div></div>
           </div>
         </div>
 
@@ -2006,8 +2006,8 @@
             <div class="bench-bar-track"><div class="bench-bar-fill qd" data-bench-bar="qd-cost" style="width:14%"></div></div>
           </div>
           <div class="bench-bar-row">
-            <div class="bench-bar-label"><span class="name">Pinecone</span><span class="val" data-bench="pn-cost">$70</span></div>
-            <div class="bench-bar-track"><div class="bench-bar-fill pn" data-bench-bar="pn-cost" style="width:70%"></div></div>
+            <div class="bench-bar-label"><span class="name">Chroma</span><span class="val" data-bench="pn-cost">$5</span></div>
+            <div class="bench-bar-track"><div class="bench-bar-fill pn" data-bench-bar="pn-cost" style="width:5%"></div></div>
           </div>
         </div>
       </div>
@@ -2036,11 +2036,11 @@
         <div class="stack-row"><span class="name">LangGraph</span><span class="level"><span class="on"></span><span class="on"></span><span class="on"></span></span></div>
         <div class="stack-row"><span class="name">LangChain core</span><span class="level"><span class="on"></span><span class="on"></span><span class="on"></span></span></div>
         <div class="stack-row"><span class="name">LlamaIndex</span><span class="level"><span class="on"></span><span class="on"></span><span></span></span></div>
-        <div class="stack-row"><span class="name">MCP (Model Context Protocol)</span><span class="level"><span class="on"></span><span class="on"></span><span></span></span></div>
-        <div class="stack-row"><span class="name">Constitutional AI patterns</span><span class="level"><span class="on"></span><span class="on"></span><span></span></span></div>
-        <div class="stack-row"><span class="name">MemGPT-style memory</span><span class="level"><span class="on"></span><span class="on"></span><span></span></span></div>
-        <div class="stack-row"><span class="name">Ragas evaluation</span><span class="level"><span class="on"></span><span class="on"></span><span></span></span></div>
-        <div class="stack-row"><span class="name">Langfuse</span><span class="level"><span class="on"></span><span class="on"></span><span></span></span></div>
+        <div class="stack-row"><span class="name">Anthropic Computer Use</span><span class="level"><span class="on"></span><span class="on"></span><span></span></span></div>
+        <div class="stack-row"><span class="name">PEFT / LoRA fine-tuning</span><span class="level"><span class="on"></span><span class="on"></span><span class="on"></span></span></div>
+        <div class="stack-row"><span class="name">tree-sitter (diff + AST)</span><span class="level"><span class="on"></span><span class="on"></span><span></span></span></div>
+        <div class="stack-row"><span class="name">RAGAS evaluation</span><span class="level"><span class="on"></span><span class="on"></span><span></span></span></div>
+        <div class="stack-row"><span class="name">LangSmith</span><span class="level"><span class="on"></span><span class="on"></span><span></span></span></div>
       </div>
 
       <div class="stack-layer reveal">
@@ -2070,7 +2070,7 @@
         <div class="stack-row"><span class="name">pgvector</span><span class="level"><span class="on"></span><span class="on"></span><span class="on"></span></span></div>
         <div class="stack-row"><span class="name">Neo4j 5 + APOC</span><span class="level"><span class="on"></span><span class="on"></span><span></span></span></div>
         <div class="stack-row"><span class="name">Qdrant</span><span class="level"><span class="on"></span><span class="on"></span><span></span></span></div>
-        <div class="stack-row"><span class="name">Pinecone</span><span class="level"><span class="on"></span><span></span><span></span></span></div>
+        <div class="stack-row"><span class="name">Chroma</span><span class="level"><span class="on"></span><span class="on"></span><span></span></span></div>
         <div class="stack-row"><span class="name">Redis</span><span class="level"><span class="on"></span><span class="on"></span><span></span></span></div>
       </div>
 
@@ -2102,24 +2102,24 @@
 
     <div class="roadmap" style="max-width: var(--max-w-narrow)">
       <div class="roadmap-item done reveal">
-        <div class="quarter">Q1 2026 · in flight</div>
-        <h5>Project 01 · Self-Healing Pipeline → metrics in README</h5>
-        <p>Functional flagship gets a real invoice corpus (300+ docs), runs the eval suite, populates the metrics table. Ships a public Langfuse dashboard.</p>
+        <div class="quarter">Q2 2026 · shipped</div>
+        <h5>9 / 9 scaffolds · static + animated demos · 94 / 94 checkpoints</h5>
+        <p>Every project has its repo, FastAPI app, animated walkthrough at <span class="mono">/projects/0X-name.html</span>, and a static fallback demo at <span class="mono">&lt;repo&gt;/demo/</span>. Roadmap checkpoints all green with honest labels — every label points to a real artifact in the repo.</p>
       </div>
       <div class="roadmap-item reveal">
-        <div class="quarter">Q2 2026</div>
-        <h5>Project 06 · Agentic RAG benchmark</h5>
-        <p>The benchmark this section is built around. Three stores stood up, Anthropic contextual retrieval in place, optimizer agent's first auto-tune cycle.</p>
-      </div>
-      <div class="roadmap-item reveal">
-        <div class="quarter">Q3 2026</div>
-        <h5>Project 03 · MemGPT Research Agent</h5>
-        <p>Three-tier memory shipping with a real research workflow. Cross-session benchmark against a single-session baseline.</p>
+        <div class="quarter">Q3 2026 · in flight</div>
+        <h5>P02 Support Triage · production data run</h5>
+        <p>Push the fine-tuned LoRA to HuggingFace Hub. Wire the agent against a real ticket queue (anonymized). Publish a LangSmith trace gallery with ≥30 examples. Confusion matrix in README.</p>
       </div>
       <div class="roadmap-item reveal">
         <div class="quarter">Q4 2026</div>
-        <h5>Projects 02 · 04 · 05 → close out the breadth</h5>
-        <p>GraphRAG, debate, and MCP workflow engine each get functional milestones. Portfolio reaches 6/6 functional with metric-backed READMEs.</p>
+        <h5>P01 + P08 · the retrieval benchmarks</h5>
+        <p>P01 Conversational E-Commerce: real Instacart corpus, full RAGAS + vector-DB benchmark on Qdrant / pgvector / Chroma. P08 GraphRAG SEC: scale entity extraction to top-100 S&amp;P 10-Ks.</p>
+      </div>
+      <div class="roadmap-item reveal">
+        <div class="quarter">Q1 2027</div>
+        <h5>P04 · P06 · P07 → production-grade depth</h5>
+        <p>P04 Document Intelligence: full FUNSD + DocVQA eval. P06 Code Review: ship the GitHub Action to the Marketplace. P07 AI Safety: apply guardrails to P01 + P03 and publish before/after attack-success-rate reports.</p>
       </div>
     </div>
   </div>
@@ -2169,12 +2169,12 @@
         <div class="reading-list">
           <h5>How I learn · recent papers I keep returning to</h5>
           <ul>
-            <li><span>Constitutional AI: Harmlessness from AI Feedback</span><span class="src">Anthropic</span></li>
-            <li><span>MemGPT: Towards LLMs as Operating Systems</span><span class="src">Berkeley</span></li>
+            <li><span>LoRA: Low-Rank Adaptation of Large Language Models</span><span class="src">Microsoft</span></li>
+            <li><span>From Local to Global: A GraphRAG Approach to QA</span><span class="src">Microsoft Research</span></li>
             <li><span>Contextual Retrieval</span><span class="src">Anthropic</span></li>
-            <li><span>From Local to Global: A GraphRAG Approach to QA</span><span class="src">MSR</span></li>
-            <li><span>Reflexion: Language Agents with Verbal RL</span><span class="src">NeurIPS</span></li>
-            <li><span>RAFT: Adapting LM to Domain-Specific RAG</span><span class="src">Berkeley</span></li>
+            <li><span>OWASP LLM Top 10 (2025)</span><span class="src">OWASP</span></li>
+            <li><span>Robust Speech Recognition via Large-Scale Weak Supervision</span><span class="src">OpenAI · Whisper</span></li>
+            <li><span>SWE-bench: Can LLMs Resolve Real-World GitHub Issues?</span><span class="src">Princeton</span></li>
           </ul>
         </div>
       </div>
