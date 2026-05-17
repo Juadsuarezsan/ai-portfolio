@@ -1252,6 +1252,118 @@
     background: rgba(124,92,255,0.14);
   }
 
+  /* Experiencia */
+  .experience-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    max-width: var(--max-w-narrow);
+  }
+  .experience-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 2px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    transition: all 0.2s;
+  }
+  .experience-item:hover {
+    background: var(--bg-card-hover);
+    border-left-color: var(--accent-2);
+  }
+  .exp-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+  }
+  .exp-role {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+  .exp-period {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--accent-2);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  .exp-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-faint);
+    margin-bottom: 14px;
+    letter-spacing: 0.03em;
+  }
+  .exp-bullets {
+    margin: 0;
+    padding-left: 18px;
+    list-style: disc;
+  }
+  .exp-bullets li {
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.65;
+    margin-bottom: 6px;
+  }
+  .exp-bullets li::marker { color: var(--accent); }
+  .exp-pending {
+    font-size: 13.5px;
+    color: var(--text-faint);
+  }
+
+  /* Educación */
+  .edu-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 28px;
+    align-items: start;
+  }
+  @media (max-width: 880px) { .edu-grid { grid-template-columns: 1fr; gap: 20px; } }
+  .edu-block {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 26px;
+  }
+  .edu-block-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent-2);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin-bottom: 16px;
+  }
+  .edu-degree {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+    letter-spacing: -0.01em;
+  }
+  .edu-school {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    color: var(--text-dim);
+  }
+  .edu-cert-list {
+    list-style: none;
+    padding: 0; margin: 0;
+  }
+  .edu-cert-list li {
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    padding: 9px 0;
+    border-bottom: 1px dashed rgba(255,255,255,0.06);
+  }
+  .edu-cert-list li:last-child { border-bottom: 0; }
+  .edu-cert-list li strong { color: var(--text); font-weight: 600; }
+
   /* Roadmap */
   .roadmap {
     position: relative;
@@ -1492,10 +1604,12 @@
       <span class="logo-text">// JDS.AI</span>
     </div>
     <div class="nav-links" id="navLinks">
-      <a href="#aprendido">Lo que aprendí</a>
+      <a href="#metodologia">Metodología</a>
       <a href="#projects">Proyectos</a>
       <a href="#stack">Stack</a>
       <a href="#about">Sobre mí</a>
+      <a href="#experiencia">Experiencia</a>
+      <a href="#educacion">Educación</a>
     </div>
     <a class="nav-cta" href="#contact">Contacto →</a>
   </div>
@@ -1593,11 +1707,11 @@
 </header>
 
 <!-- ============ APRENDIDO (merge Thesis + Capabilities) ============ -->
-<section id="aprendido">
+<section id="metodologia">
   <div class="container">
-    <div class="section-eyebrow">01 · Lo que aprendí</div>
-    <h2>Lo que aprendí construyendo sistemas de IA</h2>
-    <p class="section-sub">Seis ejes de IA en producción auto-evaluados, con la convicción que cada uno respalda.</p>
+    <div class="section-eyebrow">01 · Mi metodología técnica</div>
+    <h2>Mi enfoque al construir sistemas de IA</h2>
+    <p class="section-sub">A lo largo de mi experiencia trabajando en sistemas de IA, un patrón se hace evidente: los problemas técnicos generalmente provienen de malas prácticas en alguno de estos puntos clave.</p>
 
     <div class="cap-layout">
       <div class="radar-wrap reveal">
@@ -1654,8 +1768,8 @@
       </div>
 
       <div class="cap-text">
-        <h3>Lo aburrido es donde se decide la producción.</h3>
-        <p>La mayoría de "portafolios de IA" son un chatbot en Streamlit. Los nueve proyectos aquí responden una pregunta que un hiring manager va a hacer en la entrevista: <strong>"¿cómo falla, y cómo se da cuenta de que falló?"</strong></p>
+        <h3>La diferencia entre prototipo y producción.</h3>
+        <p>Construir sistemas de IA en producción no se trata de evitar las fallas, sino de estar preparado para ellas. Esa es la diferencia entre un prototipo y un sistema listo para producción. Esa preparación se materializa técnicamente con trazabilidad, fallbacks, eval suites, observabilidad y guardrails.</p>
         <p>El radar es auto-evaluado contra una rúbrica: cada eje sube cuando el proyecto correspondiente tiene un orquestador funcionando, un eval real, y una justificación escrita de por qué se escogió esa arquitectura sobre la alternativa obvia. Ningún eje está en 10/10 — todos los proyectos tienen TODO list.</p>
       </div>
     </div>
@@ -1693,8 +1807,8 @@
 <section id="projects">
   <div class="container">
     <div class="section-eyebrow">02 · Proyectos</div>
-    <h2>Nueve proyectos cubriendo AI Engineering 2026</h2>
-    <p class="section-sub">Cada proyecto está construido sobre un dataset público, evaluado contra ground truth manual con métricas estándar de la industria (RAGAS, F1, WER), comparado contra al menos dos baselines, y desplegado con observability completa.</p>
+    <h2>Algunos casos de estudio en los que he trabajado</h2>
+    <p class="section-sub">En conjunto, los proyectos cubren el espectro técnico que un AI Engineer enfrenta hoy: retrieval avanzado, agentes autónomos, fine-tuning, procesamiento de documentos, computer use, code review, knowledge graphs, safety y voice AI.</p>
 
     <div class="projects-grid-v2">
 
@@ -1889,7 +2003,7 @@
   <div class="container">
     <div class="section-eyebrow">03 · Stack</div>
     <h2>Las herramientas con las que construyo</h2>
-    <p class="section-sub">Ocho capas, desde los modelos hasta las metodologías. Los nombres son lo que uso realmente en los nueve proyectos; los detalles de cómo se combinan están en cada repo.</p>
+    <p class="section-sub">Mi stack técnico agrupado en ocho capas, que cubren todo el ciclo de construcción de un sistema de IA.</p>
 
     <div class="stack-matrix stack-matrix-v2">
       <div class="stack-layer reveal">
@@ -2027,6 +2141,97 @@
             <li><span>SWE-bench: Can LLMs Resolve Real-World GitHub Issues?</span><span class="src">Princeton</span></li>
           </ul>
         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ EXPERIENCIA ============ -->
+<section id="experiencia">
+  <div class="container">
+    <div class="section-eyebrow">05 · Experiencia</div>
+    <h2>Trayectoria profesional</h2>
+    <p class="section-sub">Cuatro roles construyendo y entrenando sistemas de IA, desde modelos ML clásicos hasta plataformas LLM en producción.</p>
+
+    <div class="experience-list">
+      <article class="experience-item reveal">
+        <div class="exp-head">
+          <h3 class="exp-role">AI Platform Engineer</h3>
+          <span class="exp-period">Sep 2025 — Presente</span>
+        </div>
+        <div class="exp-meta">Irrelevant · Full-time · Remote, Colombia</div>
+        <p class="exp-pending"><em>Descripción del rol en preparación.</em></p>
+      </article>
+
+      <article class="experience-item reveal">
+        <div class="exp-head">
+          <h3 class="exp-role">Computer Science Expert — AI Training</h3>
+          <span class="exp-period">May 2024 — Aug 2025</span>
+        </div>
+        <div class="exp-meta">Scale AI · Full-time · Remote, USA</div>
+        <ul class="exp-bullets">
+          <li>Diseño y evaluación de prompts para data analysis y training de LLMs.</li>
+          <li>Desarrollo y optimización de código Python para procesamiento y visualización de datos aplicado al training de modelos ML.</li>
+          <li>Evaluación de soluciones de código y respuestas con rúbricas multi-punto, enfocadas en aplicabilidad en LLMs y ML.</li>
+          <li>Análisis y aseguramiento de calidad y consistencia de datasets para optimizar el training de modelos ML.</li>
+        </ul>
+      </article>
+
+      <article class="experience-item reveal">
+        <div class="exp-head">
+          <h3 class="exp-role">Machine Learning Engineer</h3>
+          <span class="exp-period">Apr 2022 — Apr 2024</span>
+        </div>
+        <div class="exp-meta">Anyone AI · Part-time · Remote, USA</div>
+        <ul class="exp-bullets">
+          <li>Diseño y entrenamiento de modelos ML alineados con objetivos de negocio.</li>
+          <li>Manipulación, limpieza y verificación de datasets de entrenamiento.</li>
+          <li>Análisis y selección de algoritmos para problemas específicos de ML.</li>
+          <li>Optimización de modelos para infraestructura disponible.</li>
+          <li>Construcción, testing, deploy y mantenimiento de código ML en producción.</li>
+        </ul>
+      </article>
+
+      <article class="experience-item reveal">
+        <div class="exp-head">
+          <h3 class="exp-role">Machine Learning Engineer</h3>
+          <span class="exp-period">Aug 2022 — Feb 2023</span>
+        </div>
+        <div class="exp-meta">Bs Energy And Automation SAS · Part-time · Bogotá, Colombia</div>
+        <ul class="exp-bullets">
+          <li>Desarrollo de modelos ML en Python para optimización de sistemas eléctricos y de comunicaciones (predicción de demanda energética, detección de anomalías en redes).</li>
+          <li>Análisis y selección de algoritmos para modernización de estaciones de servicio y diseño eléctrico de clínicas y hospitales.</li>
+          <li>Diseño de estrategias para mejorar precisión de modelos mediante análisis de errores y ajuste de parámetros.</li>
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ EDUCACIÓN ============ -->
+<section id="educacion">
+  <div class="container">
+    <div class="section-eyebrow">06 · Educación</div>
+    <h2>Formación</h2>
+
+    <div class="edu-grid">
+      <div class="edu-block reveal">
+        <h4 class="edu-block-title">Formación universitaria</h4>
+        <article class="edu-item">
+          <h5 class="edu-degree">Física y Matemáticas</h5>
+          <div class="edu-school">Universidad Nacional de Colombia · Bogotá</div>
+        </article>
+      </div>
+
+      <div class="edu-block reveal">
+        <h4 class="edu-block-title">Certificaciones y especializaciones</h4>
+        <ul class="edu-cert-list">
+          <li><strong>Specialization in Building AI Agents with LLMs</strong> · Anyone AI</li>
+          <li><strong>Intensive Diploma in Academic Research and Publication</strong> · Universidad Nacional de Colombia · Dec 2023</li>
+          <li><strong>Aprende a programar con Python · Especialización</strong> · Universidad Austral, Buenos Aires</li>
+          <li><strong>Analíticas de Datos con Pandas</strong> · Tecnológico de Monterrey</li>
+          <li><strong>Curso Completo de Bases de Datos SQL y MySQL</strong> · Udemy</li>
+        </ul>
       </div>
     </div>
   </div>
