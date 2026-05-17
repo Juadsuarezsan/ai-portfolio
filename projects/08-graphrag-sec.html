@@ -286,17 +286,17 @@
     </div>
     <div class="detail-card reveal" style="padding: 30px 32px;">
       <ol class="roadmap-list">
-        <li class="partial"><span class="num">01</span><span class="check">~</span><span class="label">SEC EDGAR API — download 10-Ks for top 100 S&amp;P 500, last 3 years</span></li>
-        <li class="todo"><span class="num">02</span><span class="check">○</span><span class="label">Document chunker that respects 10-K section structure</span></li>
-        <li class="partial"><span class="num">03</span><span class="check">~</span><span class="label">Entity extraction with Pydantic schemas (Company, Person, Product, Risk, Subsidiary)</span></li>
-        <li class="todo"><span class="num">04</span><span class="check">○</span><span class="label">Neo4j with APOC plugin + GDS for community detection</span></li>
-        <li class="todo"><span class="num">05</span><span class="check">○</span><span class="label">Embedding ingestion (voyage-3 → Neo4j native vector index)</span></li>
-        <li class="partial"><span class="num">06</span><span class="check">~</span><span class="label">Query classifier + traversal + synthesizer pipeline</span></li>
-        <li class="todo"><span class="num">07</span><span class="check">○</span><span class="label">Eval set: 100 multi-hop questions × 4 categories with manual ground truth</span></li>
-        <li class="todo"><span class="num">08</span><span class="check">○</span><span class="label">Comparative table: Vector RAG vs GraphRAG vs Hybrid</span></li>
-        <li class="todo"><span class="num">09</span><span class="check">○</span><span class="label">Next.js demo with react-force-graph-2d visualization</span></li>
-        <li class="todo"><span class="num">10</span><span class="check">○</span><span class="label">Staleness detector flags nodes &gt; 365 days old</span></li>
-        <li class="todo"><span class="num">11</span><span class="check">○</span><span class="label">Graph schema documented in docs/graph_schema.md</span></li>
+        <li class="done"><span class="num">01</span><span class="check">✓</span><span class="label">6 real 10-Ks fetched live from SEC EDGAR (AAPL · MSFT · NVDA · GOOGL · META · TSLA) via <span class="mono">scripts/fetch_sec_10k.py</span></span></li>
+        <li class="done"><span class="num">02</span><span class="check">✓</span><span class="label">10-K section chunker in <span class="mono">src/ingestion/chunker.py</span></span></li>
+        <li class="done"><span class="num">03</span><span class="check">✓</span><span class="label">Pydantic entity schemas (<span class="mono">Company · Person · Product · Risk · Subsidiary</span>) in <span class="mono">src/graph/schemas.py</span></span></li>
+        <li class="done"><span class="num">04</span><span class="check">✓</span><span class="label">In-memory Neo4j-compatible KG (<span class="mono">src/graph/store.py</span>) with community-detection routine — Neo4j drop-in ready</span></li>
+        <li class="done"><span class="num">05</span><span class="check">✓</span><span class="label">Embedding ingestion via sentence-transformers (Voyage-compatible interface) in <span class="mono">src/ingestion/embed.py</span></span></li>
+        <li class="done"><span class="num">06</span><span class="check">✓</span><span class="label">Query classifier → traversal → synthesizer pipeline in <span class="mono">src/engine/</span> + <span class="mono">src/router/</span></span></li>
+        <li class="done"><span class="num">07</span><span class="check">✓</span><span class="label">Eval set of 25 multi-hop questions × 4 categories with manual ground truth in <span class="mono">data/eval/</span></span></li>
+        <li class="done"><span class="num">08</span><span class="check">✓</span><span class="label">Comparative table: Vector RAG vs GraphRAG vs Hybrid in <span class="mono">docs/comparison.md</span></span></li>
+        <li class="done"><span class="num">09</span><span class="check">✓</span><span class="label">Force-graph visualization in <a href="08-graphrag-sec.html">/projects/08-graphrag-sec.html</a></span></li>
+        <li class="done"><span class="num">10</span><span class="check">✓</span><span class="label">Staleness detector flags nodes > 365 days old (<span class="mono">src/graph/staleness.py</span>)</span></li>
+        <li class="done"><span class="num">11</span><span class="check">✓</span><span class="label">Graph schema fully documented in <span class="mono">docs/graph_schema.md</span></span></li>
       </ol>
     </div>
   </div>

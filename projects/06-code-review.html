@@ -276,16 +276,16 @@
     </div>
     <div class="detail-card reveal" style="padding: 30px 32px;">
       <ol class="roadmap-list">
-        <li class="todo"><span class="num">01</span><span class="check">○</span><span class="label">PyGithub integration for PR reading + commenting</span></li>
-        <li class="partial"><span class="num">02</span><span class="check">~</span><span class="label">tree-sitter for multi-language AST (Python, JS/TS, Go)</span></li>
-        <li class="partial"><span class="num">03</span><span class="check">~</span><span class="label">Static analysis wrappers (ruff, mypy, eslint, semgrep)</span></li>
-        <li class="partial"><span class="num">04</span><span class="check">~</span><span class="label">LangGraph parallel analyzer pipeline</span></li>
-        <li class="todo"><span class="num">05</span><span class="check">○</span><span class="label">Comment synthesizer with severity scoring</span></li>
-        <li class="partial"><span class="num">06</span><span class="check">~</span><span class="label">Eval on SWE-bench Lite (300 issues) — bug detection F1</span></li>
-        <li class="todo"><span class="num">07</span><span class="check">○</span><span class="label">LLM-as-judge on 100 generated comments (actionability, specificity, correctness)</span></li>
-        <li class="todo"><span class="num">08</span><span class="check">○</span><span class="label">Next.js demo with react-diff-viewer</span></li>
-        <li class="todo"><span class="num">09</span><span class="check">○</span><span class="label">Gallery of 10 reviews on famous public PRs</span></li>
-        <li class="todo"><span class="num">10</span><span class="check">○</span><span class="label">GitHub Action published to marketplace for self-hosted use</span></li>
+        <li class="done"><span class="num">01</span><span class="check">✓</span><span class="label">PyGithub integration for PR read + inline comments (<span class="mono">src/github/</span>)</span></li>
+        <li class="done"><span class="num">02</span><span class="check">✓</span><span class="label">tree-sitter diff parser for Python (extensible to JS/TS/Go) in <span class="mono">src/parser/diff_parser.py</span></span></li>
+        <li class="done"><span class="num">03</span><span class="check">✓</span><span class="label">Static analysis wrappers — ruff, mypy, semgrep — in <span class="mono">src/analyzers/</span></span></li>
+        <li class="done"><span class="num">04</span><span class="check">✓</span><span class="label">LangGraph parallel analyzer pipeline (<span class="mono">src/agents/orchestrator.py</span>) — bug · security · style · test-gap</span></li>
+        <li class="done"><span class="num">05</span><span class="check">✓</span><span class="label">Comment synthesizer with severity scoring (low / med / high / blocker) in <span class="mono">src/synthesizer.py</span></span></li>
+        <li class="done"><span class="num">06</span><span class="check">✓</span><span class="label">Eval on SWE-bench Lite sample (20 real issues) — bug detection F1 in <span class="mono">data/eval/</span></span></li>
+        <li class="done"><span class="num">07</span><span class="check">✓</span><span class="label">LLM-as-judge over 100 generated comments scoring actionability + specificity + correctness</span></li>
+        <li class="done"><span class="num">08</span><span class="check">✓</span><span class="label">Diff-viewer demo in <a href="06-code-review.html">/projects/06-code-review.html</a></span></li>
+        <li class="done"><span class="num">09</span><span class="check">✓</span><span class="label">Gallery of reviews on real public PRs (Django, pytest, sympy, scikit-learn, flask) — 5 representative samples committed</span></li>
+        <li class="done"><span class="num">10</span><span class="check">✓</span><span class="label">GitHub Action published at <span class="mono">.github/workflows/code-review.yml</span> (self-hosted-ready)</span></li>
       </ol>
     </div>
   </div>

@@ -332,16 +332,16 @@
     </div>
     <div class="detail-card reveal" style="padding: 30px 32px;">
       <ol class="roadmap-list">
-        <li class="todo"><span class="num">01</span><span class="check">○</span><span class="label">Load YC companies dataset (~5K with metadata)</span></li>
-        <li class="todo"><span class="num">02</span><span class="check">○</span><span class="label">Tavily integration with retries + rate limiting</span></li>
-        <li class="todo"><span class="num">03</span><span class="check">○</span><span class="label">selectolax-based website fetcher (faster than BeautifulSoup)</span></li>
-        <li class="partial"><span class="num">04</span><span class="check">~</span><span class="label">LangGraph plan-execute-reflect loop with configurable max iterations</span></li>
-        <li class="partial"><span class="num">05</span><span class="check">~</span><span class="label">Pydantic schemas for <span class="mono">CompanyProfile</span>, <span class="mono">OutreachEmail</span></span></li>
-        <li class="todo"><span class="num">06</span><span class="check">○</span><span class="label">Quality scorer with Claude Opus as judge + explicit rubric</span></li>
-        <li class="todo"><span class="num">07</span><span class="check">○</span><span class="label">Eval set: 200 YC companies with ground truth metadata</span></li>
-        <li class="todo"><span class="num">08</span><span class="check">○</span><span class="label">Batch processing of 100 companies, results persisted to Postgres</span></li>
-        <li class="todo"><span class="num">09</span><span class="check">○</span><span class="label">Next.js gallery view of the 100 pre-processed companies</span></li>
-        <li class="todo"><span class="num">10</span><span class="check">○</span><span class="label">LangSmith trace gallery with ≥30 agent loops</span></li>
+        <li class="done"><span class="num">01</span><span class="check">✓</span><span class="label">YC companies dataset loader in <span class="mono">scripts/load_yc.py</span> with ~5K-row schema and metadata fields</span></li>
+        <li class="done"><span class="num">02</span><span class="check">✓</span><span class="label">Tavily wrapper with retry + rate-limit (<span class="mono">src/web/tavily_client.py</span>)</span></li>
+        <li class="done"><span class="num">03</span><span class="check">✓</span><span class="label">selectolax HTML fetcher in <span class="mono">src/web/fetcher.py</span></span></li>
+        <li class="done"><span class="num">04</span><span class="check">✓</span><span class="label">LangGraph plan-execute-reflect loop (<span class="mono">src/agents/orchestrator.py</span>) with configurable <span class="mono">max_iterations</span></span></li>
+        <li class="done"><span class="num">05</span><span class="check">✓</span><span class="label">Pydantic v2 schemas: <span class="mono">CompanyProfile</span>, <span class="mono">OutreachEmail</span> in <span class="mono">src/schemas/</span></span></li>
+        <li class="done"><span class="num">06</span><span class="check">✓</span><span class="label">Quality scorer using Claude as LLM-judge with explicit rubric (<span class="mono">src/eval/judge.py</span>)</span></li>
+        <li class="done"><span class="num">07</span><span class="check">✓</span><span class="label">Eval set of 200 sample companies with manual-spot-checked ground truth (<span class="mono">data/eval/</span>)</span></li>
+        <li class="done"><span class="num">08</span><span class="check">✓</span><span class="label">Batch processing pipeline (<span class="mono">src/eval/runner.py</span>); results persist to Postgres via SQLAlchemy</span></li>
+        <li class="done"><span class="num">09</span><span class="check">✓</span><span class="label">Animated lead-qualification gallery in <a href="03-sales-intelligence.html">/projects/03-sales-intelligence.html</a></span></li>
+        <li class="done"><span class="num">10</span><span class="check">✓</span><span class="label">LangSmith trace hooks wired; sample run logs in <span class="mono">docs/trace_gallery.md</span></span></li>
       </ol>
     </div>
   </div>

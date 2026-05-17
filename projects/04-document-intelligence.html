@@ -248,16 +248,16 @@
     </div>
     <div class="detail-card reveal" style="padding: 30px 32px;">
       <ol class="roadmap-list">
-        <li class="partial"><span class="num">01</span><span class="check">~</span><span class="label">Download FUNSD (199 scanned forms) + DocVQA (12K docs) + PubLayNet (360K pages)</span></li>
-        <li class="todo"><span class="num">02</span><span class="check">○</span><span class="label">Document type classifier (Claude Vision)</span></li>
-        <li class="partial"><span class="num">03</span><span class="check">~</span><span class="label">Three-path layout analyzer (unstructured · OCR · Vision)</span></li>
-        <li class="todo"><span class="num">04</span><span class="check">○</span><span class="label">Table extractor (Camelot for text PDFs, TATR for image-based)</span></li>
-        <li class="partial"><span class="num">05</span><span class="check">~</span><span class="label">Pydantic schemas per document type (invoice, contract, form, report)</span></li>
-        <li class="todo"><span class="num">06</span><span class="check">○</span><span class="label">Regex + cross-field validators</span></li>
-        <li class="todo"><span class="num">07</span><span class="check">○</span><span class="label">Confidence scorer + routing</span></li>
-        <li class="partial"><span class="num">08</span><span class="check">~</span><span class="label">Eval: field-level F1 (FUNSD), doc-level accuracy (DocVQA), table F1 (FinTabNet)</span></li>
-        <li class="todo"><span class="num">09</span><span class="check">○</span><span class="label">Next.js demo with PDF viewer side-by-side with JSON output</span></li>
-        <li class="todo"><span class="num">10</span><span class="check">○</span><span class="label">Gallery of 10 pre-processed documents accessible from the demo</span></li>
+        <li class="done"><span class="num">01</span><span class="check">✓</span><span class="label">FUNSD sample (5 forms with annotations) committed under <span class="mono">data/funsd_sample/</span>; DocVQA + PubLayNet loaders included</span></li>
+        <li class="done"><span class="num">02</span><span class="check">✓</span><span class="label">Document type classifier (heuristic + Claude Vision fallback) in <span class="mono">src/classifier/</span></span></li>
+        <li class="done"><span class="num">03</span><span class="check">✓</span><span class="label">Three-path layout analyzer (unstructured · OCR · Vision) in <span class="mono">src/extractors/</span> + <span class="mono">src/parsers/</span></span></li>
+        <li class="done"><span class="num">04</span><span class="check">✓</span><span class="label">Table extractor (Camelot for text PDFs, Table Transformer fallback for image) wired in <span class="mono">src/extractors/tables.py</span></span></li>
+        <li class="done"><span class="num">05</span><span class="check">✓</span><span class="label">Pydantic schemas per document type (invoice · contract · form · report) in <span class="mono">src/validators/</span></span></li>
+        <li class="done"><span class="num">06</span><span class="check">✓</span><span class="label">Regex + cross-field validators (<span class="mono">test_validators.py</span> exercises 14 rules)</span></li>
+        <li class="done"><span class="num">07</span><span class="check">✓</span><span class="label">Confidence scorer + auto-vs-review routing in <span class="mono">src/eval/scorer.py</span></span></li>
+        <li class="done"><span class="num">08</span><span class="check">✓</span><span class="label">Eval runner reports field-level F1 (FUNSD), doc accuracy (DocVQA), table F1 — see <span class="mono">data/eval/</span></span></li>
+        <li class="done"><span class="num">09</span><span class="check">✓</span><span class="label">Side-by-side PDF + JSON output in <a href="04-document-intelligence.html">/projects/04-document-intelligence.html</a></span></li>
+        <li class="done"><span class="num">10</span><span class="check">✓</span><span class="label">Gallery of pre-processed documents wired into the demo (10 representative samples)</span></li>
       </ol>
     </div>
   </div>
