@@ -1,8 +1,8 @@
-# Juan David Suárez Sandoval — AI Engineer Portfolio
+# Juan David Suárez Sánchez — AI Engineer Portfolio
 
 > **Nine standalone production-grade projects** covering 99% of AI Engineering 2026: advanced RAG, fine-tuning, agents with tool-use, Document AI, Computer Use, Code AI, AI Safety, GraphRAG, and Voice AI.
 
-**Author:** Juan David Suárez Sandoval · **Contact:** juadsuarezsan@unal.edu.co
+**Author:** Juan David Suárez Sánchez · **Contact:** juadsuarezsan@unal.edu.co
 **Live portfolio site:** https://juadsuarezsan.github.io/ai-portfolio/
 **Specs (source of truth):** [`./docs/portafolio_specs.md`](./docs/portafolio_specs.md)
 
