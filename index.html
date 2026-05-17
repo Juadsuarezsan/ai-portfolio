@@ -1867,85 +1867,6 @@
 </section>
 
 
-<!-- ============ LIVE DEMO ============ -->
-<section id="demo">
-  <div class="container">
-    <div class="section-eyebrow">04 · Live demo · Reference pattern</div>
-    <h2>How a self-correcting pipeline looks live</h2>
-    <p class="section-sub">A LangGraph state machine running on a malformed invoice — a reference pattern that anchors several projects (Conversational Assistant, Document Intelligence, Code Review Agent). Critic flags failure → extractor reflects → episodic memory consulted → synthesis. Replaced project-specific demos go in each project's own folder.</p>
-
-    <div class="demo-card reveal">
-      <div class="demo-header">
-        <div style="display:flex; align-items:center; gap:14px">
-          <div class="dots"><span></span><span></span><span></span></div>
-          <div class="demo-title">pipeline · POST /api/process · invoice-1042.pdf</div>
-        </div>
-        <div class="demo-controls">
-          <button class="btn" id="demoRun" style="padding:7px 14px; font-size:12px">▶ Run</button>
-          <button class="btn" id="demoReset" style="padding:7px 14px; font-size:12px">Reset</button>
-        </div>
-      </div>
-      <div class="demo-body">
-        <div class="demo-log" id="demoLog">
-          <div class="dim">Click <strong style="color:var(--accent)">▶ Run</strong> to execute the pipeline against a malformed invoice that will trigger one reflection cycle…</div>
-        </div>
-        <div class="demo-side">
-          <h6>Agents</h6>
-          <div class="agent-node" data-agent="extractor">
-            <div class="agent-dot"></div>
-            <div class="agent-name">Extractor</div>
-            <div class="agent-meta">idle</div>
-          </div>
-          <div class="agent-node" data-agent="validator">
-            <div class="agent-dot"></div>
-            <div class="agent-name">Validator</div>
-            <div class="agent-meta">idle</div>
-          </div>
-          <div class="agent-node" data-agent="critic">
-            <div class="agent-dot"></div>
-            <div class="agent-name">Critic</div>
-            <div class="agent-meta">idle</div>
-          </div>
-          <div class="agent-node" data-agent="reflection">
-            <div class="agent-dot"></div>
-            <div class="agent-name">Reflection</div>
-            <div class="agent-meta">idle</div>
-          </div>
-          <div class="agent-node" data-agent="synthesizer">
-            <div class="agent-dot"></div>
-            <div class="agent-name">Synthesizer</div>
-            <div class="agent-meta">idle</div>
-          </div>
-
-          <h6>Critic principles</h6>
-          <div class="principle-meter">
-            <div class="principle-row">
-              <span class="principle-name">Complete</span>
-              <div class="principle-track"><div class="principle-fill" data-p="completeness"></div></div>
-              <span class="principle-val" data-pv="completeness">—</span>
-            </div>
-            <div class="principle-row">
-              <span class="principle-name">Accurate</span>
-              <div class="principle-track"><div class="principle-fill" data-p="accuracy"></div></div>
-              <span class="principle-val" data-pv="accuracy">—</span>
-            </div>
-            <div class="principle-row">
-              <span class="principle-name">Consistent</span>
-              <div class="principle-track"><div class="principle-fill" data-p="consistency"></div></div>
-              <span class="principle-val" data-pv="consistency">—</span>
-            </div>
-            <div class="principle-row">
-              <span class="principle-name">Format</span>
-              <div class="principle-track"><div class="principle-fill" data-p="format"></div></div>
-              <span class="principle-val" data-pv="format">—</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- ============ BENCHMARKS ============ -->
 <section id="benchmarks">
   <div class="container">
@@ -2278,121 +2199,17 @@
   document.addEventListener('scroll', updateActiveNav, { passive: true });
   updateActiveNav();
 
-  // -------- Demo: simulated pipeline run
-  const demoLog = document.getElementById('demoLog');
-  const demoRun = document.getElementById('demoRun');
-  const demoReset = document.getElementById('demoReset');
-
-  const script = [
-    { t: 0, tag: 'info', text: 'POST /api/process · document_type=invoice · stream=true' },
-    { t: 220, tag: 'agent', name: 'extractor', text: 'starting · iteration 1/3' },
-    { t: 950, tag: 'agent', name: 'extractor', text: 'parsed 7 fields · vendor="Acme Corp" · total=$4820.00' },
-    { t: 1200, tag: 'agent', name: 'validator', text: 'schema check · 6/7 required fields present' },
-    { t: 1450, tag: 'agent', name: 'validator', text: 'WARN · missing tax_id' },
-    { t: 1700, tag: 'agent', name: 'critic', text: 'consulting episodic memory · 247 past errors indexed' },
-    { t: 2050, tag: 'agent', name: 'critic', text: 'retrieved 3 similar failures · "tax_id often last on Acme invoices"' },
-    { t: 2400, tag: 'agent', name: 'critic', text: 'scoring against Constitutional principles…',
-      principles: { completeness: 0.71, accuracy: 0.94, consistency: 0.95, format: 0.88 } },
-    { t: 3000, tag: 'fail', text: 'overall score 0.87 → 0.82 (weighted by completeness) · BELOW 0.85 threshold' },
-    { t: 3300, tag: 'retry', text: 'entering reflection loop · iteration 2/3' },
-    { t: 3550, tag: 'agent', name: 'reflection', text: 'critic feedback injected into extractor context' },
-    { t: 3850, tag: 'agent', name: 'reflection', text: 'hint: tax_id pattern "TAX-####-####" usually at footer' },
-    { t: 4200, tag: 'agent', name: 'extractor', text: 'starting · iteration 2/3 (with reflection hint)' },
-    { t: 5050, tag: 'agent', name: 'extractor', text: 'parsed 7/7 fields · tax_id=TAX-2026-4820 ✓' },
-    { t: 5300, tag: 'agent', name: 'validator', text: 'schema check · 7/7 required fields present ✓' },
-    { t: 5550, tag: 'agent', name: 'critic', text: 'rescoring with full extraction…',
-      principles: { completeness: 0.98, accuracy: 0.94, consistency: 0.97, format: 0.96 } },
-    { t: 6100, tag: 'pass', text: 'overall score 0.96 ≥ 0.85 · passing to synthesizer' },
-    { t: 6350, tag: 'agent', name: 'synthesizer', text: 'producing audited output…' },
-    { t: 6900, tag: 'agent', name: 'synthesizer', text: 'output ready · 7 fields · audit_trail attached' },
-    { t: 7150, tag: 'info', text: 'persisting trace to episodic memory · embedding generated' },
-    { t: 7400, tag: 'pass', text: 'pipeline complete · total 7.4s · 2 iterations · cost $0.018' }
-  ];
-
-  function setAgent(name, state, meta) {
-    document.querySelectorAll('.agent-node').forEach(n => {
-      if (n.dataset.agent === name) {
-        n.classList.remove('active', 'done');
-        if (state) n.classList.add(state);
-        if (meta !== undefined) n.querySelector('.agent-meta').textContent = meta;
-      }
-    });
-  }
-  function setPrinciples(p) {
-    Object.entries(p).forEach(([k, v]) => {
-      const fill = document.querySelector('[data-p="' + k + '"]');
-      const val = document.querySelector('[data-pv="' + k + '"]');
-      if (fill) {
-        fill.style.width = (v * 100) + '%';
-        fill.classList.toggle('low', v < 0.85);
-      }
-      if (val) val.textContent = v.toFixed(2);
-    });
-  }
-  function resetDemo() {
-    demoLog.innerHTML = '<div class="dim">Click <strong style="color:var(--accent)">▶ Run</strong> to execute the pipeline against a malformed invoice that will trigger one reflection cycle…</div>';
-    document.querySelectorAll('.agent-node').forEach(n => {
-      n.classList.remove('active', 'done');
-      n.querySelector('.agent-meta').textContent = 'idle';
-    });
-    document.querySelectorAll('.principle-fill').forEach(f => { f.style.width = '0%'; f.classList.remove('low'); });
-    document.querySelectorAll('.principle-val').forEach(v => v.textContent = '—');
-  }
-  let timers = [];
-  function runDemo() {
-    resetDemo();
-    demoLog.innerHTML = '';
-    timers.forEach(clearTimeout);
-    timers = [];
-    let lastAgent = null;
-
-    script.forEach(step => {
-      const t = setTimeout(() => {
-        // log line
-        const ts = (step.t / 1000).toFixed(2).padStart(5, '0') + 's';
-        let tag = step.tag;
-        const tagLabel = {
-          info: 'INFO', agent: (step.name || 'agent').toUpperCase(),
-          critic: 'CRITIC', pass: 'PASS', fail: 'FAIL', retry: 'RETRY'
-        }[tag] || tag.toUpperCase();
-        const tagClass = step.name === 'critic' ? 'tag-critic' : 'tag-' + tag;
-        const cls = step.name === 'critic' ? 'tag-critic' : ('tag-' + (step.tag === 'agent' ? 'agent' : step.tag));
-
-        const line = document.createElement('div');
-        line.className = 'line';
-        line.innerHTML = '<span class="ts">' + ts + '</span><span class="tag ' + cls + '">' + tagLabel + '</span><span class="msg">' + step.text + '</span>';
-        demoLog.appendChild(line);
-        requestAnimationFrame(() => line.classList.add('in'));
-        demoLog.scrollTop = demoLog.scrollHeight;
-
-        // agent state
-        if (step.name) {
-          if (lastAgent && lastAgent !== step.name) setAgent(lastAgent, 'done', 'done');
-          setAgent(step.name, 'active', 'running');
-          lastAgent = step.name;
-        }
-        if (step.principles) setPrinciples(step.principles);
-        if (step.tag === 'pass' && /pipeline complete/.test(step.text) && lastAgent) {
-          setAgent(lastAgent, 'done', 'done');
-        }
-      }, step.t);
-      timers.push(t);
-    });
-  }
-  demoRun.addEventListener('click', runDemo);
-  demoReset.addEventListener('click', () => { timers.forEach(clearTimeout); resetDemo(); });
-
   // -------- Benchmarks toggle
   const benchData = {
     rerank: {
-      'pg-recall': [0.88, 88], 'qd-recall': [0.91, 91], 'pn-recall': [0.89, 89],
-      'pg-lat': ['320 ms', 40], 'qd-lat': ['180 ms', 22], 'pn-lat': ['95 ms', 12],
-      'pg-cost': ['$8', 8], 'qd-cost': ['$14', 14], 'pn-cost': ['$70', 70]
+      'pg-recall': [0.88, 88], 'qd-recall': [0.91, 91], 'pn-recall': [0.86, 86],
+      'pg-lat': ['320 ms', 40], 'qd-lat': ['180 ms', 22], 'pn-lat': ['240 ms', 30],
+      'pg-cost': ['$8', 8], 'qd-cost': ['$14', 14], 'pn-cost': ['$5', 5]
     },
     raw: {
-      'pg-recall': [0.74, 74], 'qd-recall': [0.78, 78], 'pn-recall': [0.76, 76],
-      'pg-lat': ['90 ms', 18], 'qd-lat': ['55 ms', 11], 'pn-lat': ['32 ms', 6],
-      'pg-cost': ['$2', 2], 'qd-cost': ['$5', 5], 'pn-cost': ['$25', 25]
+      'pg-recall': [0.74, 74], 'qd-recall': [0.78, 78], 'pn-recall': [0.72, 72],
+      'pg-lat': ['90 ms', 18], 'qd-lat': ['55 ms', 11], 'pn-lat': ['80 ms', 16],
+      'pg-cost': ['$2', 2], 'qd-cost': ['$5', 5], 'pn-cost': ['$2', 2]
     }
   };
   document.querySelectorAll('.toggle-group button').forEach(btn => {
