@@ -1430,8 +1430,6 @@
       <a href="#thesis">Thesis</a>
       <a href="#capabilities">Capabilities</a>
       <a href="#projects">Projects</a>
-      <a href="#demo">Live demo</a>
-      <a href="#benchmarks">Benchmarks</a>
       <a href="#stack">Stack</a>
       <a href="#about">About</a>
     </div>
@@ -1867,78 +1865,6 @@
 </section>
 
 
-<!-- ============ BENCHMARKS ============ -->
-<section id="benchmarks">
-  <div class="container">
-    <div class="section-eyebrow">05 · Benchmarks · Project 01</div>
-    <h2>Three vector stores. Same corpus. Same queries.</h2>
-    <p class="section-sub">Target benchmarks for the e-commerce RAG suite (P01), with and without the reranker stage. Numbers are the project's success targets — real measurements land in the README when the benchmark runs against the production corpus.</p>
-
-    <div class="bench-wrap reveal">
-      <div class="bench-controls">
-        <h4>Vector DB comparison · n=500 held-out queries</h4>
-        <div class="toggle-group" role="tablist" aria-label="Toggle reranker">
-          <button class="on" data-mode="rerank">With reranker</button>
-          <button data-mode="raw">Vector only</button>
-        </div>
-      </div>
-
-      <div class="bench-metrics">
-        <div class="bench-metric">
-          <h6>Recall @ 10 (higher = better)</h6>
-          <div class="bench-bar-row">
-            <div class="bench-bar-label"><span class="name">pgvector</span><span class="val" data-bench="pg-recall">0.88</span></div>
-            <div class="bench-bar-track"><div class="bench-bar-fill pg" data-bench-bar="pg-recall" style="width:88%"></div></div>
-          </div>
-          <div class="bench-bar-row">
-            <div class="bench-bar-label"><span class="name">Qdrant</span><span class="val" data-bench="qd-recall">0.91</span></div>
-            <div class="bench-bar-track"><div class="bench-bar-fill qd" data-bench-bar="qd-recall" style="width:91%"></div></div>
-          </div>
-          <div class="bench-bar-row">
-            <div class="bench-bar-label"><span class="name">Chroma</span><span class="val" data-bench="pn-recall">0.86</span></div>
-            <div class="bench-bar-track"><div class="bench-bar-fill pn" data-bench-bar="pn-recall" style="width:86%"></div></div>
-          </div>
-        </div>
-
-        <div class="bench-metric">
-          <h6>P95 latency · ms (lower = better)</h6>
-          <div class="bench-bar-row">
-            <div class="bench-bar-label"><span class="name">pgvector</span><span class="val" data-bench="pg-lat">320 ms</span></div>
-            <div class="bench-bar-track"><div class="bench-bar-fill pg" data-bench-bar="pg-lat" style="width:40%"></div></div>
-          </div>
-          <div class="bench-bar-row">
-            <div class="bench-bar-label"><span class="name">Qdrant</span><span class="val" data-bench="qd-lat">180 ms</span></div>
-            <div class="bench-bar-track"><div class="bench-bar-fill qd" data-bench-bar="qd-lat" style="width:22%"></div></div>
-          </div>
-          <div class="bench-bar-row">
-            <div class="bench-bar-label"><span class="name">Chroma</span><span class="val" data-bench="pn-lat">240 ms</span></div>
-            <div class="bench-bar-track"><div class="bench-bar-fill pn" data-bench-bar="pn-lat" style="width:30%"></div></div>
-          </div>
-        </div>
-
-        <div class="bench-metric">
-          <h6>Cost · USD / 1M queries (lower = better)</h6>
-          <div class="bench-bar-row">
-            <div class="bench-bar-label"><span class="name">pgvector</span><span class="val" data-bench="pg-cost">$8</span></div>
-            <div class="bench-bar-track"><div class="bench-bar-fill pg" data-bench-bar="pg-cost" style="width:8%"></div></div>
-          </div>
-          <div class="bench-bar-row">
-            <div class="bench-bar-label"><span class="name">Qdrant</span><span class="val" data-bench="qd-cost">$14</span></div>
-            <div class="bench-bar-track"><div class="bench-bar-fill qd" data-bench-bar="qd-cost" style="width:14%"></div></div>
-          </div>
-          <div class="bench-bar-row">
-            <div class="bench-bar-label"><span class="name">Chroma</span><span class="val" data-bench="pn-cost">$5</span></div>
-            <div class="bench-bar-track"><div class="bench-bar-fill pn" data-bench-bar="pn-cost" style="width:5%"></div></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="bench-footer">
-        // Numbers shown are project success targets, not measured results. Real benchmarks land here when the suite runs against the production corpus. The point of the chart is to show <span style="color:var(--text-dim)">what's being measured</span>, not to fabricate a winner.
-      </div>
-    </div>
-  </div>
-</section>
 
 <!-- ============ STACK ============ -->
 <section id="stack">
@@ -2199,33 +2125,6 @@
   document.addEventListener('scroll', updateActiveNav, { passive: true });
   updateActiveNav();
 
-  // -------- Benchmarks toggle
-  const benchData = {
-    rerank: {
-      'pg-recall': [0.88, 88], 'qd-recall': [0.91, 91], 'pn-recall': [0.86, 86],
-      'pg-lat': ['320 ms', 40], 'qd-lat': ['180 ms', 22], 'pn-lat': ['240 ms', 30],
-      'pg-cost': ['$8', 8], 'qd-cost': ['$14', 14], 'pn-cost': ['$5', 5]
-    },
-    raw: {
-      'pg-recall': [0.74, 74], 'qd-recall': [0.78, 78], 'pn-recall': [0.72, 72],
-      'pg-lat': ['90 ms', 18], 'qd-lat': ['55 ms', 11], 'pn-lat': ['80 ms', 16],
-      'pg-cost': ['$2', 2], 'qd-cost': ['$5', 5], 'pn-cost': ['$2', 2]
-    }
-  };
-  document.querySelectorAll('.toggle-group button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.toggle-group button').forEach(b => b.classList.remove('on'));
-      btn.classList.add('on');
-      const mode = btn.dataset.mode;
-      const data = benchData[mode];
-      Object.entries(data).forEach(([k, [val, w]]) => {
-        const valEl = document.querySelector('[data-bench="' + k + '"]');
-        const barEl = document.querySelector('[data-bench-bar="' + k + '"]');
-        if (valEl) valEl.textContent = typeof val === 'number' ? val.toFixed(2) : val;
-        if (barEl) barEl.style.width = w + '%';
-      });
-    });
-  });
 </script>
 </body>
 </html>
