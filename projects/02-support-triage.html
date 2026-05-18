@@ -354,31 +354,6 @@
   </div>
 </section>
 
-<section data-screen-label="08 Roadmap">
-  <div class="container">
-    <div class="section-head">
-      <div class="section-eyebrow">06 · Roadmap to v1.0.0</div>
-      <h2>Ten checkpoints. Each one is a separate PR.</h2>
-      <p class="section-sub">From <span class="mono">02-support-triage/README.md</span> on <span class="mono">main</span>.</p>
-    </div>
-
-    <div class="detail-card reveal" style="padding: 30px 32px;">
-      <ol class="roadmap-list">
-        <li class="done"><span class="num">01</span><span class="check">✓</span><span class="label">Load Bitext (27K queries × 27 intents), 80/10/10 stratified split</span></li>
-        <li class="done"><span class="num">02</span><span class="check">✓</span><span class="label">LoRA fine-tune DistilBERT, evaluate macro-F1 on test split</span></li>
-        <li class="done"><span class="num">03</span><span class="check">✓</span><span class="label">HuggingFace Hub push script + full <strong>MODEL_CARD.md</strong> ready in <span class="mono">models/intent-classifier-lora/</span> (token-gated publish)</span></li>
-        <li class="done"><span class="num">04</span><span class="check">✓</span><span class="label">Qdrant retrieval module (<span class="mono">src/retrieval/similar_tickets.py</span>) + ingest CLI for resolved-tickets corpus</span></li>
-        <li class="done"><span class="num">05</span><span class="check">✓</span><span class="label">LangGraph agent: classifier → sentiment → similar tickets → drafter → confidence scorer</span></li>
-        <li class="done"><span class="num">06</span><span class="check">✓</span><span class="label">End-to-end eval runner in <span class="mono">src/eval/runner.py</span> over 200-sample test split</span></li>
-        <li class="done"><span class="num">07</span><span class="check">✓</span><span class="label">Comparative report: zero-shot Claude vs LoRA classifier-only vs hybrid pipeline (<span class="mono">docs/pipeline_comparison.md</span>)</span></li>
-        <li class="done"><span class="num">08</span><span class="check">✓</span><span class="label">Animated kanban demo (pending → drafted → suggested → resolved → escalated) in <a href="02-support-triage.html#demo-system">/projects/02-support-triage.html</a></span></li>
-        <li class="done"><span class="num">09</span><span class="check">✓</span><span class="label">LangSmith trace hooks wired in orchestrator; sample runs documented in <span class="mono">docs/trace_gallery.md</span></span></li>
-        <li class="done"><span class="num">10</span><span class="check">✓</span><span class="label">Confusion matrix rendered to <span class="mono">reports/confusion_matrix.png</span> and embedded in <span class="mono">MODEL_CARD.md</span></span></li>
-      </ol>
-    </div>
-  </div>
-</section>
-
 <section data-screen-label="09 Next">
   <div class="container">
     <a class="next-card" href="03-sales-intelligence.html">
