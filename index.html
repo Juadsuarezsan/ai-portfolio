@@ -1315,6 +1315,21 @@
     font-size: 13.5px;
     color: var(--text-faint);
   }
+  .exp-summary {
+    font-size: 14.5px;
+    color: var(--text);
+    line-height: 1.65;
+    margin-bottom: 12px;
+  }
+  .exp-skills {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px dashed rgba(255,255,255,0.06);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-faint);
+    letter-spacing: 0.05em;
+  }
 
   /* Educación */
   .edu-grid {
@@ -2156,52 +2171,66 @@
       <article class="experience-item reveal">
         <div class="exp-head">
           <h3 class="exp-role">AI Platform Engineer</h3>
-          <span class="exp-period">Sep 2025 — Presente</span>
+          <span class="exp-period">Sep 2025 — Presente · 9 mos</span>
         </div>
-        <div class="exp-meta">Irrelevant · Full-time · Remote, Colombia</div>
-        <p class="exp-pending"><em>Descripción del rol en preparación.</em></p>
+        <div class="exp-meta">Irrelevant · Full-time · Colombia · Remote</div>
+        <p class="exp-summary">Lidero el área de tecnología de la empresa, gestionando el equipo técnico y trabajando directamente con clientes para diseñar, orquestar y desplegar soluciones de inteligencia artificial.</p>
+        <ul class="exp-bullets">
+          <li>Diseño de arquitectura con Large Language Models (OpenAI API, Anthropic API) orquestados con LangChain y LangGraph.</li>
+          <li>Construcción de AI Agents y sistemas multi-agente con tool calling, function calling y MCP (Model Context Protocol).</li>
+          <li>Implementación de sistemas RAG (Retrieval-Augmented Generation) con embeddings y búsqueda semántica.</li>
+          <li>Desarrollo de servicios en Python con FastAPI y deploy en GCP con Docker.</li>
+          <li>Comunicación directa con cliente desde discovery hasta sistema en producción.</li>
+        </ul>
+        <div class="exp-skills">Large Language Models · LangChain &amp; LangGraph · +29 skills</div>
       </article>
 
       <article class="experience-item reveal">
         <div class="exp-head">
           <h3 class="exp-role">Computer Science Expert — AI Training</h3>
-          <span class="exp-period">May 2024 — Aug 2025</span>
+          <span class="exp-period">May 2024 — Aug 2025 · 1 yr 4 mos</span>
         </div>
-        <div class="exp-meta">Scale AI · Full-time · Remote, USA</div>
+        <div class="exp-meta">Scale AI · Full-time · United States · Remote</div>
+        <p class="exp-summary">Año y medio especializado en la capa de calidad y evaluación del training de Large Language Models para mejorar los modelos de frontera.</p>
         <ul class="exp-bullets">
-          <li>Diseño y evaluación de prompts para data analysis y training de LLMs.</li>
-          <li>Desarrollo y optimización de código Python para procesamiento y visualización de datos aplicado al training de modelos ML.</li>
-          <li>Evaluación de soluciones de código y respuestas con rúbricas multi-punto, enfocadas en aplicabilidad en LLMs y ML.</li>
-          <li>Análisis y aseguramiento de calidad y consistencia de datasets para optimizar el training de modelos ML.</li>
+          <li>Diseño de prompts complejos aplicando Prompt Engineering avanzado: chain-of-thought, few-shot prompting y structured outputs.</li>
+          <li>Desarrollo y optimización de código Python integrado en pipelines de training de LLMs.</li>
+          <li>Aplicación de rúbricas multi-punto para LLM Evaluation en contextos altamente subjetivos.</li>
+          <li>Análisis y aseguramiento de calidad de datasets para training de modelos.</li>
         </ul>
+        <div class="exp-skills">Aprendizaje automático · SQL · +14 skills</div>
       </article>
 
       <article class="experience-item reveal">
         <div class="exp-head">
           <h3 class="exp-role">Machine Learning Engineer</h3>
-          <span class="exp-period">Apr 2022 — Apr 2024</span>
+          <span class="exp-period">Jun 2022 — Apr 2024 · 1 yr 11 mos</span>
         </div>
-        <div class="exp-meta">Anyone AI · Part-time · Remote, USA</div>
+        <div class="exp-meta">Anyone AI · Full-time · United States · Remote</div>
+        <p class="exp-summary">Casi dos años combinando construcción y deploy de modelos de IA en producción con formación a otros profesionales en estas tecnologías. Recorrí la transición de Machine Learning clásico hacia sistemas de Generative AI.</p>
         <ul class="exp-bullets">
-          <li>Diseño y entrenamiento de modelos ML alineados con objetivos de negocio.</li>
-          <li>Manipulación, limpieza y verificación de datasets de entrenamiento.</li>
-          <li>Análisis y selección de algoritmos para problemas específicos de ML.</li>
-          <li>Optimización de modelos para infraestructura disponible.</li>
-          <li>Construcción, testing, deploy y mantenimiento de código ML en producción.</li>
+          <li>Diseño, entrenamiento y deploy en producción de modelos de Machine Learning y sistemas basados en Large Language Models.</li>
+          <li>Formación de profesionales en LLMs, LangChain, AI Agents y RAG, conectando técnicas con sus fundamentos matemáticos.</li>
+          <li>Construcción de aplicaciones con OpenAI API y Anthropic API usando Python.</li>
+          <li>Implementación de data pipelines, evaluación de modelos y deploy con Docker.</li>
         </ul>
+        <div class="exp-skills">Analytics · Git · +39 skills</div>
       </article>
 
       <article class="experience-item reveal">
         <div class="exp-head">
           <h3 class="exp-role">Machine Learning Engineer</h3>
-          <span class="exp-period">Aug 2022 — Feb 2023</span>
+          <span class="exp-period">Jun 2021 — May 2022 · 1 yr</span>
         </div>
-        <div class="exp-meta">Bs Energy And Automation SAS · Part-time · Bogotá, Colombia</div>
+        <div class="exp-meta">Bs Energy And Automation SAS · Full-time · Bogotá, Colombia · On-site</div>
+        <p class="exp-summary">Primer rol profesional aplicando Machine Learning a sistemas industriales en los sectores de energía y comunicaciones, bajo restricciones reales de hardware y costo.</p>
         <ul class="exp-bullets">
-          <li>Desarrollo de modelos ML en Python para optimización de sistemas eléctricos y de comunicaciones (predicción de demanda energética, detección de anomalías en redes).</li>
-          <li>Análisis y selección de algoritmos para modernización de estaciones de servicio y diseño eléctrico de clínicas y hospitales.</li>
-          <li>Diseño de estrategias para mejorar precisión de modelos mediante análisis de errores y ajuste de parámetros.</li>
+          <li>Desarrollo de modelos en Python para predicción de demanda energética y detección de anomalías en redes de comunicaciones.</li>
+          <li>Análisis y selección de algoritmos apropiados para cada problema específico, evaluando su efectividad en contextos aplicados.</li>
+          <li>Diseño de estrategias para mejorar la precisión de modelos mediante análisis de errores y ajuste de parámetros.</li>
+          <li>Optimización de modelos para entornos con restricciones de hardware, asegurando rendimiento eficiente sin comprometer calidad.</li>
         </ul>
+        <div class="exp-skills">Analytics · Git · +14 skills</div>
       </article>
     </div>
   </div>
